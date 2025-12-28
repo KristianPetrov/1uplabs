@@ -57,20 +57,23 @@ export default function Home ()
               <div className="relative mb-8 lg:hidden">
                 <div className="absolute -inset-4 rounded-3xl bg-linear-to-br from-emerald-500/14 via-transparent to-sky-500/12 blur-xl" />
 
-                <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl">
-                  <Image
-                    src="/1uplabs-mushroom-molecule.png"
-                    alt="1UpLabs hero logo"
-                    fill
-                    className="object-contain"
-                    sizes="100vw"
-                    priority
-                  />
+                <div className="relative aspect-4/3 w-full">
+                  <div className="hero-fire" aria-hidden="true" />
+                  <div className="relative h-full w-full overflow-hidden rounded-2xl">
+                    <Image
+                      src="/1uplabs-mushroom-molecule.png"
+                      alt="1UpLabs hero logo"
+                      fill
+                      className="relative z-5 object-contain"
+                      sizes="100vw"
+                      priority
+                    />
+                  </div>
                 </div>
 
               </div>
 
-              <p className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/70">
+              <p className="inline-flex items-center gap-2 rounded-full border  bg-white/5 px-3 py-1 text-xs font-medium text-white/70">
                 Transparent. Tested. Reliable.
               </p>
               <h1 className="mt-5 text-balance text-4xl font-semibold tracking-tight text-white sm:text-5xl">
@@ -101,16 +104,19 @@ export default function Home ()
 
             <div className="relative hidden lg:block">
               <div className="absolute -inset-4 rounded-3xl bg-linear-to-br from-emerald-500/14 via-transparent to-sky-500/12 blur-xl" />
-              <div className="relative overflow-hidden rounded-3xl border border-white/10 p-4">
-                <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl">
-                  <Image
-                    src="/1uplabs-mushroom-molecule.png"
-                    alt="1UpLabs hero logo"
-                    fill
-                    className="object-contain"
-                    sizes="(min-width: 1024px) 520px, 100vw"
-                    priority
-                  />
+              <div className="relative rounded-3xl p-4">
+                <div className="relative aspect-4/3 w-full">
+                  <div className="hero-fire" aria-hidden="true" />
+                  <div className="relative h-full w-full overflow-hidden rounded-2xl">
+                    <Image
+                      src="/1uplabs-mushroom-molecule.png"
+                      alt="1UpLabs hero logo"
+                      fill
+                      className="relative z-5 object-contain"
+                      sizes="(min-width: 1024px) 520px, 100vw"
+                      priority
+                    />
+                  </div>
                 </div>
               </div>
             </div>

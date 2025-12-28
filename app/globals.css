@@ -31,6 +31,90 @@ body {
 ::selection {
   background: color-mix(in oklab, var(--accent) 30%, transparent);
 }
+.hero-fire {
+  position: absolute;
+  inset: -32%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.82;
+  mix-blend-mode: screen;
+  filter:
+    drop-shadow(0 55px 160px rgba(16, 185, 129, 0.22))
+    drop-shadow(0 40px 140px rgba(14, 165, 233, 0.16));
+  -webkit-mask-image: radial-gradient(closest-side at 50% 55%, #000 0%, transparent 78%);
+  mask-image: radial-gradient(closest-side at 50% 55%, #000 0%, transparent 78%);
+}
+
+.hero-fire::before,
+.hero-fire::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background:
+    radial-gradient(ellipse 62% 88% at 50% 12%, rgba(236, 253, 245, 0.55) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 76% at 46% 55%, rgba(16, 185, 129, 0.62) 0%, transparent 78%),
+    radial-gradient(ellipse 58% 78% at 56% 64%, rgba(14, 165, 233, 0.36) 0%, transparent 80%),
+    radial-gradient(ellipse 70% 92% at 50% 104%, rgba(5, 150, 105, 0.34) 0%, transparent 76%);
+  filter: blur(36px);
+  animation: heroFirePulse 6.2s ease-in-out infinite;
+  opacity: 0.78;
+}
+
+.hero-fire::after {
+  inset: 12% 22% 16%;
+  border-radius: 9999px;
+  background:
+    radial-gradient(ellipse 70% 96% at 50% 16%, rgba(240, 253, 250, 0.62) 0%, transparent 66%),
+    radial-gradient(ellipse 52% 58% at 50% 66%, rgba(34, 197, 94, 0.62) 0%, transparent 86%),
+    radial-gradient(ellipse 58% 78% at 50% 100%, rgba(14, 165, 233, 0.42) 0%, transparent 92%);
+  filter: blur(28px);
+  animation: heroFireFlicker 3.4s ease-in-out infinite;
+  opacity: 0.9;
+}
+
+@keyframes heroFirePulse {
+  0% {
+    opacity: 0.66;
+    filter: blur(32px) brightness(1.05) saturate(1.1);
+  }
+  28% {
+    opacity: 0.88;
+    filter: blur(28px) brightness(1.25) saturate(1.2);
+  }
+  56% {
+    opacity: 0.72;
+    filter: blur(34px) brightness(1.12) saturate(1.08);
+  }
+  82% {
+    opacity: 0.9;
+    filter: blur(29px) brightness(1.28) saturate(1.18);
+  }
+  100% {
+    opacity: 0.66;
+    filter: blur(32px) brightness(1.05) saturate(1.1);
+  }
+}
+
+@keyframes heroFireFlicker {
+  0%,
+  100% {
+    opacity: 0.78;
+    transform: translateY(0) scaleY(1);
+  }
+  22% {
+    opacity: 0.95;
+    transform: translateY(-3%) scaleY(1.06);
+  }
+  48% {
+    opacity: 0.72;
+    transform: translateY(2%) scaleY(0.96);
+  }
+  74% {
+    opacity: 0.92;
+    transform: translateY(-2%) scaleY(1.03);
+  }
+}
 
 /* Candle flicker glow animation */
 @keyframes candle-flicker {
