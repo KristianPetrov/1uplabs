@@ -28,6 +28,39 @@ body {
     Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
+/* Subtle neon vignette around the viewport edges */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  box-shadow:
+    inset 0 0 140px rgba(16, 185, 129, 0.12),
+    inset 0 0 240px rgba(14, 165, 233, 0.08);
+  opacity: 0.9;
+}
+
+/* Keep app content above the vignette layer */
+body > *:not(.fixed) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Reusable neon edge glow for cards/buttons/inputs */
+.neon-edge {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--accent) 22%, rgba(255,255,255,0.06)),
+    0 0 22px color-mix(in oklab, var(--accent) 14%, transparent),
+    0 0 46px color-mix(in oklab, var(--accent-2) 10%, transparent);
+}
+
+.neon-header {
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.06),
+    0 0 34px rgba(16, 185, 129, 0.10);
+}
+
 ::selection {
   background: color-mix(in oklab, var(--accent) 30%, transparent);
 }

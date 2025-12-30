@@ -4,8 +4,10 @@ import { notFound } from "next/navigation";
 
 import LazyMoleculeViewer from "@/app/components/LazyMoleculeViewer";
 import AddToCartButton from "@/app/components/AddToCartButton";
+import ExpandableResearch from "@/app/components/ExpandableResearch";
+import LivePrice from "@/app/components/LivePrice";
+import SiteHeader from "@/app/components/SiteHeader";
 import { getMoleculesForProduct } from "@/app/lib/molecules";
-import { formatUsdFromCents } from "@/app/lib/money";
 import { getProductBySlug, products } from "@/app/lib/products";
 
 type Props = {
@@ -39,25 +41,17 @@ export default async function ProductPage ({ params }: Props)
 
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-50">
-            <header className="sticky top-0 z-10 border-b border-white/10 bg-zinc-950/70 backdrop-blur">
-                <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-                    <div className="leading-tight">
-                        <div className="text-sm font-semibold tracking-wide text-white">
-                            1UpLabs
-                        </div>
-                        <div className="text-xs text-white/60">Research peptides</div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <Link
-                            href="/store"
-                            className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-sky-500/30 hover:bg-white/8"
-                        >
-                            Back to store
-                        </Link>
-                    </div>
-                </div>
-            </header>
+            <SiteHeader
+                subtitle="Research peptides"
+                actions={(
+                    <Link
+                        href="/store"
+                        className="inline-flex h-9 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 text-sm font-semibold text-white transition hover:border-sky-500/30 hover:bg-white/8 neon-edge"
+                    >
+                        Back to store
+                    </Link>
+                )}
+            />
 
             <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
@@ -83,13 +77,22 @@ export default async function ProductPage ({ params }: Props)
                             Vial strength: <span className="font-semibold text-white">{p.amount}</span>
                         </div>
                         <div className="mt-4 text-2xl font-semibold text-white">
-                            {formatUsdFromCents(p.priceCents)}
+                            <LivePrice slug={p.slug} fallbackCents={p.priceCents} />
                         </div>
 
                         <div className="mt-5 text-sm leading-6 text-white/70">
                             Intended for laboratory research only. Not for human consumption.
                             No medical claims are made.
                         </div>
+
+                        {p.research && (
+                            <ExpandableResearch
+                                className="mt-5"
+                                summary={p.research.summary}
+                                paragraphs={p.research.paragraphs}
+                                bullets={p.research.bullets}
+                            />
+                        )}
 
                         <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
                             <AddToCartButton

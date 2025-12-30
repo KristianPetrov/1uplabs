@@ -4,6 +4,8 @@ import "./globals.css";
 import { getSiteUrl } from "@/app/lib/site";
 import { CartProvider } from "@/app/cart/CartProvider";
 import FloatingCart from "@/app/components/FloatingCart";
+import { PricingProvider } from "@/app/pricing/PricingProvider";
+import AuthSessionProvider from "@/app/auth/SessionProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -68,10 +70,14 @@ export default function RootLayout ({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <CartProvider>
-          {children}
-          <FloatingCart />
-        </CartProvider>
+        <AuthSessionProvider>
+          <PricingProvider>
+            <CartProvider>
+              {children}
+              <FloatingCart />
+            </CartProvider>
+          </PricingProvider>
+        </AuthSessionProvider>
       </body>
     </html>
   );

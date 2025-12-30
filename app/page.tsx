@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getFeaturedProducts } from "@/app/lib/products";
 import FeaturedCarousel from "@/app/components/FeaturedCarousel";
+import SiteHeader from "@/app/components/SiteHeader";
 
 export default function Home ()
 {
@@ -9,40 +10,17 @@ export default function Home ()
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-50">
-      <header className="sticky top-0 z-10 border-b border-white/10 bg-zinc-950/70 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="relative h-9 w-9 overflow-hidden rounded-lg ring-1 ring-white/10">
-              <Image
-                src="/1uplabs-mushroom-molecule.png"
-                alt="1UpLabs mushroom peptide logo"
-                fill
-                sizes="36px"
-                className="object-cover"
-                priority
-              />
-            </div>
-            <div className="leading-tight">
-              <div className="text-sm font-semibold tracking-wide text-white">
-                1UpLabs
-              </div>
-              <div className="text-xs text-white/60">Research peptides</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="hidden rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-200 sm:inline">
-              Laboratory research only
-            </span>
-            <Link
-              href="/store"
-              className="inline-flex items-center justify-center rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400"
-            >
-              Browse store
-            </Link>
-          </div>
-        </div>
-      </header>
+      <SiteHeader
+        subtitle="Research peptides"
+        actions={(
+          <Link
+            href="/store"
+            className="inline-flex h-9 items-center justify-center rounded-full bg-emerald-500 px-4 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400 neon-edge"
+          >
+            Browse store
+          </Link>
+        )}
+      />
 
       <main>
         <section className="relative overflow-hidden">
@@ -92,7 +70,7 @@ export default function Home ()
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link
                   href="/store"
-                  className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400"
+                  className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400 neon-edge"
                 >
                   View store
                 </Link>
@@ -107,7 +85,7 @@ export default function Home ()
               <div className="relative rounded-3xl p-4">
                 <div className="relative aspect-4/3 w-full">
                   <div className="hero-fire" aria-hidden="true" />
-                  <div className="relative h-full w-full overflow-hidden rounded-2xl">
+                  <div className="relative h-full w-full overflow-hidden rounded-2xl ">
                     <Image
                       src="/1uplabs-mushroom-molecule.png"
                       alt="1UpLabs hero logo"
@@ -135,7 +113,7 @@ export default function Home ()
             </div>
             <Link
               href="/store#catalog"
-              className="inline-flex w-fit items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-sky-500/30 hover:bg-white/8"
+              className="inline-flex w-fit items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-sky-500/30 hover:bg-white/8 neon-edge"
             >
               View full store
             </Link>

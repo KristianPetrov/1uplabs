@@ -16,6 +16,24 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Environment setup
+
+See `ENV_SETUP.md` for required environment variables (Neon `DATABASE_URL`, `NEXTAUTH_SECRET`, and optional payment destinations).
+
+## Admin
+
+- Create/update an admin user:
+  - `pnpm admin:create "you@example.com" "YourStrongPassword"`
+- Login:
+  - Visit `/login` then go to `/admin`
+
+## Database (Drizzle)
+
+- Generate migrations:
+  - `pnpm db:generate`
+- Push schema to your Neon database:
+  - `pnpm exec drizzle-kit push --force`
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

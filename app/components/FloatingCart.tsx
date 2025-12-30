@@ -1,14 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { useCart } from "@/app/cart/CartProvider";
 import { formatUsdFromCents } from "@/app/lib/money";
 import { products } from "@/app/lib/products";
+import { usePricing } from "@/app/pricing/PricingProvider";
 
 export default function FloatingCart ()
 {
     const cart = useCart();
+    const pricing = usePricing();
     const [open, setOpen] = useState(false);
 
     const lines = useMemo(() =>
@@ -19,10 +22,11 @@ export default function FloatingCart ()
             {
                 const p = bySlug.get(l.slug);
                 if (!p) return null;
-                return { ...l, product: p, lineTotalCents: p.priceCents * l.qty };
+                const unitPriceCents = pricing.getPriceCents(l.slug, p.priceCents);
+                return { ...l, product: p, unitPriceCents, lineTotalCents: unitPriceCents * l.qty };
             })
-            .filter(Boolean) as Array<{ slug: string; qty: number; product: (typeof products)[number]; lineTotalCents: number }>;
-    }, [cart.lines]);
+            .filter(Boolean) as Array<{ slug: string; qty: number; product: (typeof products)[number]; unitPriceCents: number; lineTotalCents: number }>;
+    }, [cart.lines, pricing]);
 
     return (
         <>
@@ -30,7 +34,7 @@ export default function FloatingCart ()
                 type="button"
                 onClick={() => setOpen(true)}
                 aria-label="Open cart"
-                className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-zinc-950/70 px-5 py-3 text-base font-semibold text-white shadow-lg shadow-black/25 backdrop-blur transition hover:border-emerald-500/30 hover:bg-zinc-950/85"
+                className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2.5 rounded-full border border-white/10 bg-zinc-950/70 px-5 py-3 text-base font-semibold text-white shadow-lg shadow-black/25 backdrop-blur transition hover:border-emerald-500/30 hover:bg-zinc-950/85 neon-edge"
             >
                 <span>Cart</span>
                 <span className="text-white/70">
@@ -76,7 +80,7 @@ export default function FloatingCart ()
                                                         {l.product.name}
                                                     </div>
                                                     <div className="mt-1 text-xs text-white/65">
-                                                        {l.product.amount} · {formatUsdFromCents(l.product.priceCents)} each
+                                                        {l.product.amount} · {formatUsdFromCents(l.unitPriceCents)} each
                                                     </div>
                                                 </div>
                                                 <button
@@ -142,13 +146,18 @@ export default function FloatingCart ()
                                 >
                                     Clear
                                 </button>
-                                <button
-                                    type="button"
-                                    disabled={!lines.length}
-                                    className="inline-flex h-10 flex-1 items-center justify-center rounded-full bg-emerald-500 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:opacity-50"
+                                <Link
+                                    href="/checkout"
+                                    aria-disabled={!lines.length}
+                                    onClick={() =>
+                                    {
+                                        if (!lines.length) return;
+                                        setOpen(false);
+                                    }}
+                                    className="inline-flex h-10 flex-1 items-center justify-center rounded-full bg-emerald-500 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 aria-disabled:pointer-events-none aria-disabled:opacity-50"
                                 >
                                     Checkout
-                                </button>
+                                </Link>
                             </div>
 
                             <div className="mt-3 text-xs leading-5 text-white/55">

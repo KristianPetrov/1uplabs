@@ -3,6 +3,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { products } from "@/app/lib/products";
+import { usePricing } from "@/app/pricing/PricingProvider";
 
 export type CartLine = {
     slug: string;
@@ -69,6 +70,7 @@ function writeStoredCart (state: CartState): void
 
 export function CartProvider ({ children }: { children: React.ReactNode }): React.JSX.Element
 {
+    const pricing = usePricing();
     const [state, setState] = useState<CartState>({ lines: [] });
 
     useEffect(() =>
@@ -124,10 +126,14 @@ export function CartProvider ({ children }: { children: React.ReactNode }): Reac
         {
             items += line.qty;
             const p = productBySlug.get(line.slug);
-            if (p) subtotal += p.priceCents * line.qty;
+            if (p)
+            {
+                const priceCents = pricing.getPriceCents(line.slug, p.priceCents);
+                subtotal += priceCents * line.qty;
+            }
         }
         return { totalItems: items, subtotalCents: subtotal };
-    }, [state.lines]);
+    }, [pricing, state.lines]);
 
     const value: CartContextValue = useMemo(() => ({
         lines: state.lines,

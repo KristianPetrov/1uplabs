@@ -5,8 +5,10 @@ import { useMemo, useState } from "react";
 import type { MoleculeDefinition } from "@/app/lib/molecules";
 import type { Product } from "@/app/lib/products";
 import LazyMoleculeViewer from "@/app/components/LazyMoleculeViewer";
+import ExpandableResearch from "@/app/components/ExpandableResearch";
 import { formatUsdFromCents } from "@/app/lib/money";
 import { useCart } from "@/app/cart/CartProvider";
+import { usePricing } from "@/app/pricing/PricingProvider";
 
 type Props = {
     title: string;
@@ -24,6 +26,7 @@ function amountSortKey (amount: string): number
 export default function ProductCard ({ title, moleculeKey, molecules, variants }: Props)
 {
     const cart = useCart();
+    const pricing = usePricing();
     const sorted = useMemo(() => [...variants].sort((a, b) => amountSortKey(a.amount) - amountSortKey(b.amount)), [variants]);
     const [selectedSlug, setSelectedSlug] = useState<string>(() => sorted[0]?.slug ?? "");
 
@@ -33,7 +36,7 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
     if (!selected) return null;
 
     return (
-        <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-emerald-500/25 hover:bg-white/6">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-emerald-500/25 hover:bg-white/6 neon-edge">
             <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-sky-500/0 blur-2xl transition group-hover:bg-sky-500/20" />
             <div className="mb-4 h-40">
                 <LazyMoleculeViewer
@@ -61,7 +64,7 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
                                 >
                                     {sorted.map((v) => (
                                         <option key={v.slug} value={v.slug}>
-                                            {v.amount} — {formatUsdFromCents(v.priceCents)}
+                                            {v.amount} — {formatUsdFromCents(pricing.getPriceCents(v.slug, v.priceCents))}
                                         </option>
                                     ))}
                                 </select>
@@ -75,7 +78,7 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
                     </div>
 
                     <div className="mt-2 text-sm font-semibold text-white">
-                        {formatUsdFromCents(selected.priceCents)}
+                        {formatUsdFromCents(pricing.getPriceCents(selected.slug, selected.priceCents))}
                     </div>
                 </div>
 
@@ -91,11 +94,20 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
                 <button
                     type="button"
                     onClick={() => cart.add(selected.slug, 1)}
-                    className="inline-flex h-9 items-center justify-center rounded-full bg-emerald-500 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400"
+                    className="inline-flex h-9 items-center justify-center rounded-full bg-emerald-500 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 neon-edge"
                 >
                     Add to cart
                 </button>
             </div>
+
+            {selected.research && (
+                <ExpandableResearch
+                    className="mt-4"
+                    summary={selected.research.summary}
+                    paragraphs={selected.research.paragraphs}
+                    bullets={selected.research.bullets}
+                />
+            )}
         </div>
     );
 }

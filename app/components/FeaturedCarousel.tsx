@@ -6,8 +6,10 @@ import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/app/lib/products";
 import { getMoleculesForProduct } from "@/app/lib/molecules";
 import LazyMoleculeViewer from "@/app/components/LazyMoleculeViewer";
+import ExpandableResearch from "@/app/components/ExpandableResearch";
 import { formatUsdFromCents } from "@/app/lib/money";
 import { useCart } from "@/app/cart/CartProvider";
+import { usePricing } from "@/app/pricing/PricingProvider";
 
 type Props = {
     products: Product[];
@@ -39,6 +41,7 @@ export default function FeaturedCarousel ({
 }: Props)
 {
     const cart = useCart();
+    const pricing = usePricing();
     const items = useMemo(() => products.filter(Boolean), [products]);
     const [index, setIndex] = useState(0);
     const prefersReducedMotion = usePrefersReducedMotion();
@@ -97,12 +100,21 @@ export default function FeaturedCarousel ({
                                 <span className="font-semibold text-white">{active?.amount}</span>
                             </div>
                             <div className="mt-2 text-sm font-semibold text-white">
-                                {active ? formatUsdFromCents(active.priceCents) : null}
+                                {active ? formatUsdFromCents(pricing.getPriceCents(active.slug, active.priceCents)) : null}
                             </div>
                             <div className="mt-4 text-xs leading-5 text-white/55">
                                 Laboratory research only. Not for human consumption. No medical claims
                                 are made.
                             </div>
+
+                            {active?.research && (
+                                <ExpandableResearch
+                                    className="mt-4"
+                                    summary={active.research.summary}
+                                    paragraphs={active.research.paragraphs}
+                                    bullets={active.research.bullets}
+                                />
+                            )}
                         </div>
 
                         <div className="flex flex-col gap-3">

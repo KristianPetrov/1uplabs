@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getMoleculesForProduct } from "@/app/lib/molecules";
 import { products } from "@/app/lib/products";
 import ProductCard from "@/app/components/ProductCard";
+import SiteHeader from "@/app/components/SiteHeader";
 
 export const metadata: Metadata = {
     title: "Store",
@@ -16,28 +17,17 @@ export default function StorePage ()
 {
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-50">
-            <header className="sticky top-0 z-10 border-b border-white/10 bg-zinc-950/70 backdrop-blur">
-                <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-                    <div className="leading-tight">
-                        <div className="text-sm font-semibold tracking-wide text-white">
-                            1UpLabs
-                        </div>
-                        <div className="text-xs text-white/60">Research peptides</div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        <span className="hidden rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-200 sm:inline">
-                            Laboratory research only
-                        </span>
-                        <Link
-                            href="/"
-                            className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-sky-500/30 hover:bg-white/8"
-                        >
-                            Home
-                        </Link>
-                    </div>
-                </div>
-            </header>
+            <SiteHeader
+                subtitle="Research peptides"
+                actions={(
+                    <Link
+                        href="/"
+                        className="inline-flex h-9 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 text-sm font-semibold text-white transition hover:border-sky-500/30 hover:bg-white/8 neon-edge"
+                    >
+                        Home
+                    </Link>
+                )}
+            />
 
             <main id="catalog" className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
