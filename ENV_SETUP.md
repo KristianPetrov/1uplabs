@@ -6,6 +6,7 @@ This repo intentionally ignores `.env*` files via `.gitignore`.
 
 - `DATABASE_URL`: Neon/Postgres connection string (must include SSL / `sslmode=require`).
 - `NEXTAUTH_SECRET`: random secret string for NextAuth (JWT signing).
+- `NEXTAUTH_URL`: the canonical site URL (used by NextAuth). For local dev: `http://localhost:3000`. For production: `https://your-domain.com`.
 
 ## Optional (but recommended)
 

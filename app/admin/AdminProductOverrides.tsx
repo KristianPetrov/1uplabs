@@ -117,7 +117,7 @@ export default function AdminProductOverrides ({ products, overrides }: Props)
       </div>
 
       <div className="mt-6 overflow-hidden rounded-3xl border border-white/10">
-        <div className="grid grid-cols-12 gap-2 border-b border-white/10 bg-zinc-950/50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/55">
+        <div className="hidden grid-cols-12 gap-2 border-b border-white/10 bg-zinc-950/50 px-4 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-white/55 sm:grid">
           <div className="col-span-5">Product</div>
           <div className="col-span-3">Price</div>
           <div className="col-span-2">Inventory</div>
@@ -148,10 +148,10 @@ export default function AdminProductOverrides ({ products, overrides }: Props)
               <motion.div
                 key={product.slug}
                 layout
-                className="grid grid-cols-12 items-center gap-2 px-4 py-4"
+                className="grid grid-cols-1 items-start gap-3 px-4 py-4 sm:grid-cols-12 sm:items-center sm:gap-2"
                 initial={false}
               >
-                <div className="col-span-5 min-w-0">
+                <div className="col-span-1 min-w-0 sm:col-span-5">
                   <div className="truncate text-sm font-semibold text-white">
                     {product.name} <span className="text-white/60">{product.amount}</span>
                   </div>
@@ -169,7 +169,7 @@ export default function AdminProductOverrides ({ products, overrides }: Props)
                   </div>
                 </div>
 
-                <div className="col-span-3">
+                <div className="col-span-1 sm:col-span-3">
                   <div className="text-xs text-white/50">Effective: {formatUsdFromCents(effectivePriceCents)}</div>
                   <input
                     defaultValue={currentPriceInput}
@@ -193,7 +193,7 @@ export default function AdminProductOverrides ({ products, overrides }: Props)
                   />
                 </div>
 
-                <div className="col-span-2">
+                <div className="col-span-1 sm:col-span-2">
                   <div className="text-xs text-white/50">Effective: {typeof effectiveInventory === "number" ? effectiveInventory : "∞"}</div>
                   <input
                     defaultValue={currentInventoryInput}
@@ -228,7 +228,7 @@ export default function AdminProductOverrides ({ products, overrides }: Props)
                   />
                 </div>
 
-                <div className="col-span-2 flex items-center justify-end gap-2">
+                <div className="col-span-1 flex flex-wrap items-center justify-start gap-2 sm:col-span-2 sm:flex-nowrap sm:justify-end">
                   <button
                     type="button"
                     disabled={pending || !isDirty || !draft}
@@ -244,7 +244,7 @@ export default function AdminProductOverrides ({ products, overrides }: Props)
                         await pricing.refresh();
                       });
                     }}
-                    className="inline-flex h-10 items-center justify-center rounded-full bg-emerald-500 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:opacity-60"
+                    className="inline-flex h-10 flex-1 items-center justify-center rounded-full bg-emerald-500 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:opacity-60 sm:flex-none"
                   >
                     Save
                   </button>
@@ -262,7 +262,7 @@ export default function AdminProductOverrides ({ products, overrides }: Props)
                         await pricing.refresh();
                       });
                     }}
-                    className="inline-flex h-10 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 text-sm font-semibold text-white transition hover:border-rose-500/30 hover:bg-white/8 disabled:opacity-60"
+                    className="inline-flex h-10 flex-1 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 text-sm font-semibold text-white transition hover:border-rose-500/30 hover:bg-white/8 disabled:opacity-60 sm:flex-none"
                   >
                     Reset
                   </button>
