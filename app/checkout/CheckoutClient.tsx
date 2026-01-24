@@ -10,6 +10,7 @@ import { formatUsdFromCents } from "@/app/lib/money";
 import { products } from "@/app/lib/products";
 import { usePricing } from "@/app/pricing/PricingProvider";
 import { createOrder } from "@/app/checkout/actions";
+import CircuitOverlay from "@/app/components/CircuitOverlay";
 
 type PaymentMethod = "cashapp" | "zelle" | "venmo" | "bitcoin";
 
@@ -97,8 +98,10 @@ export default function CheckoutClient ({
           initial={{ opacity: 0, y: 12, filter: "blur(10px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-3 neon-edge"
+          className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-3 neon-edge"
         >
+            <CircuitOverlay variant="panel" className="opacity-42" />
+            <div className="relative z-10">
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
               Shipping + contact
             </div>
@@ -290,14 +293,17 @@ export default function CheckoutClient ({
                 </div>
               </form>
             )}
+            </div>
         </motion.section>
 
         <motion.aside
           initial={{ opacity: 0, y: 12, filter: "blur(10px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.55, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-          className="rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-2 neon-edge"
+          className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-2 neon-edge"
         >
+            <CircuitOverlay variant="panel" className="opacity-40" />
+            <div className="relative z-10">
             <div className="text-sm font-semibold text-white">Order summary</div>
             <div className="mt-4 flex flex-col gap-3">
               {lines.length ? lines.map((l) => (
@@ -345,6 +351,7 @@ export default function CheckoutClient ({
                 <div className="text-white/70">Total</div>
                 <div className="font-semibold text-white">{formatUsdFromCents(subtotalCents)}</div>
               </div>
+            </div>
             </div>
         </motion.aside>
       </div>

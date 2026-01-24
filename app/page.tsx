@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getFeaturedProducts } from "@/app/lib/products";
+import CircuitOverlay from "@/app/components/CircuitOverlay";
 import FeaturedCarousel from "@/app/components/FeaturedCarousel";
 import SiteHeader from "@/app/components/SiteHeader";
 
@@ -9,7 +10,7 @@ export default function Home ()
   const featured = getFeaturedProducts(3);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50">
+    <div className="min-h-screen text-zinc-50">
       <SiteHeader
         subtitle="Research peptides"
         actions={(
@@ -25,6 +26,7 @@ export default function Home ()
       <main>
         <section className="relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0">
+            <CircuitOverlay variant="hero" className="opacity-55" />
             <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-emerald-500/18 blur-3xl" />
             <div className="absolute -bottom-64 right-[-10%] h-[520px] w-[520px] rounded-full bg-sky-500/12 blur-3xl" />
             <div className="absolute inset-0 bg-[radial-gradient(900px_400px_at_50%_0%,rgba(16,185,129,0.12),transparent_60%)]" />
@@ -102,28 +104,85 @@ export default function Home ()
         </section>
 
         <section className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
-                Featured products
-              </h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65 sm:text-base">
-                A quick look at what researchers are exploring right now.
-              </p>
-            </div>
-            <Link
-              href="/store#catalog"
-              className="inline-flex w-fit items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-sky-500/30 hover:bg-white/8 neon-edge"
-            >
-              View full store
-            </Link>
-          </div>
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge sm:p-8">
+            <CircuitOverlay variant="panel" className="opacity-45" />
+            <div className="relative z-10">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                    Featured products
+                  </h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65 sm:text-base">
+                    A quick look at what researchers are exploring right now.
+                  </p>
+                </div>
+                <Link
+                  href="/store#catalog"
+                  className="inline-flex w-fit items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-sky-500/30 hover:bg-white/8 neon-edge"
+                >
+                  View full store
+                </Link>
+              </div>
 
-          <FeaturedCarousel products={featured} href="/store#catalog" />
+              <FeaturedCarousel products={featured} href="/store#catalog" />
+            </div>
+          </div>
         </section>
 
-        <footer className="border-t border-white/10">
-          <div className="mx-auto max-w-6xl px-6 py-10">
+        <section className="mx-auto max-w-6xl px-6 pb-12 sm:pb-16">
+          <div className="lab-scanlines rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge sm:p-8">
+            <CircuitOverlay variant="panel" className="opacity-40" />
+            <div className="relative z-10">
+              <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+                <div className="max-w-2xl">
+                  <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
+                    Lab results / compliance
+                  </div>
+                  <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                    Built like a lab. Presented like a game.
+                  </h2>
+                  <p className="mt-3 text-sm leading-6 text-white/65 sm:text-base">
+                    Research-only positioning, clear disclaimers, and an account dashboard built for tracking and repeatability.
+                  </p>
+                </div>
+
+                <div className="shrink-0">
+                  <Link
+                    href="/account"
+                    className="inline-flex h-11 items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 text-sm font-semibold text-white transition hover:border-emerald-500/30 hover:bg-white/8 neon-edge"
+                  >
+                    Open dashboard
+                  </Link>
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="text-sm font-semibold text-white">Research-only</div>
+                  <div className="mt-1 text-xs leading-5 text-white/60">
+                    Not for human consumption. No medical claims.
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="text-sm font-semibold text-white">Traceable</div>
+                  <div className="mt-1 text-xs leading-5 text-white/60">
+                    Order IDs, receipts, and history in your account.
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="text-sm font-semibold text-white">Transparent UX</div>
+                  <div className="mt-1 text-xs leading-5 text-white/60">
+                    Clear product details with molecular previews for researchers.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <footer className="relative overflow-hidden border-t border-white/10">
+          <CircuitOverlay variant="footer" className="opacity-45" />
+          <div className="relative mx-auto max-w-6xl px-6 py-10">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-sm font-semibold text-white">1UpLabs</div>
               <div className="text-xs leading-5 text-white/60">

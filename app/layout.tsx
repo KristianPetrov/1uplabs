@@ -6,6 +6,7 @@ import { CartProvider } from "@/app/cart/CartProvider";
 import FloatingCart from "@/app/components/FloatingCart";
 import { PricingProvider } from "@/app/pricing/PricingProvider";
 import AuthSessionProvider from "@/app/auth/SessionProvider";
+// import LabBackground from "@/app/components/LabBackground";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,6 +26,9 @@ export const metadata: Metadata = {
   },
   description:
     "1UpLabs provides researchers with reliable, high-quality peptide materials for laboratory research only — supported by transparency, testing, and integrity at every step.",
+  icons: {
+    icon: [{ url: "/icon", type: "image/png" }],
+  },
   alternates: {
     canonical: "/",
   },
@@ -37,7 +41,7 @@ export const metadata: Metadata = {
     url: "/",
     images: [
       {
-        url: "/1uplabs-mushroom-molecule.png",
+        url: "/opengraph-image",
       },
     ],
   },
@@ -46,7 +50,7 @@ export const metadata: Metadata = {
     title: "1UpLabs — Research Peptides",
     description:
       "Reliable, research-only peptide materials — backed by transparency, testing, and integrity.",
-    images: ["/1uplabs-mushroom-molecule.png"],
+    images: ["/twitter-image"],
   },
   robots: {
     index: true,
@@ -70,14 +74,17 @@ export default function RootLayout ({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthSessionProvider>
-          <PricingProvider>
-            <CartProvider>
-              {children}
-              <FloatingCart />
-            </CartProvider>
-          </PricingProvider>
-        </AuthSessionProvider>
+        {/* <LabBackground /> */}
+        <div className="relative z-10 min-h-screen">
+          <AuthSessionProvider>
+            <PricingProvider>
+              <CartProvider>
+                {children}
+                <FloatingCart />
+              </CartProvider>
+            </PricingProvider>
+          </AuthSessionProvider>
+        </div>
       </body>
     </html>
   );

@@ -28,23 +28,231 @@ body {
     Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
-/* Subtle neon vignette around the viewport edges */
-body::before {
-  content: "";
+/* Futuristic background system (base → starfield → circuits) */
+.lab-bg {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  box-shadow:
-    inset 0 0 140px rgba(16, 185, 129, 0.12),
-    inset 0 0 240px rgba(14, 165, 233, 0.08);
-  opacity: 0.9;
+  overflow: hidden;
+  isolation: isolate;
 }
 
-/* Keep app content above the vignette layer */
-body > *:not(.fixed) {
+.lab-bg__base,
+.lab-bg__starfield {
+  position: absolute;
+  inset: 0;
+}
+
+/* Base layer: dark lab gradient + vignette */
+.lab-bg__base {
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.56) 68%, rgba(0,0,0,0.94) 100%),
+    radial-gradient(1100px 620px at 18% 10%, rgba(16, 185, 129, 0.16), transparent 62%),
+    radial-gradient(920px 560px at 82% 18%, rgba(14, 165, 233, 0.13), transparent 60%),
+    radial-gradient(980px 720px at 50% 115%, rgba(99, 102, 241, 0.11), transparent 60%),
+    linear-gradient(180deg, #05060a 0%, #06060b 38%, #040409 100%);
+}
+
+/* Starfield (canvas) */
+.lab-bg__starfield {
+  z-index: 1;
+  opacity: 1;
+}
+
+.lab-starfield {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: saturate(1.08) contrast(1.08);
+}
+
+/* Circuit board glow traces (SVG) — applied per-container via CircuitOverlay */
+.circuit-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.60;
+  mix-blend-mode: screen;
+}
+
+.circuit-overlay--hero {
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 42%, rgba(0,0,0,0) 88%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 42%, rgba(0,0,0,0) 88%);
+}
+
+.circuit-overlay--footer {
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 52%, rgba(0,0,0,0) 92%);
+  mask-image: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 52%, rgba(0,0,0,0) 92%);
+}
+
+.circuit-overlay--panel {
+  opacity: 0.48;
+}
+
+.lab-circuits {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.lab-circuits .circuit-base path {
+  fill: none;
+  stroke: rgba(255,255,255,0.22);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+
+.lab-circuits .circuit-pulse {
+  fill: none;
+  stroke: url(#circuitGrad);
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.72;
+  stroke-dasharray: 18 240;
+  animation: circuitDash var(--dur) linear infinite;
+  animation-delay: var(--delay);
+}
+
+.lab-circuits .circuit-node {
+  fill: rgba(255,255,255,0.25);
+  stroke: rgba(255,255,255,0.35);
+  stroke-width: 1;
+  opacity: 0.9;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: circuitNodePulse 3.2s ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.lab-circuits .circuit-faint-scan {
+  fill: rgba(255,255,255,0.02);
+  opacity: 0.12;
+  mix-blend-mode: overlay;
+  animation: circuitFaintDrift 16s ease-in-out infinite;
+}
+
+@keyframes circuitDash {
+  0% { stroke-dashoffset: 260; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes circuitNodePulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.92); }
+  50% { opacity: 0.98; transform: scale(1.16); }
+}
+
+@keyframes circuitFaintDrift {
+  0%, 100% { transform: translateY(0); opacity: 0.10; }
+  50% { transform: translateY(1.2%); opacity: 0.18; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-circuits .circuit-pulse,
+  .lab-circuits .circuit-node,
+  .lab-circuits .circuit-faint-scan { animation: none; }
+}
+
+/* Optional: grid floor (hero-only) */
+.hero-grid-floor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+}
+
+.hero-grid-floor::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 64%;
+  width: 160%;
+  height: 140%;
+  transform: translate(-50%, -50%) perspective(980px) rotateX(70deg);
+  transform-origin: top center;
+  background-image:
+    linear-gradient(to right, rgba(16, 185, 129, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(14, 165, 233, 0.09) 1px, transparent 1px);
+  background-size: 64px 64px;
+  filter: drop-shadow(0 0 24px rgba(16, 185, 129, 0.10));
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 66%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 66%, transparent 100%);
+}
+
+.hero-grid-floor::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  width: 120%;
+  height: 2px;
+  transform: translateX(-50%);
+  background: linear-gradient(to right, transparent, rgba(16, 185, 129, 0.26), rgba(14, 165, 233, 0.16), transparent);
+  opacity: 0.7;
+  filter: blur(0.2px);
+}
+
+/* Optional: scanlines (compliance / lab-results sections only) */
+.lab-scanlines {
+  position: relative;
+  overflow: hidden;
+}
+
+.lab-scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.06) 0px,
+    rgba(255,255,255,0.06) 1px,
+    rgba(0,0,0,0) 4px,
+    rgba(0,0,0,0) 7px
+  );
+  opacity: 0.10;
+  mix-blend-mode: overlay;
+  z-index: 0;
+}
+
+.lab-scanlines::after {
+  content: "";
+  position: absolute;
+  inset: -45% 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(14, 165, 233, 0.12), rgba(16, 185, 129, 0.10), transparent);
+  opacity: 0.16;
+  filter: blur(1px);
+  z-index: 0;
+  animation: labScanSweep 9.5s linear infinite;
+}
+
+.lab-scanlines > * {
   position: relative;
   z-index: 1;
+}
+
+@keyframes labScanSweep {
+  0% {
+    transform: translateY(-14%);
+  }
+  100% {
+    transform: translateY(14%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-scanlines::after {
+    animation: none;
+  }
 }
 
 /* Reusable neon edge glow for cards/buttons/inputs */

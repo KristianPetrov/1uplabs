@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/app/auth";
 import SignOutButton from "@/app/admin/SignOutButton";
 import AdminProductOverrides from "@/app/admin/AdminProductOverrides";
+import CircuitOverlay from "@/app/components/CircuitOverlay";
 import { db } from "@/app/db";
 import { productOverrides } from "@/app/db/schema";
 import { products } from "@/app/lib/products";
@@ -30,7 +31,7 @@ export default async function AdminPage ()
     .from(productOverrides);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50">
+    <div className="min-h-screen text-zinc-50">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-zinc-950/70 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="leading-tight">
@@ -51,21 +52,25 @@ export default async function AdminPage ()
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <main className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
+        <CircuitOverlay variant="panel" className="opacity-35" />
+        <div className="relative z-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
           <AdminProductOverrides products={products} overrides={overrides} />
 
-          <aside className="rounded-3xl border border-white/10 bg-white/5 p-6">
-            <div className="text-sm font-semibold text-white">Quick actions</div>
-            <div className="mt-4 flex flex-col gap-3">
-              <Link
-                href="/store"
-                className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400"
-              >
-                Preview store
-              </Link>
-              <div className="text-xs leading-5 text-white/55">
-                This page is protected by middleware (admin-only).
+          <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6">
+            <CircuitOverlay variant="panel" className="opacity-45" />
+            <div className="relative z-10">
+              <div className="text-sm font-semibold text-white">Quick actions</div>
+              <div className="mt-4 flex flex-col gap-3">
+                <Link
+                  href="/store"
+                  className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400"
+                >
+                  Preview store
+                </Link>
+                <div className="text-xs leading-5 text-white/55">
+                  This page is protected by middleware (admin-only).
+                </div>
               </div>
             </div>
           </aside>

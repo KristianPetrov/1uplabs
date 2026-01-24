@@ -6,6 +6,7 @@ import { and, desc, eq } from "drizzle-orm";
 
 import { authOptions } from "@/app/auth";
 import SiteHeader from "@/app/components/SiteHeader";
+import CircuitOverlay from "@/app/components/CircuitOverlay";
 import { db } from "@/app/db";
 import { customerAddresses, orders, users } from "@/app/db/schema";
 import { formatUsdFromCents } from "@/app/lib/money";
@@ -75,7 +76,7 @@ export default async function AccountPage ()
     .limit(50);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50">
+    <div className="min-h-screen text-zinc-50">
       <SiteHeader
         subtitle="Your account"
         actions={(
@@ -90,7 +91,9 @@ export default async function AccountPage ()
 
       <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <section className="rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge lg:col-span-2">
+        <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge lg:col-span-2">
+          <CircuitOverlay variant="panel" className="opacity-45" />
+          <div className="relative z-10">
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
               Profile
             </div>
@@ -131,9 +134,12 @@ export default async function AccountPage ()
                 </button>
               </div>
             </form>
-          </section>
+          </div>
+        </section>
 
-          <aside className="rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge">
+        <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge">
+          <CircuitOverlay variant="panel" className="opacity-42" />
+          <div className="relative z-10">
             <div className="text-sm font-semibold text-white">Orders</div>
             <div className="mt-4 flex flex-col gap-3">
               {myOrders.length ? myOrders.map((o) => (
@@ -166,110 +172,114 @@ export default async function AccountPage ()
                 </div>
               )}
             </div>
-          </aside>
+          </div>
+        </aside>
         </div>
 
-        <section className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge">
-          <div className="text-sm font-semibold text-white">Saved address</div>
-          <p className="mt-2 text-sm leading-6 text-white/65">
-            This will be used to pre-fill checkout next time.
-          </p>
+        <section className="relative mt-6 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge">
+          <CircuitOverlay variant="panel" className="opacity-40" />
+          <div className="relative z-10">
+            <div className="text-sm font-semibold text-white">Saved address</div>
+            <p className="mt-2 text-sm leading-6 text-white/65">
+              This will be used to pre-fill checkout next time.
+            </p>
 
-          <form action={saveDefaultAddress} className="mt-6 grid grid-cols-1 gap-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <form action={saveDefaultAddress} className="mt-6 grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <label className="flex flex-col gap-1">
+                  <span className="text-xs font-semibold text-white/60">Full name</span>
+                  <input
+                    name="name"
+                    defaultValue={a?.name ?? u.name ?? ""}
+                    autoComplete="name"
+                    className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
+                    required
+                  />
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span className="text-xs font-semibold text-white/60">Phone (optional)</span>
+                  <input
+                    name="phone"
+                    defaultValue={a?.phone ?? u.phone ?? ""}
+                    autoComplete="tel"
+                    className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
+                  />
+                </label>
+              </div>
+
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-white/60">Full name</span>
+                <span className="text-xs font-semibold text-white/60">Address line 1</span>
                 <input
-                  name="name"
-                  defaultValue={a?.name ?? u.name ?? ""}
-                  autoComplete="name"
+                  name="address1"
+                  defaultValue={a?.address1 ?? ""}
+                  autoComplete="address-line1"
                   className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
                   required
                 />
               </label>
               <label className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-white/60">Phone (optional)</span>
+                <span className="text-xs font-semibold text-white/60">Address line 2</span>
                 <input
-                  name="phone"
-                  defaultValue={a?.phone ?? u.phone ?? ""}
-                  autoComplete="tel"
+                  name="address2"
+                  defaultValue={a?.address2 ?? ""}
+                  autoComplete="address-line2"
                   className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
                 />
               </label>
-            </div>
 
-            <label className="flex flex-col gap-1">
-              <span className="text-xs font-semibold text-white/60">Address line 1</span>
-              <input
-                name="address1"
-                defaultValue={a?.address1 ?? ""}
-                autoComplete="address-line1"
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
-                required
-              />
-            </label>
-            <label className="flex flex-col gap-1">
-              <span className="text-xs font-semibold text-white/60">Address line 2</span>
-              <input
-                name="address2"
-                defaultValue={a?.address2 ?? ""}
-                autoComplete="address-line2"
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
-              />
-            </label>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                <label className="flex flex-col gap-1 sm:col-span-2">
+                  <span className="text-xs font-semibold text-white/60">City</span>
+                  <input
+                    name="city"
+                    defaultValue={a?.city ?? ""}
+                    autoComplete="address-level2"
+                    className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
+                    required
+                  />
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span className="text-xs font-semibold text-white/60">State</span>
+                  <input
+                    name="state"
+                    defaultValue={a?.state ?? ""}
+                    autoComplete="address-level1"
+                    className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
+                    required
+                  />
+                </label>
+                <label className="flex flex-col gap-1">
+                  <span className="text-xs font-semibold text-white/60">ZIP</span>
+                  <input
+                    name="zip"
+                    defaultValue={a?.zip ?? ""}
+                    autoComplete="postal-code"
+                    className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
+                    required
+                  />
+                </label>
+              </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
-              <label className="flex flex-col gap-1 sm:col-span-2">
-                <span className="text-xs font-semibold text-white/60">City</span>
-                <input
-                  name="city"
-                  defaultValue={a?.city ?? ""}
-                  autoComplete="address-level2"
+              <label className="flex flex-col gap-1 sm:max-w-xs">
+                <span className="text-xs font-semibold text-white/60">Country</span>
+                <select
+                  name="country"
+                  defaultValue={(a?.country ?? "US").toUpperCase()}
                   className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
-                  required
-                />
+                >
+                  <option value="US">US</option>
+                  <option value="CA">CA</option>
+                </select>
               </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-white/60">State</span>
-                <input
-                  name="state"
-                  defaultValue={a?.state ?? ""}
-                  autoComplete="address-level1"
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
-                  required
-                />
-              </label>
-              <label className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-white/60">ZIP</span>
-                <input
-                  name="zip"
-                  defaultValue={a?.zip ?? ""}
-                  autoComplete="postal-code"
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
-                  required
-                />
-              </label>
-            </div>
 
-            <label className="flex flex-col gap-1 sm:max-w-xs">
-              <span className="text-xs font-semibold text-white/60">Country</span>
-              <select
-                name="country"
-                defaultValue={(a?.country ?? "US").toUpperCase()}
-                className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
+              <button
+                type="submit"
+                className="inline-flex h-11 w-fit items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400 neon-edge"
               >
-                <option value="US">US</option>
-                <option value="CA">CA</option>
-              </select>
-            </label>
-
-            <button
-              type="submit"
-              className="inline-flex h-11 w-fit items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400 neon-edge"
-            >
-              Save address
-            </button>
-          </form>
+                Save address
+              </button>
+            </form>
+          </div>
         </section>
       </main>
     </div>

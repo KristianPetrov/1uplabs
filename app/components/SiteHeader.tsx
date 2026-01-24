@@ -13,7 +13,7 @@ type Props = {
 export default function SiteHeader ({ subtitle = "Research peptides", actions, showLabPill = true }: Props)
 {
   return (
-    <header className="sticky top-0 z-10 border-b border-white/10 bg-zinc-950/70 backdrop-blur neon-header">
+    <header className="sticky top-0 z-15 border-b border-white/10 bg-zinc-950/70 backdrop-blur neon-header">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-4">
         <Link href="/" className="flex items-center gap-3">
           <div className="relative h-9 w-9 overflow-hidden rounded-lg ring-1 ring-white/10 neon-edge">

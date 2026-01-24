@@ -82,7 +82,7 @@ export default async function CheckoutPage ()
   }
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50">
+    <div className="min-h-screen text-zinc-50">
       <SiteHeader
         subtitle="Checkout"
         actions={(

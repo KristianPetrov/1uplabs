@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { getSession, signIn } from "next-auth/react";
 import { motion } from "framer-motion";
 import { useMemo, useState, useTransition } from "react";
+import CircuitOverlay from "@/app/components/CircuitOverlay";
 
 type Props = {
   defaultCallbackUrl?: string;
@@ -23,7 +24,7 @@ export default function LoginForm ({ defaultCallbackUrl = "/account", mode = "cu
   const [pending, startTransition] = useTransition();
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50">
+    <div className="min-h-screen text-zinc-50">
       <header className="sticky top-0 z-10 border-b border-white/10 bg-zinc-950/70 backdrop-blur neon-header">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="leading-tight">
@@ -47,110 +48,113 @@ export default function LoginForm ({ defaultCallbackUrl = "/account", mode = "cu
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge"
           >
+            <CircuitOverlay variant="panel" className="opacity-42" />
             <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-sky-500/0 blur-3xl transition duration-700 group-hover:bg-sky-500/15" />
 
-            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
-              Secure login
-            </div>
-            <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-              {mode === "admin" ? "Admin dashboard" : "Your account"}
-            </h1>
-            <p className="mt-2 text-sm leading-6 text-white/65">
-              {mode === "admin"
-                ? "Sign in to update pricing, inventory, and orders."
-                : "Sign in to save your info, address, and track your orders."}
-            </p>
+            <div className="relative z-10">
+              <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
+                Secure login
+              </div>
+              <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+                {mode === "admin" ? "Admin dashboard" : "Your account"}
+              </h1>
+              <p className="mt-2 text-sm leading-6 text-white/65">
+                {mode === "admin"
+                  ? "Sign in to update pricing, inventory, and orders."
+                  : "Sign in to save your info, address, and track your orders."}
+              </p>
 
-            <form
-              className="mt-6 flex flex-col gap-3"
-              onSubmit={(e) =>
-              {
-                e.preventDefault();
-                setError(null);
-                startTransition(async () =>
+              <form
+                className="mt-6 flex flex-col gap-3"
+                onSubmit={(e) =>
                 {
-                  const res = await signIn("credentials", {
-                    email,
-                    password,
-                    redirect: false,
-                    callbackUrl,
-                  });
-
-                  if (!res || res.error)
+                  e.preventDefault();
+                  setError(null);
+                  startTransition(async () =>
                   {
-                    setError("Invalid email or password.");
-                    return;
-                  }
+                    const res = await signIn("credentials", {
+                      email,
+                      password,
+                      redirect: false,
+                      callbackUrl,
+                    });
 
-                  const s = await getSession();
-                  if ((s?.user as any)?.role === "admin")
-                  {
-                    router.push("/admin");
+                    if (!res || res.error)
+                    {
+                      setError("Invalid email or password.");
+                      return;
+                    }
+
+                    const s = await getSession();
+                    if ((s?.user as any)?.role === "admin")
+                    {
+                      router.push("/admin");
+                      router.refresh();
+                      return;
+                    }
+
+                    router.push(callbackUrl);
                     router.refresh();
-                    return;
-                  }
-
-                  router.push(callbackUrl);
-                  router.refresh();
-                });
-              }}
-            >
-              <label className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-white/60">Email</span>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
-                  required
-                />
-              </label>
-
-              <label className="flex flex-col gap-1">
-                <span className="text-xs font-semibold text-white/60">Password</span>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
-                  required
-                />
-              </label>
-
-              {error ? (
-                <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
-                  {error}
-                </div>
-              ) : null}
-
-              <button
-                type="submit"
-                disabled={pending}
-                className="mt-2 inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400 disabled:opacity-60 neon-edge"
+                  });
+                }}
               >
-                {pending ? "Signing in…" : "Sign in"}
-              </button>
+                <label className="flex flex-col gap-1">
+                  <span className="text-xs font-semibold text-white/60">Email</span>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                    className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
+                    required
+                  />
+                </label>
 
-              {mode === "admin" ? (
-                <div className="mt-1 text-xs leading-5 text-white/55">
-                  Admin access only. If you need an account, create one via{" "}
-                  <code className="rounded bg-white/10 px-1 py-0.5">pnpm admin:create</code>.
-                </div>
-              ) : (
-                <div className="mt-1 text-xs leading-5 text-white/55">
-                  New here?{" "}
-                  <Link
-                    href={`/register?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-                    className="font-semibold text-white underline decoration-white/25 underline-offset-4"
-                  >
-                    Create an account
-                  </Link>
-                  .
-                </div>
-              )}
-            </form>
+                <label className="flex flex-col gap-1">
+                  <span className="text-xs font-semibold text-white/60">Password</span>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="current-password"
+                    className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35 neon-edge"
+                    required
+                  />
+                </label>
+
+                {error ? (
+                  <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-100">
+                    {error}
+                  </div>
+                ) : null}
+
+                <button
+                  type="submit"
+                  disabled={pending}
+                  className="mt-2 inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400 disabled:opacity-60 neon-edge"
+                >
+                  {pending ? "Signing in…" : "Sign in"}
+                </button>
+
+                {mode === "admin" ? (
+                  <div className="mt-1 text-xs leading-5 text-white/55">
+                    Admin access only. If you need an account, create one via{" "}
+                    <code className="rounded bg-white/10 px-1 py-0.5">pnpm admin:create</code>.
+                  </div>
+                ) : (
+                  <div className="mt-1 text-xs leading-5 text-white/55">
+                    New here?{" "}
+                    <Link
+                      href={`/register?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+                      className="font-semibold text-white underline decoration-white/25 underline-offset-4"
+                    >
+                      Create an account
+                    </Link>
+                    .
+                  </div>
+                )}
+              </form>
+            </div>
           </motion.div>
         </div>
       </main>

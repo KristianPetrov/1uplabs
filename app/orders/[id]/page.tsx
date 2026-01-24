@@ -8,6 +8,7 @@ import { orderItems, orders } from "@/app/db/schema";
 import { formatUsdFromCents } from "@/app/lib/money";
 import CopyField from "@/app/orders/[id]/CopyField";
 import SiteHeader from "@/app/components/SiteHeader";
+import CircuitOverlay from "@/app/components/CircuitOverlay";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -89,7 +90,7 @@ export default async function OrderPage ({ params }: Props)
   const pay = paymentDestination(o.paymentMethod);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-50">
+    <div className="min-h-screen text-zinc-50">
       <SiteHeader
         subtitle="Order confirmation"
         actions={(
@@ -104,62 +105,68 @@ export default async function OrderPage ({ params }: Props)
 
       <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-          <section className="rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-3">
-            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
-              Next step
-            </div>
-            <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-              Pay with {pay.title}
-            </h1>
-            <p className="mt-2 text-sm leading-6 text-white/65">
-              Your order is reserved and marked <span className="font-semibold text-white">{o.status}</span>.
-              Complete payment to confirm.
-            </p>
-
-            <div className="mt-6 grid grid-cols-1 gap-3">
-              <CopyField label="Order ID" value={o.id} />
-              <CopyField label={pay.destinationLabel} value={pay.destinationValue} />
-              <CopyField label="Amount (USD)" value={formatUsdFromCents(o.totalCents)} />
-              <CopyField label="Payment memo" value={orderIdToMemo(o.id)} />
-            </div>
-
-            {pay.note ? (
-              <div className="mt-4 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
-                {pay.note}
+          <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-3">
+            <CircuitOverlay variant="panel" className="opacity-42" />
+            <div className="relative z-10">
+              <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
+                Next step
               </div>
-            ) : null}
+              <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+                Pay with {pay.title}
+              </h1>
+              <p className="mt-2 text-sm leading-6 text-white/65">
+                Your order is reserved and marked <span className="font-semibold text-white">{o.status}</span>.
+                Complete payment to confirm.
+              </p>
 
-            <div className="mt-6 text-xs leading-5 text-white/55">
-              Research-only items. Not for human consumption. No medical claims are made.
+              <div className="mt-6 grid grid-cols-1 gap-3">
+                <CopyField label="Order ID" value={o.id} />
+                <CopyField label={pay.destinationLabel} value={pay.destinationValue} />
+                <CopyField label="Amount (USD)" value={formatUsdFromCents(o.totalCents)} />
+                <CopyField label="Payment memo" value={orderIdToMemo(o.id)} />
+              </div>
+
+              {pay.note ? (
+                <div className="mt-4 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+                  {pay.note}
+                </div>
+              ) : null}
+
+              <div className="mt-6 text-xs leading-5 text-white/55">
+                Research-only items. Not for human consumption. No medical claims are made.
+              </div>
             </div>
           </section>
 
-          <aside className="rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-2">
-            <div className="text-sm font-semibold text-white">Order summary</div>
-            <div className="mt-4 flex flex-col gap-3">
-              {items.map((it) => (
-                <div key={it.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <div className="truncate text-sm font-semibold text-white">
-                        {it.productName} <span className="text-white/60">{it.productAmount}</span>
+          <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-2">
+            <CircuitOverlay variant="panel" className="opacity-40" />
+            <div className="relative z-10">
+              <div className="text-sm font-semibold text-white">Order summary</div>
+              <div className="mt-4 flex flex-col gap-3">
+                {items.map((it) => (
+                  <div key={it.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-semibold text-white">
+                          {it.productName} <span className="text-white/60">{it.productAmount}</span>
+                        </div>
+                        <div className="mt-1 text-xs text-white/60">
+                          {it.qty} × {formatUsdFromCents(it.unitPriceCents)}
+                        </div>
                       </div>
-                      <div className="mt-1 text-xs text-white/60">
-                        {it.qty} × {formatUsdFromCents(it.unitPriceCents)}
+                      <div className="shrink-0 text-sm font-semibold text-white">
+                        {formatUsdFromCents(it.lineTotalCents)}
                       </div>
-                    </div>
-                    <div className="shrink-0 text-sm font-semibold text-white">
-                      {formatUsdFromCents(it.lineTotalCents)}
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
 
-            <div className="mt-5 border-t border-white/10 pt-4">
-              <div className="flex items-center justify-between text-sm">
-                <div className="text-white/70">Total</div>
-                <div className="font-semibold text-white">{formatUsdFromCents(o.totalCents)}</div>
+              <div className="mt-5 border-t border-white/10 pt-4">
+                <div className="flex items-center justify-between text-sm">
+                  <div className="text-white/70">Total</div>
+                  <div className="font-semibold text-white">{formatUsdFromCents(o.totalCents)}</div>
+                </div>
               </div>
             </div>
           </aside>
