@@ -100,7 +100,7 @@ export default function CheckoutClient ({
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-3 neon-edge"
         >
-            <CircuitOverlay variant="panel" className="opacity-42" />
+            <CircuitOverlay variant="panel" className="opacity-42" animated={false} />
             <div className="relative z-10">
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
               Shipping + contact
@@ -302,7 +302,7 @@ export default function CheckoutClient ({
           transition={{ duration: 0.55, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
           className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-2 neon-edge"
         >
-            <CircuitOverlay variant="panel" className="opacity-40" />
+            <CircuitOverlay variant="panel" className="opacity-40" animated={false} />
             <div className="relative z-10">
             <div className="text-sm font-semibold text-white">Order summary</div>
             <div className="mt-4 flex flex-col gap-3">

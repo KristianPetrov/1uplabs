@@ -53,12 +53,12 @@ export default async function AdminPage ()
       </header>
 
       <main className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
-        <CircuitOverlay variant="panel" className="opacity-35" />
+        <CircuitOverlay variant="panel" className="opacity-35" animated={false} />
         <div className="relative z-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
           <AdminProductOverrides products={products} overrides={overrides} />
 
           <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6">
-            <CircuitOverlay variant="panel" className="opacity-45" />
+            <CircuitOverlay variant="panel" className="opacity-45" animated={false} />
             <div className="relative z-10">
               <div className="text-sm font-semibold text-white">Quick actions</div>
               <div className="mt-4 flex flex-col gap-3">

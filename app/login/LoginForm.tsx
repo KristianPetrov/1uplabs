@@ -48,7 +48,7 @@ export default function LoginForm ({ defaultCallbackUrl = "/account", mode = "cu
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge"
           >
-            <CircuitOverlay variant="panel" className="opacity-42" />
+            <CircuitOverlay variant="panel" className="opacity-42" animated={false} />
             <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-sky-500/0 blur-3xl transition duration-700 group-hover:bg-sky-500/15" />
 
             <div className="relative z-10">

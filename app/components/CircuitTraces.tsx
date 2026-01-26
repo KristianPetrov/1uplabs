@@ -47,8 +47,14 @@ const NODES: Array<{ cx: number; cy: number; r: number; delay: string }> = [
   { cx: 712, cy: 356, r: 3, delay: "-1.1s" },
 ];
 
-export default function CircuitTraces ()
+type Props = {
+  animated?: boolean;
+};
+
+export default function CircuitTraces ({ animated = true }: Props)
 {
+  const filterId = animated ? "url(#circuitGlow)" : undefined;
+
   return (
     <svg
       className="lab-circuits"
@@ -81,37 +87,41 @@ export default function CircuitTraces ()
         </filter>
       </defs>
 
-      <g className="circuit-base" filter="url(#circuitGlow)">
+      <g className="circuit-base" filter={filterId}>
         {PATHS.map((d, idx) => (
           <path key={idx} d={d} />
         ))}
       </g>
 
-      <g className="circuit-pulses" filter="url(#circuitGlow)">
-        {PULSES.map((p, idx) => (
-          <path
-            key={idx}
-            d={p.d}
-            className="circuit-pulse"
-            style={{ ["--dur" as any]: p.dur, ["--delay" as any]: p.delay }}
-          />
-        ))}
-      </g>
+      {animated && (
+        <>
+          <g className="circuit-pulses" filter={filterId}>
+            {PULSES.map((p, idx) => (
+              <path
+                key={idx}
+                d={p.d}
+                className="circuit-pulse"
+                style={{ ["--dur" as any]: p.dur, ["--delay" as any]: p.delay }}
+              />
+            ))}
+          </g>
 
-      <g className="circuit-nodes" filter="url(#circuitGlow)">
-        {NODES.map((n, idx) => (
-          <circle
-            key={idx}
-            cx={n.cx}
-            cy={n.cy}
-            r={n.r}
-            className="circuit-node"
-            style={{ ["--delay" as any]: n.delay }}
-          />
-        ))}
-      </g>
+          <g className="circuit-nodes" filter={filterId}>
+            {NODES.map((n, idx) => (
+              <circle
+                key={idx}
+                cx={n.cx}
+                cy={n.cy}
+                r={n.r}
+                className="circuit-node"
+                style={{ ["--delay" as any]: n.delay }}
+              />
+            ))}
+          </g>
 
-      <rect className="circuit-faint-scan" x="0" y="0" width="1000" height="1000" />
+          <rect className="circuit-faint-scan" x="0" y="0" width="1000" height="1000" />
+        </>
+      )}
     </svg>
   );
 }

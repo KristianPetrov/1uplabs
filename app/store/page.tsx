@@ -31,7 +31,7 @@ export default function StorePage ()
             />
 
             <main id="catalog" className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
-                <CircuitOverlay variant="panel" className="opacity-30" />
+                <CircuitOverlay variant="panel" className="opacity-30" animated={false} />
                 <div className="relative z-10">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
@@ -84,7 +84,7 @@ export default function StorePage ()
             </main>
 
             <footer className="relative overflow-hidden border-t border-white/10">
-                <CircuitOverlay variant="footer" className="opacity-40" />
+                <CircuitOverlay variant="footer" className="opacity-40" animated={false} />
                 <div className="relative mx-auto max-w-6xl px-6 py-10">
                     <div className="text-xs leading-5 text-white/60">
                         Disclaimer: Products are intended for laboratory research only and

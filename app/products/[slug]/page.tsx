@@ -55,10 +55,10 @@ export default async function ProductPage ({ params }: Props)
             />
 
             <main className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
-                <CircuitOverlay variant="panel" className="opacity-30" />
+                <CircuitOverlay variant="panel" className="opacity-30" animated={false} />
                 <div className="relative z-10 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
                     <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4">
-                        <CircuitOverlay variant="panel" className="opacity-45" />
+                        <CircuitOverlay variant="panel" className="opacity-45" animated={false} />
                         <div className="relative z-10 h-72 overflow-hidden rounded-2xl border border-white/10 sm:h-96">
                             <LazyMoleculeViewer
                                 productName={p.moleculeKey}
@@ -70,7 +70,7 @@ export default async function ProductPage ({ params }: Props)
                     </div>
 
                     <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6">
-                        <CircuitOverlay variant="panel" className="opacity-42" />
+                        <CircuitOverlay variant="panel" className="opacity-42" animated={false} />
                         <div className="relative z-10">
                             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
                                 Research only

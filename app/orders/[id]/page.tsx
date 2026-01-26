@@ -106,7 +106,7 @@ export default async function OrderPage ({ params }: Props)
       <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-3">
-            <CircuitOverlay variant="panel" className="opacity-42" />
+            <CircuitOverlay variant="panel" className="opacity-42" animated={false} />
             <div className="relative z-10">
               <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
                 Next step
@@ -139,7 +139,7 @@ export default async function OrderPage ({ params }: Props)
           </section>
 
           <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-2">
-            <CircuitOverlay variant="panel" className="opacity-40" />
+            <CircuitOverlay variant="panel" className="opacity-40" animated={false} />
             <div className="relative z-10">
               <div className="text-sm font-semibold text-white">Order summary</div>
               <div className="mt-4 flex flex-col gap-3">

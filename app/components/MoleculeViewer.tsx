@@ -16,7 +16,7 @@ type GLViewerInstance = {
     setStyle: (selection: Record<string, unknown>, style: Record<string, unknown>) => void;
     addSurface: (surfaceType: number, style: Record<string, unknown>) => void;
     zoomTo: () => void;
-    setSpin: (axisOrState: string | boolean, speed?: number) => void;
+    setSpin?: (axisOrState: string | boolean, speed?: number) => void;
     spin: (axis: string, speed: number) => void;
     render: () => void;
 };
@@ -86,6 +86,15 @@ const spinnerDots = (
     </span>
 );
 
+function stopSpin (viewer: GLViewerInstance): void
+{
+    if (typeof viewer.setSpin === "function") {
+        viewer.setSpin(false);
+        return;
+    }
+    (viewer as GLViewerInstance & { spin?: (state: boolean) => void }).spin?.(false);
+}
+
 export default function MoleculeViewer ({
     productName,
     molecules,
@@ -110,16 +119,14 @@ export default function MoleculeViewer ({
 
     useEffect(() =>
     {
-        if (isInView) {
-            return;
-        }
         const observer = new IntersectionObserver(
             (entries) =>
             {
-                if (entries.some((entry) => entry.isIntersecting)) {
-                    setIsInView(true);
-                    observer.disconnect();
+                const entry = entries[0];
+                if (!entry) {
+                    return;
                 }
+                setIsInView(entry.isIntersecting);
             },
             { threshold: 0.15 }
         );
@@ -127,7 +134,7 @@ export default function MoleculeViewer ({
             observer.observe(rootRef.current);
         }
         return () => observer.disconnect();
-    }, [isInView]);
+    }, []);
 
     useEffect(() =>
     {
@@ -168,6 +175,8 @@ export default function MoleculeViewer ({
         };
     }, []);
 
+    const shouldAnimate = isInView && !prefersReducedMotion && variant === "hero";
+
     useEffect(() =>
     {
         const viewer = viewerRef.current;
@@ -175,12 +184,12 @@ export default function MoleculeViewer ({
             return;
         }
 
-        if (prefersReducedMotion) {
-            viewer.setSpin(false);
+        if (shouldAnimate) {
+            viewer.spin("y", 0.6);
         } else {
-            viewer.spin("y", 0.9);
+            stopSpin(viewer);
         }
-    }, [prefersReducedMotion]);
+    }, [shouldAnimate]);
 
     const clampedIndex = useMemo(() =>
     {
@@ -218,7 +227,7 @@ export default function MoleculeViewer ({
 
                 if (!viewerRef.current) {
                     viewerRef.current = new $3Dmol.GLViewer(canvasRef.current, {
-                        antialias: true,
+                        antialias: variant === "hero",
                     });
                     if (viewerRef.current.setBackgroundColor) {
                         viewerRef.current.setBackgroundColor("#000000", 0);
@@ -253,15 +262,17 @@ export default function MoleculeViewer ({
                         },
                     }
                 );
-                viewer.addSurface($3Dmol.SurfaceType.VDW, {
-                    opacity: 0.08,
-                    color: "#c084fc",
-                });
+                if (variant === "hero") {
+                    viewer.addSurface($3Dmol.SurfaceType.VDW, {
+                        opacity: 0.08,
+                        color: "#c084fc",
+                    });
+                }
                 viewer.zoomTo();
-                if (prefersReducedMotion) {
-                    viewer.setSpin(false);
+                if (shouldAnimate) {
+                    viewer.spin("y", 0.6);
                 } else {
-                    viewer.spin("y", 0.9);
+                    stopSpin(viewer);
                 }
                 viewer.render();
                 if (isMounted) {
@@ -288,7 +299,7 @@ export default function MoleculeViewer ({
             isMounted = false;
             abortController.abort();
         };
-    }, [activeMolecule, isInView, reloadToken, prefersReducedMotion, hasRenderableArea]);
+    }, [activeMolecule, isInView, reloadToken, hasRenderableArea, shouldAnimate, variant]);
 
     const effectiveStatus: ViewerStatus = molecules.length ? status : "missing";
 
