@@ -6,7 +6,7 @@ import { CartProvider } from "@/app/cart/CartProvider";
 import FloatingCart from "@/app/components/FloatingCart";
 import { PricingProvider } from "@/app/pricing/PricingProvider";
 import AuthSessionProvider from "@/app/auth/SessionProvider";
-// import LabBackground from "@/app/components/LabBackground";
+import LabBackground from "@/app/components/LabBackground";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -74,7 +74,7 @@ export default function RootLayout ({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* <LabBackground /> */}
+        <LabBackground />
         <div className="relative z-10 min-h-screen">
           <AuthSessionProvider>
             <PricingProvider>
