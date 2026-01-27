@@ -92,7 +92,7 @@ export default async function AccountPage ()
       <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge lg:col-span-2">
-          <CircuitOverlay variant="panel" className="opacity-45" animated={false} />
+          <CircuitOverlay variant="panel" className="opacity-45" animated />
           <div className="relative z-10">
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
               Profile

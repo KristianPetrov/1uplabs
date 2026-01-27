@@ -31,7 +31,7 @@ export default function StorePage ()
             />
 
             <main id="catalog" className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
-                <CircuitOverlay variant="panel" className="opacity-30" animated={false} />
+                <CircuitOverlay variant="panel" className="opacity-30" animated />
                 <div className="relative z-10">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
