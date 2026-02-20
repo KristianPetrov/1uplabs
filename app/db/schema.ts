@@ -9,9 +9,10 @@ export const paymentMethodEnum = pgEnum("payment_method", [
 ]);
 
 export const orderStatusEnum = pgEnum("order_status", [
-  "pending_payment",
+  "pending",
   "paid",
-  "cancelled",
+  "shipped",
+  "canceled",
 ]);
 
 export const userRoleEnum = pgEnum("user_role", ["admin", "customer"]);
@@ -68,7 +69,10 @@ export const orders = pgTable("orders", {
   shippingCountry: text("shipping_country").notNull().default("US"),
 
   paymentMethod: paymentMethodEnum("payment_method").notNull(),
-  status: orderStatusEnum("status").notNull().default("pending_payment"),
+  status: orderStatusEnum("status").notNull().default("pending"),
+  mailService: text("mail_service"),
+  trackingNumber: text("tracking_number"),
+  shippedAt: timestamp("shipped_at", { withTimezone: true }),
 
   subtotalCents: integer("subtotal_cents").notNull(),
   totalCents: integer("total_cents").notNull(),

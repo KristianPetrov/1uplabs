@@ -1,4 +1,4 @@
-import Starfield from "@/app/components/Starfield";
+import LabStarfield from "@/app/components/LabStarfield";
 
 export default function LabBackground ()
 {
@@ -6,7 +6,7 @@ export default function LabBackground ()
     <div aria-hidden="true" className="lab-bg">
       <div className="lab-bg__base" />
       <div className="lab-bg__starfield">
-        <Starfield className="lab-starfield" />
+        <LabStarfield className="lab-starfield" />
       </div>
     </div>
   );

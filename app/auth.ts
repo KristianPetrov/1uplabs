@@ -22,7 +22,7 @@ if (process.env.NODE_ENV !== "production" && !process.env.NEXTAUTH_URL) {
 }
 
 const credentialsSchema = z.object({
-  email: z.string().email(),
+  email: z.email(),
   password: z.string().min(1),
 });
 
@@ -94,9 +94,3 @@ export const authOptions: NextAuthOptions = {
 
 // Convenience export for server components / server actions.
 export const nextAuthHandler = NextAuth(authOptions);
-
-
-
-
-
-

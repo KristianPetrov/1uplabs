@@ -69,6 +69,23 @@ function orderIdToMemo (id: string): string
   return `1UpLabs ${id.slice(0, 8)}`;
 }
 
+function orderStatusLabel (status: "pending" | "paid" | "shipped" | "canceled"): string
+{
+  switch (status)
+  {
+    case "pending":
+      return "pending";
+    case "paid":
+      return "paid";
+    case "shipped":
+      return "shipped";
+    case "canceled":
+      return "canceled";
+    default:
+      return status;
+  }
+}
+
 export default async function OrderPage ({ params }: Props)
 {
   const { id } = await params;
@@ -88,6 +105,10 @@ export default async function OrderPage ({ params }: Props)
     .where(eq(orderItems.orderId, id));
 
   const pay = paymentDestination(o.paymentMethod);
+  const statusLabel = orderStatusLabel(o.status);
+  const isPending = o.status === "pending";
+  const isPaid = o.status === "paid";
+  const isShipped = o.status === "shipped";
 
   return (
     <div className="min-h-screen text-zinc-50">
@@ -112,7 +133,13 @@ export default async function OrderPage ({ params }: Props)
                 Next step
               </div>
               <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-                Pay with {pay.title}
+                {isPending
+                  ? `Pay with ${pay.title}`
+                  : isPaid
+                    ? "Payment received"
+                    : isShipped
+                      ? "Order shipped"
+                      : "Order canceled"}
               </h1>
               <p className="mt-2 text-sm leading-6 text-white/65">
                 Your order is reserved and marked <span className="font-semibold text-white">{o.status}</span>.
@@ -121,12 +148,22 @@ export default async function OrderPage ({ params }: Props)
 
               <div className="mt-6 grid grid-cols-1 gap-3">
                 <CopyField label="Order ID" value={o.id} />
-                <CopyField label={pay.destinationLabel} value={pay.destinationValue} />
                 <CopyField label="Amount (USD)" value={formatUsdFromCents(o.totalCents)} />
-                <CopyField label="Payment memo" value={orderIdToMemo(o.id)} />
+                {isPending ? (
+                  <>
+                    <CopyField label={pay.destinationLabel} value={pay.destinationValue} />
+                    <CopyField label="Payment memo" value={orderIdToMemo(o.id)} />
+                  </>
+                ) : null}
+                {isShipped && o.mailService ? (
+                  <CopyField label="Mail service" value={o.mailService} />
+                ) : null}
+                {isShipped && o.trackingNumber ? (
+                  <CopyField label="Tracking number" value={o.trackingNumber} />
+                ) : null}
               </div>
 
-              {pay.note ? (
+              {isPending && pay.note ? (
                 <div className="mt-4 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
                   {pay.note}
                 </div>
@@ -161,7 +198,6 @@ export default async function OrderPage ({ params }: Props)
                   </div>
                 ))}
               </div>
-
               <div className="mt-5 border-t border-white/10 pt-4">
                 <div className="flex items-center justify-between text-sm">
                   <div className="text-white/70">Total</div>

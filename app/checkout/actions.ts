@@ -121,7 +121,7 @@ export async function createOrder (input: CreateOrderInput): Promise<{ orderId: 
         shippingZip: data.shippingZip,
         shippingCountry: data.shippingCountry.toUpperCase(),
         paymentMethod: data.paymentMethod,
-        status: "pending_payment",
+        status: "pending",
         subtotalCents,
         totalCents,
         createdAt: now,

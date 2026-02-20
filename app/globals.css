@@ -70,6 +70,12 @@ body {
   filter: saturate(1.08) contrast(1.08);
 }
 
+.lab-starfield canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 /* Circuit board glow traces (SVG) — applied per-container via CircuitOverlay */
 .circuit-overlay {
   position: absolute;
@@ -159,6 +165,15 @@ body {
   .lab-circuits .circuit-pulse,
   .lab-circuits .circuit-node,
   .lab-circuits .circuit-faint-scan { animation: none; }
+}
+
+@media (prefers-reduced-motion: reduce), (max-width: 768px) {
+  /* Large-area SVG blur can be expensive; disable on low-motion/smaller screens. */
+  .lab-circuits .circuit-base,
+  .lab-circuits .circuit-pulses,
+  .lab-circuits .circuit-nodes {
+    filter: none !important;
+  }
 }
 
 /* Optional: grid floor (hero-only) */

@@ -73,14 +73,14 @@ export function PricingProvider ({ children }: { children: React.ReactNode }): R
     }
   }, []);
 
-  useEffect(() =>
-  {
-    void refresh();
+  // useEffect(() =>
+  // {
+  //   void refresh();
 
-    // Keep prices fresh if you change them in the admin dashboard.
-    const id = window.setInterval(() => void refresh(), 45_000);
-    return () => window.clearInterval(id);
-  }, [refresh]);
+  //   // Keep prices fresh if you change them in the admin dashboard.
+  //   const id = window.setInterval(() => void refresh(), 125_000);
+  //   return () => window.clearInterval(id);
+  // }, [refresh]);
 
   const getPriceCents = useCallback((slug: string, fallbackCents: number): number =>
   {

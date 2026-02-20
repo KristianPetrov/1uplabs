@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import type { Product } from "@/app/lib/products";
+import { getProductImagePath } from "@/app/lib/products";
 import { getMoleculesForProduct } from "@/app/lib/molecules";
 import LazyMoleculeViewer from "@/app/components/LazyMoleculeViewer";
 import ExpandableResearch from "@/app/components/ExpandableResearch";
@@ -48,6 +50,7 @@ export default function FeaturedCarousel ({
 
     const clampedIndex = items.length ? Math.min(index, items.length - 1) : 0;
     const active = items.length ? items[clampedIndex] : null;
+    const activeImagePath = active ? getProductImagePath(active.slug) : null;
 
     useEffect(() =>
     {
@@ -95,6 +98,17 @@ export default function FeaturedCarousel ({
                             <div className="mt-3 text-2xl font-semibold tracking-tight text-white">
                                 {active?.name}
                             </div>
+                            {activeImagePath && (
+                                <div className="relative mt-3 h-60">
+                                    <Image
+                                        src={activeImagePath}
+                                        alt={`${active?.name ?? "Product"} ${active?.amount ?? ""} vial`}
+                                        fill
+                                        sizes="(max-width: 1024px) 100vw, 40vw"
+                                        className="object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)]"
+                                    />
+                                </div>
+                            )}
                             <div className="mt-2 text-sm text-white/70">
                                 Vial strength:{" "}
                                 <span className="font-semibold text-white">{active?.amount}</span>

@@ -318,4 +318,28 @@ export function getFeaturedProducts (limit = 3): Product[]
     return products.slice(0, limit);
 }
 
+const productImagePathBySlug: Record<string, string> = {
+    "semaglutide-5mg": "/products/semaglutide-5mg-vial.png",
+    "semaglutide-10mg": "/products/semaglutide-10mg-vial.png",
+    "tirzepatide-30mg": "/products/tirzepatide-30mg-vial.png",
+    "retatrutide-10mg": "/products/retatrutide-10mg-vial.png",
+    "bpc-157-10mg": "/products/bpc-157-10mg-vial.png",
+    "tb-500-10mg": "/products/tb-500-10mg-vial.png",
+    "mots-c-10mg": "/products/mots-c-10mg-vial.png",
+    "ghk-cu-50mg": "/products/ghk-cu-50mg-vial.png",
+    "ipamorelin-5mg": "/products/ipamorelin-5mg-vial.png",
+    "cjc-1295-no-dac-5mg": "/products/cjc-1295-no-dac-5mg-vial.png",
+    "tesamorelin-10mg": "/products/tesamorelin-10mg-vial.png",
+    "epithalon-10mg": "/products/epithalon-10mg-vial.png",
+    "melanotan-ii-10mg": "/products/melanotan-II-10mg-vial .png",
+    "pt-141-10mg": "/products/pt-141-10mg-vial.png",
+    "nad-plus-500mg": "/products/nad-500mg-vial.png",
+    "glutathione-600mg": "/products/glutathione-600mg-vial.png",
+};
+
+export function getProductImagePath (slug: string): string | null
+{
+    return productImagePathBySlug[slug] ?? null;
+}
+
 

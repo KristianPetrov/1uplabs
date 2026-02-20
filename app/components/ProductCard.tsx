@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 
 import type { MoleculeDefinition } from "@/app/lib/molecules";
 import type { Product } from "@/app/lib/products";
+import { getProductImagePath } from "@/app/lib/products";
 import LazyMoleculeViewer from "@/app/components/LazyMoleculeViewer";
 import ExpandableResearch from "@/app/components/ExpandableResearch";
 import { formatUsdFromCents } from "@/app/lib/money";
@@ -32,13 +34,14 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
 
     const selected = useMemo(() => sorted.find((v) => v.slug === selectedSlug) ?? sorted[0], [selectedSlug, sorted]);
     const isMulti = sorted.length > 1;
+    const selectedImagePath = getProductImagePath(selected?.slug ?? "");
 
     if (!selected) return null;
 
     return (
         <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-emerald-500/25 hover:bg-white/6 neon-edge">
             <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-sky-500/0 blur-2xl transition group-hover:bg-sky-500/20" />
-            <div className="mb-4 h-40">
+            <div className="mb-1 h-40">
                 <LazyMoleculeViewer
                     productName={moleculeKey}
                     molecules={molecules}
@@ -46,6 +49,17 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
                     className="h-full"
                 />
             </div>
+            {selectedImagePath && (
+                <div className="relative mb-4 h-84">
+                    <Image
+                        src={selectedImagePath}
+                        alt={`${selected.name} ${selected.amount} vial`}
+                        fill
+                        sizes="(max-width: 640px) 100vw, 33vw"
+                        className="object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)]"
+                    />
+                </div>
+            )}
 
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">

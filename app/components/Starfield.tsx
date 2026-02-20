@@ -1,14 +1,29 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  AdditiveBlending,
+  BufferAttribute,
+  BufferGeometry,
+  ShaderMaterial,
+  Vector2,
+} from "three";
 
-type Star = {
-  x: number;
-  y: number;
-  z: number;
-  px: number;
-  py: number;
-  hue: number; // 0 = white, else HSL hue
+import Starfield2D from "@/app/components/Starfield2D";
+
+type Props = {
+  className?: string;
+};
+
+type Quality = {
+  dpr: number;
+  fps: number;
+  count: number;
+  speed: number;
+  parallax: number;
+  sizeScale: number;
+  twinkle: number;
 };
 
 function clamp (n: number, min: number, max: number): number
@@ -16,177 +31,389 @@ function clamp (n: number, min: number, max: number): number
   return Math.min(max, Math.max(min, n));
 }
 
-function rand (min: number, max: number): number
+function usePrefersReducedMotion (): boolean
 {
-  return min + Math.random() * (max - min);
-}
-
-function starHue (): number
-{
-  const r = Math.random();
-  if (r < 0.70) return 0; // white
-  if (r < 0.84) return rand(160, 172); // emerald
-  if (r < 0.95) return rand(194, 210); // cyan
-  return rand(228, 245); // indigo
-}
-
-function makeStar (near = false): Star
-{
-  const spread = 1.35;
-  const z = near ? rand(0.08, 0.35) : rand(0.10, 1.00);
-  return {
-    x: rand(-spread, spread),
-    y: rand(-spread, spread),
-    z,
-    px: 0,
-    py: 0,
-    hue: starHue(),
-  };
-}
-
-export default function Starfield ({ className }: { className?: string })
-{
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const [reduced, setReduced] = useState(false);
 
   useEffect(() =>
   {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) return;
+    const mql = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (!mql) return;
+    const onChange = () => setReduced(mql.matches);
+    onChange();
+    mql.addEventListener?.("change", onChange);
+    return () => mql.removeEventListener?.("change", onChange);
+  }, []);
 
-    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+  return reduced;
+}
 
-    let width = 0;
-    let height = 0;
-    let scale = 1;
-    let stars: Star[] = [];
-
-    const resize = () =>
-    {
-      // Use viewport so the background stays correct even if parent changes.
-      width = Math.max(1, window.innerWidth);
-      height = Math.max(1, window.innerHeight);
-
-      const dpr = clamp(window.devicePixelRatio || 1, 1, 2);
-      canvas.width = Math.round(width * dpr);
-      canvas.height = Math.round(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      scale = Math.min(width, height) * 0.52;
-
-      const count = Math.round(clamp((width * height) / 12000, 90, 340));
-      stars = Array.from({ length: count }, () => makeStar(false));
+function computeQuality (reducedMotion: boolean): Quality
+{
+  if (reducedMotion) {
+    return {
+      dpr: 1,
+      fps: 1,
+      count: 160,
+      speed: 0,
+      parallax: 0,
+      sizeScale: 2.05,
+      twinkle: 0,
     };
+  }
 
-    const drawFrame = (t: number, dt: number) =>
-    {
-      ctx.clearRect(0, 0, width, height);
+  const w = window.innerWidth || 1200;
+  const h = window.innerHeight || 800;
+  const area = w * h;
 
-      // Subtle “camera drift” (parallax at depth)
-      const camX = Math.sin(t * 0.00008) * 0.24 + Math.sin(t * 0.000031) * 0.10;
-      const camY = Math.cos(t * 0.000075) * 0.20 + Math.cos(t * 0.000029) * 0.08;
+  const coarse = window.matchMedia?.("(pointer: coarse)")?.matches ?? false;
+  const mobile = coarse || w < 768;
+  const cores = typeof navigator !== "undefined" ? (navigator.hardwareConcurrency ?? 8) : 8;
+  const deviceMemory = typeof navigator !== "undefined" ? ((navigator as any).deviceMemory ?? 8) : 8;
+  const lowEnd = mobile || cores <= 4 || deviceMemory <= 4;
 
-      // Gentle forward drift (depth motion) — keep it slow/premium, not warp speed.
-      const zSpeed = reduceMotion ? 0 : 0.10; // z units per second
+  const baseCount = clamp(Math.round(area / 14000), 160, 520);
+  const count = lowEnd ? Math.round(baseCount * 0.85) : baseCount;
 
-      for (const s of stars)
-      {
-        if (!reduceMotion)
-        {
-          s.z -= zSpeed * dt;
-          if (s.z <= 0.085)
-          {
-            const ns = makeStar(false);
-            s.x = ns.x;
-            s.y = ns.y;
-            s.z = 1.0;
-            s.px = 0;
-            s.py = 0;
-            s.hue = ns.hue;
-          }
-        }
+  const dprCap = lowEnd ? 1.25 : 1.5;
+  const dpr = clamp(Math.min(window.devicePixelRatio || 1, dprCap), 1, dprCap);
 
-        const invZ = 1 / s.z;
-        const sx = (s.x - camX) * invZ * scale + width / 2;
-        const sy = (s.y - camY) * invZ * scale + height / 2;
+  return {
+    dpr,
+    fps: lowEnd ? 30 : 60,
+    count,
+    speed: 0,
+    parallax: lowEnd ? 0.04 : 0.06,
+    sizeScale: lowEnd ? 2.2 : 2.45,
+    twinkle: lowEnd ? 0.32 : 0.40,
+  };
+}
 
-        // Skip offscreen.
-        if (sx < -80 || sx > width + 80 || sy < -80 || sy > height + 80)
-        {
-          s.px = 0;
-          s.py = 0;
-          continue;
-        }
+function webglSupported (): boolean
+{
+  try {
+    const canvas = document.createElement("canvas");
+    const gl =
+      canvas.getContext("webgl", { alpha: true, antialias: false }) ||
+      canvas.getContext("experimental-webgl", { alpha: true, antialias: false });
+    return !!gl;
+  } catch {
+    return false;
+  }
+}
 
-        const depth = 1 - s.z; // near => bigger/brighter
-        const alpha = clamp(0.08 + depth * 0.92, 0, 0.92);
-        const r = clamp(0.55 + depth * 2.15, 0.55, 2.9);
+function AdaptiveLoop ({
+  fps,
+  reducedMotion,
+}: {
+  fps: number;
+  reducedMotion: boolean;
+})
+{
+  const { gl, invalidate } = useThree();
+  const [pageVisible, setPageVisible] = useState(true);
+  const [inView, setInView] = useState(true);
 
-        // Trails add the “3D camera” premium feel.
-        if (!reduceMotion && s.px !== 0 && s.py !== 0)
-        {
-          const trailA = alpha * 0.28;
-          ctx.lineWidth = Math.max(0.6, r * 0.6);
-          ctx.strokeStyle = s.hue === 0
-            ? `rgba(255,255,255,${trailA})`
-            : `hsla(${s.hue}, 92%, 72%, ${trailA})`;
-          ctx.beginPath();
-          ctx.moveTo(s.px, s.py);
-          ctx.lineTo(sx, sy);
-          ctx.stroke();
-        }
+  useEffect(() =>
+  {
+    const onVis = () => setPageVisible(document.visibilityState === "visible");
+    onVis();
+    document.addEventListener("visibilitychange", onVis);
+    return () => document.removeEventListener("visibilitychange", onVis);
+  }, []);
 
-        // Core star
-        ctx.fillStyle = s.hue === 0
-          ? `rgba(255,255,255,${alpha})`
-          : `hsla(${s.hue}, 92%, 74%, ${alpha})`;
-        ctx.beginPath();
-        ctx.arc(sx, sy, r, 0, Math.PI * 2);
-        ctx.fill();
+  useEffect(() =>
+  {
+    if (typeof IntersectionObserver === "undefined") return;
+    const el = gl.domElement;
+    const obs = new IntersectionObserver(
+      (entries) => setInView(entries[0]?.isIntersecting ?? true),
+      { threshold: 0.01 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [gl]);
 
-        // Soft bloom
-        const bloomA = alpha * 0.22;
-        ctx.fillStyle = s.hue === 0
-          ? `rgba(255,255,255,${bloomA})`
-          : `hsla(${s.hue}, 96%, 70%, ${bloomA})`;
-        ctx.beginPath();
-        ctx.arc(sx, sy, r * 2.0, 0, Math.PI * 2);
-        ctx.fill();
+  const paused = reducedMotion || !pageVisible || !inView;
 
-        s.px = sx;
-        s.py = sy;
-      }
-    };
+  useEffect(() =>
+  {
+    // Render one frame so the background never looks “empty”.
+    invalidate();
+  }, [invalidate, paused]);
 
-    resize();
+  useEffect(() =>
+  {
+    if (paused) return;
 
+    const frameMs = 1000 / Math.max(1, fps);
     let raf = 0;
     let last = performance.now();
 
-    const loop = (now: number) =>
+    const tick = (now: number) =>
     {
-      const dt = clamp((now - last) / 1000, 0, 0.05);
-      last = now;
-      drawFrame(now, dt);
-      raf = requestAnimationFrame(loop);
+      if (now - last >= frameMs) {
+        // Clamp to avoid huge jumps (tab throttling, etc.).
+        last = now - ((now - last) % frameMs);
+        invalidate();
+      }
+      raf = requestAnimationFrame(tick);
     };
 
-    // Draw once even for reduced motion (still “premium”).
-    drawFrame(performance.now(), 0);
-    if (!reduceMotion) raf = requestAnimationFrame(loop);
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [fps, invalidate, paused]);
 
-    window.addEventListener("resize", resize, { passive: true });
+  return null;
+}
 
+function Stars ({
+  count,
+  speed,
+  parallax,
+  sizeScale,
+  twinkle,
+  paused,
+}: {
+  count: number;
+  speed: number;
+  parallax: number;
+  sizeScale: number;
+  twinkle: number;
+  paused: boolean;
+})
+{
+  const materialRef = useRef<ShaderMaterial | null>(null);
+  const tRef = useRef(0);
+
+  const { geometry, material } = useMemo(() =>
+  {
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const sizes = new Float32Array(count);
+    const seeds = new Float32Array(count);
+
+    const pickColor = (): [number, number, number] =>
+    {
+      const r = Math.random();
+      if (r < 0.70) return [1.0, 1.0, 1.0];
+      if (r < 0.84) return [0.40, 1.00, 0.74]; // emerald-ish
+      if (r < 0.95) return [0.35, 0.86, 1.00]; // cyan-ish
+      return [0.62, 0.62, 1.00]; // indigo-ish
+    };
+
+    for (let i = 0; i < count; i++) {
+      const i3 = i * 3;
+      positions[i3 + 0] = (Math.random() * 2.6 - 1.3); // allow a bit of overscan
+      positions[i3 + 1] = (Math.random() * 2.6 - 1.3);
+      positions[i3 + 2] = Math.random(); // depth bucket [0..1]
+
+      const [cr, cg, cb] = pickColor();
+      colors[i3 + 0] = cr;
+      colors[i3 + 1] = cg;
+      colors[i3 + 2] = cb;
+
+      sizes[i] = 0.9 + Math.random() * 1.9;
+      seeds[i] = Math.random();
+    }
+
+    const geo = new BufferGeometry();
+    geo.setAttribute("position", new BufferAttribute(positions, 3));
+    geo.setAttribute("aColor", new BufferAttribute(colors, 3));
+    geo.setAttribute("aSize", new BufferAttribute(sizes, 1));
+    geo.setAttribute("aSeed", new BufferAttribute(seeds, 1));
+
+    const uniforms = {
+      uTime: { value: 0 },
+      uPointer: { value: new Vector2(0, 0) },
+      uSpeed: { value: speed },
+      uParallax: { value: parallax },
+      uSizeScale: { value: sizeScale },
+      uTwinkle: { value: twinkle },
+    };
+
+    const mat = new ShaderMaterial({
+      transparent: true,
+      depthTest: false,
+      depthWrite: false,
+      blending: AdditiveBlending,
+      uniforms,
+      vertexShader: `
+        uniform float uTime;
+        uniform vec2 uPointer;
+        uniform float uSpeed;
+        uniform float uParallax;
+        uniform float uSizeScale;
+        uniform float uTwinkle;
+
+        attribute vec3 aColor;
+        attribute float aSize;
+        attribute float aSeed;
+
+        varying vec3 vColor;
+        varying float vAlpha;
+
+        void main() {
+          float z = fract(position.z - uTime * uSpeed);
+          float depth = 1.0 - z;
+
+          vec2 par = uPointer * uParallax * depth;
+          vec2 p = position.xy + par;
+
+          // Clip-space placement (cheap & stable).
+          gl_Position = vec4(p, 0.0, 1.0);
+
+          float tw = 1.0;
+          if (uTwinkle > 0.0) {
+            // Slow, subtle twinkle to avoid harsh flashing.
+            tw = mix(1.0, 0.92 + 0.08 * sin(uTime * 0.45 + aSeed * 16.0), uTwinkle);
+          }
+
+          gl_PointSize = aSize * uSizeScale * (0.85 + depth * 1.65);
+          vAlpha = (0.10 + depth * 0.90) * tw;
+          vColor = aColor;
+        }
+      `,
+      fragmentShader: `
+        precision highp float;
+        varying vec3 vColor;
+        varying float vAlpha;
+
+        void main() {
+          vec2 uv = gl_PointCoord - 0.5;
+          float d = length(uv);
+
+          // Core + soft glow (no expensive fullscreen blur).
+          float core = smoothstep(0.22, 0.0, d);
+          float glow = smoothstep(0.50, 0.10, d);
+          float halo = smoothstep(0.75, 0.25, d);
+
+          float a = vAlpha * (core + glow * 0.42 + halo * 0.12);
+
+          // Feather edges.
+          a *= smoothstep(0.85, 0.55, d);
+
+          gl_FragColor = vec4(vColor, a);
+        }
+      `,
+    });
+
+    return { geometry: geo, material: mat };
+  }, [count, parallax, sizeScale, speed, twinkle]);
+
+  useEffect(() =>
+  {
     return () =>
     {
-      window.removeEventListener("resize", resize);
-      if (raf) cancelAnimationFrame(raf);
+      geometry.dispose();
+      material.dispose();
     };
+  }, [geometry, material]);
+
+  useEffect(() =>
+  {
+    // Keep uniforms updated if quality changes.
+    material.uniforms.uSpeed.value = speed;
+    material.uniforms.uParallax.value = parallax;
+    material.uniforms.uSizeScale.value = sizeScale;
+    material.uniforms.uTwinkle.value = twinkle;
+  }, [material, parallax, sizeScale, speed, twinkle]);
+
+  useFrame((state, delta) =>
+  {
+    const mat = materialRef.current;
+    if (!mat) return;
+
+    // Avoid giant time jumps when the browser throttles timers.
+    const dt = Math.min(delta, 0.05);
+
+    if (!paused) {
+      tRef.current += dt;
+      mat.uniforms.uTime.value = tRef.current;
+      mat.uniforms.uPointer.value.set(state.pointer.x, state.pointer.y);
+    } else {
+      mat.uniforms.uPointer.value.set(0, 0);
+    }
+  });
+
+  return (
+    <points frustumCulled={false} geometry={geometry}>
+      <primitive ref={materialRef} object={material} attach="material" />
+    </points>
+  );
+}
+
+export default function Starfield ({ className }: Props)
+{
+  const reducedMotion = usePrefersReducedMotion();
+  const [canWebGL, setCanWebGL] = useState(true);
+  const [quality, setQuality] = useState<Quality | null>(null);
+
+  useEffect(() =>
+  {
+    setCanWebGL(webglSupported());
   }, []);
 
-  return <canvas ref={canvasRef} className={className} />;
+  useEffect(() =>
+  {
+    if (!canWebGL) return;
+    let raf = 0;
+
+    const update = () =>
+    {
+      setQuality(computeQuality(reducedMotion));
+    };
+
+    const onResize = () =>
+    {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("resize", onResize, { passive: true });
+    return () =>
+    {
+      window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(raf);
+    };
+  }, [canWebGL, reducedMotion]);
+
+  // Fallback for environments where WebGL is unavailable/blocked.
+  if (!canWebGL) return <Starfield2D className={className} />;
+  if (!quality) return null;
+
+  const paused = reducedMotion;
+
+  return (
+    <Canvas
+      className={className}
+      frameloop="demand"
+      dpr={quality.dpr}
+      gl={{
+        alpha: true,
+        antialias: false,
+        depth: false,
+        stencil: false,
+        powerPreference: "high-performance",
+        preserveDrawingBuffer: false,
+      }}
+      onCreated={({ gl }) =>
+      {
+        gl.setClearColor(0x000000, 0);
+      }}
+    >
+      <AdaptiveLoop fps={quality.fps} reducedMotion={reducedMotion} />
+      <Stars
+        count={quality.count}
+        speed={quality.speed}
+        parallax={quality.parallax}
+        sizeScale={quality.sizeScale}
+        twinkle={quality.twinkle}
+        paused={paused}
+      />
+    </Canvas>
+  );
 }
+
 
