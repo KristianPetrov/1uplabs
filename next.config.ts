@@ -3,6 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  transpilePackages: ["@ap/shared-ui", "@ap/shared-core"],
+  experimental: {
+    externalDir: true,
+  },
   async headers() {
     return [
       {

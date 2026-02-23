@@ -7,6 +7,7 @@ import FloatingCart from "@/app/components/FloatingCart";
 import { PricingProvider } from "@/app/pricing/PricingProvider";
 import AuthSessionProvider from "@/app/auth/SessionProvider";
 import LabBackground from "@/app/components/LabBackground";
+import { SharedUiAdaptersProvider } from "@/app/shared/SharedUiAdaptersProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -77,12 +78,14 @@ export default function RootLayout ({
         <LabBackground />
         <div className="relative z-10 min-h-screen">
           <AuthSessionProvider>
-            <PricingProvider>
-              <CartProvider>
-                {children}
-                <FloatingCart />
-              </CartProvider>
-            </PricingProvider>
+            <SharedUiAdaptersProvider>
+              <PricingProvider>
+                <CartProvider>
+                  {children}
+                  <FloatingCart />
+                </CartProvider>
+              </PricingProvider>
+            </SharedUiAdaptersProvider>
           </AuthSessionProvider>
         </div>
       </body>

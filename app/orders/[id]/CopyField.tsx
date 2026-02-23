@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { CopyButton } from "@ap/shared-ui/copy-button";
 
 type Props = {
   label: string;
@@ -10,8 +10,6 @@ type Props = {
 
 export default function CopyField ({ label, value }: Props)
 {
-  const [copied, setCopied] = useState(false);
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 8, filter: "blur(8px)" }}
@@ -27,25 +25,10 @@ export default function CopyField ({ label, value }: Props)
         <code className="min-w-0 truncate rounded-xl bg-zinc-950/50 px-3 py-2 text-sm text-white/90">
           {value}
         </code>
-        <button
-          type="button"
-          onClick={async () =>
-          {
-            try
-            {
-              await navigator.clipboard.writeText(value);
-              setCopied(true);
-              window.setTimeout(() => setCopied(false), 900);
-            }
-            catch
-            {
-              // ignore
-            }
-          }}
-          className="shrink-0 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-emerald-500/30 hover:bg-white/8"
-        >
-          {copied ? "Copied" : "Copy"}
-        </button>
+        <CopyButton
+          text={value}
+          className="shrink-0 border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold tracking-normal text-white transition hover:border-emerald-500/30 hover:bg-white/8 hover:text-white"
+        />
       </div>
     </motion.div>
   );
