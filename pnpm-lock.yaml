@@ -12,11 +12,11 @@ importers:
         specifier: ^2.5.3
         version: 2.5.3
       '@ap/shared-core':
-        specifier: file:../affordable-peptides/packages/shared-core
-        version: file:../affordable-peptides/packages/shared-core
+        specifier: workspace:*
+        version: link:packages/shared-core
       '@ap/shared-ui':
-        specifier: file:../affordable-peptides/packages/shared-ui
-        version: file:../affordable-peptides/packages/shared-ui(@ap/shared-core@file:../affordable-peptides/packages/shared-core)(next-auth@4.24.13(next@16.1.1(@babel/core@7.28.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(next@16.1.1(@babel/core@7.28.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: workspace:*
+        version: link:packages/shared-ui
       '@react-three/fiber':
         specifier: ^9.5.0
         version: 9.5.0(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(three@0.182.0)
@@ -91,6 +91,27 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/shared-core: {}
+
+  packages/shared-ui:
+    dependencies:
+      next:
+        specifier: ^16.0.0
+        version: 16.1.1(@babel/core@7.28.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      next-auth:
+        specifier: ^4.0.0 || ^5.0.0-beta.0
+        version: 4.24.13(next@16.1.1(@babel/core@7.28.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      react:
+        specifier: ^19.0.0
+        version: 19.2.3
+      react-dom:
+        specifier: ^19.0.0
+        version: 19.2.3(react@19.2.3)
+    devDependencies:
+      '@ap/shared-core':
+        specifier: workspace:*
+        version: link:../shared-core
+
 packages:
 
   3dmol@2.5.3:
@@ -100,18 +121,6 @@ packages:
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
-
-  '@ap/shared-core@file:../affordable-peptides/packages/shared-core':
-    resolution: {directory: ../affordable-peptides/packages/shared-core, type: directory}
-
-  '@ap/shared-ui@file:../affordable-peptides/packages/shared-ui':
-    resolution: {directory: ../affordable-peptides/packages/shared-ui, type: directory}
-    peerDependencies:
-      '@ap/shared-core': ^0.1.0
-      next: ^16.0.0
-      next-auth: ^4.0.0 || ^5.0.0-beta.0
-      react: ^19.0.0
-      react-dom: ^19.0.0
 
   '@babel/code-frame@7.27.1':
     resolution: {integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==}
@@ -2792,16 +2801,6 @@ snapshots:
       upng-js: 2.1.0
 
   '@alloc/quick-lru@5.2.0': {}
-
-  '@ap/shared-core@file:../affordable-peptides/packages/shared-core': {}
-
-  '@ap/shared-ui@file:../affordable-peptides/packages/shared-ui(@ap/shared-core@file:../affordable-peptides/packages/shared-core)(next-auth@4.24.13(next@16.1.1(@babel/core@7.28.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(next@16.1.1(@babel/core@7.28.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
-    dependencies:
-      '@ap/shared-core': file:../affordable-peptides/packages/shared-core
-      next: 16.1.1(@babel/core@7.28.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      next-auth: 4.24.13(next@16.1.1(@babel/core@7.28.5)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      react: 19.2.3
-      react-dom: 19.2.3(react@19.2.3)
 
   '@babel/code-frame@7.27.1':
     dependencies:

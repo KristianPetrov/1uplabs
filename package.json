@@ -14,8 +14,8 @@
     "admin:create": "tsx scripts/create-admin.ts"
   },
   "dependencies": {
-    "@ap/shared-core": "file:../affordable-peptides/packages/shared-core",
-    "@ap/shared-ui": "file:../affordable-peptides/packages/shared-ui",
+    "@ap/shared-core": "workspace:*",
+    "@ap/shared-ui": "workspace:*",
     "3dmol": "^2.5.3",
     "@react-three/fiber": "^9.5.0",
     "bcryptjs": "^3.0.3",

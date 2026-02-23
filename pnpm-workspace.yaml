@@ -1,1 +1,4 @@
-storeDir: /Users/kristianpetrov/Desktop/1uplabs/.pnpm-store
+packages:
+  - "."
+  - "packages/*"
+storeDir: .pnpm-store
