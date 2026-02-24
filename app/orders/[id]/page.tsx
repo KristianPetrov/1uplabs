@@ -80,9 +80,9 @@ export default async function OrderPage ({ params }: Props)
   const o = order[0];
   if (!o) notFound();
   const isPending = o.status === "pending";
-  if (o.status === "pending")
+  if (o.status === "pending" )
   {
-    redirect(`/orders/${o.id}/thank-you`);
+   // redirect(`/orders/${o.id}/thank-you`);
   }
 
   const items = await db
