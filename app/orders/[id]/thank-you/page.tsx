@@ -51,7 +51,7 @@ export default async function ThankYouOrderPage ({ params }: Props)
 
   const orderNumber = formatOrderNumberFromId(order.id);
   const memo = orderIdToMemo(order.id);
-  const methods = getManualPaymentMethods(order.id, order.totalCents);
+  const methods = await getManualPaymentMethods(order.id, order.totalCents);
 
   return (
     <div className="min-h-screen text-zinc-50">

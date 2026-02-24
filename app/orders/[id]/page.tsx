@@ -91,7 +91,7 @@ export default async function OrderPage ({ params }: Props)
     .where(eq(orderItems.orderId, id));
 
   const memo = orderIdToMemo(o.id);
-  const manualMethods = getManualPaymentMethods(o.id, o.totalCents);
+  const manualMethods = await getManualPaymentMethods(o.id, o.totalCents);
   const statusLabel = orderStatusLabel(o.status);
   const isPaid = o.status === "paid";
   const isShipped = o.status === "shipped";

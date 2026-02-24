@@ -241,9 +241,9 @@ function renderItemsHtml (items: OrderEmailData["items"]): string
   `.trim();
 }
 
-function renderPaymentMethodsHtml (orderId: string, totalCents: number): string
+async function renderPaymentMethodsHtml (orderId: string, totalCents: number): Promise<string>
 {
-  const methods = getManualPaymentMethods(orderId, totalCents);
+  const methods = await getManualPaymentMethods(orderId, totalCents);
   const memo = orderIdToMemo(orderId);
   const methodRows = methods.map((method) =>
   {
@@ -271,12 +271,13 @@ function renderPaymentMethodsHtml (orderId: string, totalCents: number): string
   `.trim();
 }
 
-function buildReceiptText (data: OrderEmailData): string
+async function buildReceiptText (data: OrderEmailData): Promise<string>
 {
   const orderUrl = `${getSiteUrl()}/orders/${data.order.id}/thank-you`;
   const orderNumber = getOrderNumber(data.order.id);
   const itemsText = data.items.map((item) =>
     `- ${item.productName} ${item.productAmount}: ${item.qty} x ${formatUsdFromCents(item.unitPriceCents)} = ${formatUsdFromCents(item.lineTotalCents)}`).join("\n");
+  const paymentInstructions = await buildPaymentInstructionsText(data.order.id, data.order.totalCents);
 
   return [
     `Thanks for your order #${orderNumber}.`,
@@ -289,31 +290,33 @@ function buildReceiptText (data: OrderEmailData): string
     "Items:",
     itemsText,
     "",
-    buildPaymentInstructionsText(data.order.id, data.order.totalCents),
+    paymentInstructions,
   ].join("\n");
 }
 
-function buildReceiptHtml (data: OrderEmailData): string
+async function buildReceiptHtml (data: OrderEmailData): Promise<string>
 {
   const orderNumber = getOrderNumber(data.order.id);
   const orderUrl = `${getSiteUrl()}/orders/${data.order.id}/thank-you`;
+  const paymentMethodsHtml = await renderPaymentMethodsHtml(data.order.id, data.order.totalCents);
   const body = `
     <div style="color:#e2e8f0">
       <div style="margin-bottom:10px">Order number: <strong style="color:#fff">#${escapeHtml(orderNumber)}</strong></div>
       <div style="margin-bottom:10px">Order ID: <span style="color:#fff">${escapeHtml(data.order.id)}</span></div>
       <div style="margin-bottom:16px">Total: <strong style="color:#fff">${escapeHtml(formatUsdFromCents(data.order.totalCents))}</strong></div>
       ${renderItemsHtml(data.items)}
-      ${renderPaymentMethodsHtml(data.order.id, data.order.totalCents)}
+      ${paymentMethodsHtml}
     </div>
   `.trim();
 
   return renderLayoutHtml("Thanks for your order", "Your order is now received and pending payment.", body, "Open your thank-you page", orderUrl);
 }
 
-function buildPaymentInstructionsTextMessage (data: OrderEmailData): string
+async function buildPaymentInstructionsTextMessage (data: OrderEmailData): Promise<string>
 {
   const orderUrl = `${getSiteUrl()}/orders/${data.order.id}/thank-you`;
   const orderNumber = getOrderNumber(data.order.id);
+  const paymentInstructions = await buildPaymentInstructionsText(data.order.id, data.order.totalCents);
   return [
     `Payment instructions for order #${orderNumber}.`,
     "",
@@ -321,20 +324,21 @@ function buildPaymentInstructionsTextMessage (data: OrderEmailData): string
     `Total: ${formatUsdFromCents(data.order.totalCents)}`,
     `Order page: ${orderUrl}`,
     "",
-    buildPaymentInstructionsText(data.order.id, data.order.totalCents),
+    paymentInstructions,
   ].join("\n");
 }
 
-function buildPaymentInstructionsHtml (data: OrderEmailData): string
+async function buildPaymentInstructionsHtml (data: OrderEmailData): Promise<string>
 {
   const orderNumber = getOrderNumber(data.order.id);
   const orderUrl = `${getSiteUrl()}/orders/${data.order.id}/thank-you`;
+  const paymentMethodsHtml = await renderPaymentMethodsHtml(data.order.id, data.order.totalCents);
   const body = `
     <div style="color:#e2e8f0">
       <div style="margin-bottom:10px">Order number: <strong style="color:#fff">#${escapeHtml(orderNumber)}</strong></div>
       <div style="margin-bottom:10px">Order ID: <span style="color:#fff">${escapeHtml(data.order.id)}</span></div>
       <div style="margin-bottom:16px">Total: <strong style="color:#fff">${escapeHtml(formatUsdFromCents(data.order.totalCents))}</strong></div>
-      ${renderPaymentMethodsHtml(data.order.id, data.order.totalCents)}
+      ${paymentMethodsHtml}
     </div>
   `.trim();
 
@@ -405,8 +409,8 @@ export async function sendOrderReceiptEmail (orderId: string): Promise<EmailSend
   if (data.order.receiptEmailSentAt) return "already-sent";
 
   const orderNumber = getOrderNumber(data.order.id);
-  const html = buildReceiptHtml(data);
-  const text = buildReceiptText(data);
+  const html = await buildReceiptHtml(data);
+  const text = await buildReceiptText(data);
   const result = await sendEmail(data.order.email, `Receipt for order #${orderNumber}`, html, text);
 
   if (result === "sent")
@@ -424,8 +428,8 @@ export async function sendPaymentInstructionsEmail (orderId: string): Promise<Em
   if (data.order.paymentInstructionsEmailSentAt) return "already-sent";
 
   const orderNumber = getOrderNumber(data.order.id);
-  const html = buildPaymentInstructionsHtml(data);
-  const text = buildPaymentInstructionsTextMessage(data);
+  const html = await buildPaymentInstructionsHtml(data);
+  const text = await buildPaymentInstructionsTextMessage(data);
   const result = await sendEmail(data.order.email, `Payment instructions for order #${orderNumber}`, html, text);
 
   if (result === "sent")
