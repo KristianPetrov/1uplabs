@@ -14,9 +14,9 @@
     "admin:create": "tsx scripts/create-admin.ts"
   },
   "dependencies": {
+    "3dmol": "^2.5.3",
     "@ap/shared-core": "workspace:*",
     "@ap/shared-ui": "workspace:*",
-    "3dmol": "^2.5.3",
     "@react-three/fiber": "^9.5.0",
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
@@ -28,6 +28,7 @@
     "postgres": "^3.4.7",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "resend": "^6.9.2",
     "three": "^0.182.0",
     "zod": "^4.2.1"
   },

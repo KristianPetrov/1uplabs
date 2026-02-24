@@ -8,6 +8,7 @@ import { authOptions } from "@/app/auth";
 import { db } from "@/app/db";
 import { customerAddresses, orderItems, orders, productOverrides, users } from "@/app/db/schema";
 import { products } from "@/app/lib/products";
+import { sendOrderReceiptEmail } from "@/app/lib/orderEmails";
 
 const paymentMethodSchema = z.enum(["cashapp", "zelle", "venmo", "bitcoin"]);
 
@@ -27,10 +28,10 @@ const createOrderSchema = z.object({
   shippingState: z.string().trim().min(2).max(64),
   shippingZip: z.string().trim().min(3).max(16),
   shippingCountry: z.string().trim().min(2).max(2).default("US"),
-  paymentMethod: paymentMethodSchema,
+  paymentMethod: paymentMethodSchema.optional().default("venmo"),
 });
 
-export type CreateOrderInput = z.infer<typeof createOrderSchema>;
+export type CreateOrderInput = z.input<typeof createOrderSchema>;
 
 export async function createOrder (input: CreateOrderInput): Promise<{ orderId: string }>
 {
@@ -195,6 +196,19 @@ export async function createOrder (input: CreateOrderInput): Promise<{ orderId: 
 
     return { orderId };
   });
+
+  try
+  {
+    const result = await sendOrderReceiptEmail(created.orderId);
+    if (result === "failed")
+    {
+      console.error("[checkout] Receipt email failed to send.");
+    }
+  }
+  catch (error)
+  {
+    console.error("[checkout] Failed to send receipt email", error);
+  }
 
   return created;
 }

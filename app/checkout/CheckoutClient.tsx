@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useMemo, useState, useTransition } from "react";
 
@@ -11,8 +10,6 @@ import { products } from "@/app/lib/products";
 import { usePricing } from "@/app/pricing/PricingProvider";
 import { createOrder } from "@/app/checkout/actions";
 import CircuitOverlay from "@/app/components/CircuitOverlay";
-
-type PaymentMethod = "cashapp" | "zelle" | "venmo" | "bitcoin";
 
 type Props = {
   initialEmail?: string;
@@ -40,7 +37,6 @@ export default function CheckoutClient ({
 {
   const cart = useCart();
   const pricing = usePricing();
-  const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +49,6 @@ export default function CheckoutClient ({
   const [shippingState, setShippingState] = useState(initialShippingState);
   const [shippingZip, setShippingZip] = useState(initialShippingZip);
   const [shippingCountry, setShippingCountry] = useState(initialShippingCountry);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cashapp");
 
   const lines = useMemo(() =>
   {
@@ -155,12 +150,11 @@ export default function CheckoutClient ({
                         shippingState,
                         shippingZip,
                         shippingCountry,
-                        paymentMethod,
                       });
 
                       cart.clear();
-                      router.push(`/orders/${res.orderId}`);
-                      router.refresh();
+                      window.location.assign(`/orders/${res.orderId}/thank-you`);
+                      return;
                     }
                     catch (err)
                     {
@@ -252,7 +246,7 @@ export default function CheckoutClient ({
                   </label>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-1">
                   <label className="flex flex-col gap-1">
                     <span className="text-xs font-semibold text-white/60">Country</span>
                     <select
@@ -262,20 +256,6 @@ export default function CheckoutClient ({
                     >
                       <option value="US">US</option>
                       <option value="CA">CA</option>
-                    </select>
-                  </label>
-
-                  <label className="flex flex-col gap-1">
-                    <span className="text-xs font-semibold text-white/60">Payment method</span>
-                    <select
-                      value={paymentMethod}
-                      onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
-                      className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35"
-                    >
-                      <option value="cashapp">Cash App</option>
-                      <option value="zelle">Zelle</option>
-                      <option value="venmo">Venmo</option>
-                      <option value="bitcoin">Bitcoin</option>
                     </select>
                   </label>
                 </div>

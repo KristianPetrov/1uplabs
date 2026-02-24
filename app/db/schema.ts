@@ -76,6 +76,9 @@ export const orders = pgTable("orders", {
 
   subtotalCents: integer("subtotal_cents").notNull(),
   totalCents: integer("total_cents").notNull(),
+  receiptEmailSentAt: timestamp("receipt_email_sent_at", { withTimezone: true }),
+  paymentInstructionsEmailSentAt: timestamp("payment_instructions_email_sent_at", { withTimezone: true }),
+  statusEmailSentAt: timestamp("status_email_sent_at", { withTimezone: true }),
 
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
