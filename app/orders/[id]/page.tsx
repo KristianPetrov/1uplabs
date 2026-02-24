@@ -79,6 +79,7 @@ export default async function OrderPage ({ params }: Props)
 
   const o = order[0];
   if (!o) notFound();
+  const isPending = o.status === "pending";
   if (o.status === "pending")
   {
     redirect(`/orders/${o.id}/thank-you`);
@@ -92,7 +93,6 @@ export default async function OrderPage ({ params }: Props)
   const memo = orderIdToMemo(o.id);
   const manualMethods = getManualPaymentMethods(o.id, o.totalCents);
   const statusLabel = orderStatusLabel(o.status);
-  const isPending = o.status === "pending";
   const isPaid = o.status === "paid";
   const isShipped = o.status === "shipped";
 
