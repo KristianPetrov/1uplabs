@@ -12,7 +12,7 @@
 .pnpm-store
 # testing
 /coverage
-
+   cc
 # next.js
 /.next/
 /out/
