@@ -4,6 +4,7 @@ import { products } from "@/app/lib/products";
 import { getPricingRows } from "@/app/lib/pricing";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET (request: Request): Promise<Response>
 {
@@ -13,7 +14,14 @@ export async function GET (request: Request): Promise<Response>
     ? slugsParam.split(",").map((s) => s.trim()).filter(Boolean)
     : products.map((p) => p.slug));
   const rows = await getPricingRows(slugs);
-  return NextResponse.json({ rows });
+  return NextResponse.json(
+    { rows },
+    {
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+      },
+    },
+  );
 }
 
 

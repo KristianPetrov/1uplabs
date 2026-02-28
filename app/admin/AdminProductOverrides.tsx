@@ -5,7 +5,7 @@ import { useMemo, useState, useTransition } from "react";
 
 import type { Product } from "@/app/lib/products";
 import { formatUsdFromCents } from "@/app/lib/money";
-import { usePricing } from "@/app/pricing/PricingProvider";
+import { broadcastPricingUpdate, usePricing } from "@/app/pricing/PricingProvider";
 import { deleteProductOverride, upsertProductOverride } from "@/app/admin/actions";
 
 type OverrideRow = {
@@ -242,6 +242,7 @@ export default function AdminProductOverrides ({ products, overrides }: Props)
                         setToast(`Saved ${product.name} ${product.amount}`);
                         window.setTimeout(() => setToast(null), 1400);
                         await pricing.refresh();
+                        broadcastPricingUpdate();
                       });
                     }}
                     className="inline-flex h-10 flex-1 items-center justify-center rounded-full bg-emerald-500 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:opacity-60 sm:flex-none"
@@ -260,6 +261,7 @@ export default function AdminProductOverrides ({ products, overrides }: Props)
                         setToast(`Reset ${product.name} ${product.amount}`);
                         window.setTimeout(() => setToast(null), 1400);
                         await pricing.refresh();
+                        broadcastPricingUpdate();
                       });
                     }}
                     className="inline-flex h-10 flex-1 items-center justify-center rounded-full border border-white/10 bg-white/5 px-4 text-sm font-semibold text-white transition hover:border-rose-500/30 hover:bg-white/8 disabled:opacity-60 sm:flex-none"
