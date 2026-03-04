@@ -43,7 +43,7 @@ function getResend (): Resend | null
 
 function getFromAddress (): string
 {
-  return process.env.RESEND_FROM?.trim() || "1UpLabs <onboarding@resend.dev>";
+  return process.env.RESEND_FROM?.trim() || "1UpLabs <orders@1-uplabs.com>";
 }
 
 function escapeHtml (input: string): string
