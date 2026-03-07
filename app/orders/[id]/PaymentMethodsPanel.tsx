@@ -72,7 +72,7 @@ export default function PaymentMethodsPanel ({ orderId, memo, methods }: Props)
               ) : (
                 <CopyButton
                   text={method.destinationValue}
-                  label={method.key === "zelle" ? "Copy recipient" : "Copy address"}
+                  label="Copy address"
                   className="shrink-0 border-white/10 bg-white/5 px-4 py-2 text-[0.65rem] font-semibold tracking-[0.2em] text-white transition hover:border-emerald-500/35 hover:bg-white/10"
                 />
               )}
@@ -99,18 +99,6 @@ export default function PaymentMethodsPanel ({ orderId, memo, methods }: Props)
               </div>
             ) : null}
 
-            {method.key === "zelle" ? (
-              <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-                <div className="text-xs text-white/70">
-                  Add Order ID in memo: <span className="font-semibold text-white">{orderId}</span>
-                </div>
-                <CopyButton
-                  text={orderId}
-                  label="Copy Order ID"
-                  className="shrink-0 border-white/10 bg-white/5 px-3 py-1 text-[0.6rem] font-semibold tracking-[0.2em] text-white transition hover:border-emerald-500/35 hover:bg-white/10"
-                />
-              </div>
-            ) : null}
           </div>
         ))}
       </div>
