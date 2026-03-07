@@ -23,6 +23,7 @@ export async function generateMetadata ({ params }: Props): Promise<Metadata>
   return {
     title: `Thank you · Order ${id.slice(0, 8).toUpperCase()}`,
     alternates: { canonical: `/orders/${id}/thank-you` },
+    robots: { index: false, follow: false },
   };
 }
 

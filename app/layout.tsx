@@ -21,12 +21,22 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
+  applicationName: "1UpLabs",
   title: {
     default: "1UpLabs — Research Peptides",
     template: "%s | 1UpLabs",
   },
   description:
     "1UpLabs provides researchers with reliable, high-quality peptide materials for laboratory research only — supported by transparency, testing, and integrity at every step.",
+  keywords: [
+    "research peptides",
+    "research compounds",
+    "laboratory peptides",
+    "peptide catalog",
+    "1UpLabs",
+  ],
+  referrer: "origin-when-cross-origin",
+  category: "science",
   icons: {
     icon: [{ url: "/icon", type: "image/png" }],
   },
@@ -36,6 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "1UpLabs",
+    locale: "en_US",
     title: "1UpLabs — Research Peptides",
     description:
       "Reliable, research-only peptide materials — backed by transparency, testing, and integrity.",
@@ -56,6 +67,13 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 };
 

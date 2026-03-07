@@ -9,16 +9,13 @@ import { z } from "zod";
 
 import { db } from "@/app/db";
 import { users } from "@/app/db/schema";
+import { getSiteUrl } from "@/app/lib/site";
 
 // NextAuth warns if it can't determine the canonical site URL.
-// Prefer an explicit `NEXTAUTH_URL`, but fall back to `NEXT_PUBLIC_SITE_URL`,
-// and in development default to localhost to keep DX clean.
-if (!process.env.NEXTAUTH_URL && process.env.NEXT_PUBLIC_SITE_URL) {
-  process.env.NEXTAUTH_URL = process.env.NEXT_PUBLIC_SITE_URL;
-}
-if (process.env.NODE_ENV !== "production" && !process.env.NEXTAUTH_URL) {
-  const port = process.env.PORT ?? "3000";
-  process.env.NEXTAUTH_URL = `http://localhost:${port}`;
+// Prefer an explicit `NEXTAUTH_URL`, but ensure there's always a canonical
+// fallback so metadata, emails, and auth links stay aligned.
+if (!process.env.NEXTAUTH_URL) {
+  process.env.NEXTAUTH_URL = getSiteUrl();
 }
 
 const credentialsSchema = z.object({

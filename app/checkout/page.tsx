@@ -12,6 +12,7 @@ import SiteHeader from "@/app/components/SiteHeader";
 export const metadata: Metadata = {
   title: "Checkout",
   alternates: { canonical: "/checkout" },
+  robots: { index: false, follow: false },
 };
 
 export default async function CheckoutPage ()

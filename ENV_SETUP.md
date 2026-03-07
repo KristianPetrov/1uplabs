@@ -6,13 +6,13 @@ This repo intentionally ignores `.env*` files via `.gitignore`.
 
 - `DATABASE_URL`: Neon/Postgres connection string (must include SSL / `sslmode=require`).
 - `NEXTAUTH_SECRET`: random secret string for NextAuth (JWT signing).
-- `NEXTAUTH_URL`: the canonical site URL (used by NextAuth). For local dev: `http://localhost:3000`. For production: `https://your-domain.com`.
+- `NEXTAUTH_URL`: the canonical site URL (used by NextAuth). For local dev: `http://localhost:3000`. For production: `https://www.1-uplabs.com`.
 
 ## Optional (but recommended)
 
-- `NEXT_PUBLIC_SITE_URL`: used for metadata base URL (defaults to `http://localhost:3000`).
+- `NEXT_PUBLIC_SITE_URL`: used for metadata base URL (defaults to `https://www.1-uplabs.com` in production and `http://localhost:3000` in local development).
 - `RESEND_API_KEY`: API key for transactional customer emails.
-- `RESEND_FROM`: sender identity used for emails (example: `1UpLabs <orders@your-domain.com>`).
+- `RESEND_FROM`: sender identity used for emails (example: `1UpLabs <orders@1-uplabs.com>`).
 - `ADMIN_EMAIL`: email address that should receive new-order notifications from checkout.
 
 ## Optional payment destinations (shown on the order confirmation page)

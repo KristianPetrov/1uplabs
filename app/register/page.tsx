@@ -6,6 +6,7 @@ import RegisterForm from "@/app/register/RegisterForm";
 export const metadata: Metadata = {
   title: "Create account",
   alternates: { canonical: "/register" },
+  robots: { index: false, follow: false },
 };
 
 export default function RegisterPage ()

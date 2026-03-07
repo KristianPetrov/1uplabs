@@ -15,6 +15,7 @@ import { products } from "@/app/lib/products";
 export const metadata: Metadata = {
   title: "Admin",
   alternates: { canonical: "/admin" },
+  robots: { index: false, follow: false },
 };
 
 type Props = {

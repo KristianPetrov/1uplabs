@@ -22,6 +22,7 @@ export async function generateMetadata ({ params }: Props): Promise<Metadata>
   return {
     title: `Order ${id.slice(0, 8)}`,
     alternates: { canonical: `/orders/${id}` },
+    robots: { index: false, follow: false },
   };
 }
 

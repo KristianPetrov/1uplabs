@@ -4,6 +4,7 @@ import LoginForm from "@/app/login/LoginForm";
 export const metadata: Metadata = {
   title: "Login",
   alternates: { canonical: "/login" },
+  robots: { index: false, follow: false },
 };
 
 type Props = {

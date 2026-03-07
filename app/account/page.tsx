@@ -15,6 +15,7 @@ import { saveDefaultAddress, updateProfile } from "@/app/account/actions";
 export const metadata: Metadata = {
   title: "Account",
   alternates: { canonical: "/account" },
+  robots: { index: false, follow: false },
 };
 
 function fmtDate (d: Date): string
