@@ -8,7 +8,7 @@ import { authOptions } from "@/app/auth";
 import { db } from "@/app/db";
 import { customerAddresses, orderItems, orders, productOverrides, users } from "@/app/db/schema";
 import { products } from "@/app/lib/products";
-import { sendOrderReceiptEmail } from "@/app/lib/orderEmails";
+import { sendAdminOrderPlacedEmail, sendOrderReceiptEmail } from "@/app/lib/orderEmails";
 
 const paymentMethodSchema = z.enum(["cashapp", "zelle", "venmo", "bitcoin"]);
 
@@ -208,6 +208,19 @@ export async function createOrder (input: CreateOrderInput): Promise<{ orderId: 
   catch (error)
   {
     console.error("[checkout] Failed to send receipt email", error);
+  }
+
+  try
+  {
+    const result = await sendAdminOrderPlacedEmail(created.orderId);
+    if (result === "failed")
+    {
+      console.error("[checkout] Admin order notification email failed to send.");
+    }
+  }
+  catch (error)
+  {
+    console.error("[checkout] Failed to send admin order notification email", error);
   }
 
   return created;

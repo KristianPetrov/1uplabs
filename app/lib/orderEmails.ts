@@ -13,8 +13,17 @@ type OrderEmailData = {
   order: {
     id: string;
     email: string;
+    phone: string | null;
     status: "pending" | "paid" | "shipped" | "canceled";
     totalCents: number;
+    paymentMethod: "cashapp" | "zelle" | "venmo" | "bitcoin";
+    shippingName: string;
+    shippingAddress1: string;
+    shippingAddress2: string | null;
+    shippingCity: string;
+    shippingState: string;
+    shippingZip: string;
+    shippingCountry: string;
     mailService: string | null;
     trackingNumber: string | null;
     receiptEmailSentAt: Date | null;
@@ -44,6 +53,12 @@ function getResend (): Resend | null
 function getFromAddress (): string
 {
   return process.env.RESEND_FROM?.trim() || "1UpLabs <orders@1-uplabs.com>";
+}
+
+function getAdminEmail (): string | null
+{
+  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  return email || null;
 }
 
 function escapeHtml (input: string): string
@@ -82,6 +97,34 @@ function statusDisplay (status: OrderEmailData["order"]["status"]): string
   }
 }
 
+function paymentMethodDisplay (paymentMethod: OrderEmailData["order"]["paymentMethod"]): string
+{
+  switch (paymentMethod)
+  {
+    case "cashapp":
+      return "Cash App";
+    case "zelle":
+      return "Zelle";
+    case "venmo":
+      return "Venmo";
+    case "bitcoin":
+      return "Bitcoin";
+    default:
+      return paymentMethod;
+  }
+}
+
+function buildShippingAddressLines (data: OrderEmailData): string[]
+{
+  return [
+    data.order.shippingName,
+    data.order.shippingAddress1,
+    data.order.shippingAddress2,
+    `${data.order.shippingCity}, ${data.order.shippingState} ${data.order.shippingZip}`,
+    data.order.shippingCountry,
+  ].filter((line): line is string => Boolean(line && line.trim()));
+}
+
 async function loadOrderEmailData (orderId: string): Promise<OrderEmailData | null>
 {
   let order: OrderEmailData["order"] | undefined;
@@ -91,8 +134,17 @@ async function loadOrderEmailData (orderId: string): Promise<OrderEmailData | nu
       .select({
         id: orders.id,
         email: orders.email,
+        phone: orders.phone,
         status: orders.status,
         totalCents: orders.totalCents,
+        paymentMethod: orders.paymentMethod,
+        shippingName: orders.shippingName,
+        shippingAddress1: orders.shippingAddress1,
+        shippingAddress2: orders.shippingAddress2,
+        shippingCity: orders.shippingCity,
+        shippingState: orders.shippingState,
+        shippingZip: orders.shippingZip,
+        shippingCountry: orders.shippingCountry,
         mailService: orders.mailService,
         trackingNumber: orders.trackingNumber,
         receiptEmailSentAt: orders.receiptEmailSentAt,
@@ -111,8 +163,17 @@ async function loadOrderEmailData (orderId: string): Promise<OrderEmailData | nu
       .select({
         id: orders.id,
         email: orders.email,
+        phone: orders.phone,
         status: orders.status,
         totalCents: orders.totalCents,
+        paymentMethod: orders.paymentMethod,
+        shippingName: orders.shippingName,
+        shippingAddress1: orders.shippingAddress1,
+        shippingAddress2: orders.shippingAddress2,
+        shippingCity: orders.shippingCity,
+        shippingState: orders.shippingState,
+        shippingZip: orders.shippingZip,
+        shippingCountry: orders.shippingCountry,
         mailService: orders.mailService,
         trackingNumber: orders.trackingNumber,
       })
@@ -402,6 +463,60 @@ function buildStatusHtml (data: OrderEmailData): string
   return renderLayoutHtml("Order status updated", "Your order status has changed.", body, "Open order details", orderUrl);
 }
 
+function buildAdminOrderPlacedText (data: OrderEmailData): string
+{
+  const orderUrl = `${getSiteUrl()}/orders/${data.order.id}`;
+  const orderNumber = getOrderNumber(data.order.id);
+  const itemsText = data.items.map((item) =>
+    `- ${item.productName} ${item.productAmount}: ${item.qty} x ${formatUsdFromCents(item.unitPriceCents)} = ${formatUsdFromCents(item.lineTotalCents)}`).join("\n");
+  const shippingLines = buildShippingAddressLines(data);
+
+  return [
+    `A new order #${orderNumber} was placed.`,
+    "",
+    `Order ID: ${data.order.id}`,
+    `Customer email: ${data.order.email}`,
+    `Customer phone: ${data.order.phone ?? "n/a"}`,
+    `Payment method: ${paymentMethodDisplay(data.order.paymentMethod)}`,
+    `Status: ${statusDisplay(data.order.status)}`,
+    `Total: ${formatUsdFromCents(data.order.totalCents)}`,
+    `Admin order page: ${orderUrl}`,
+    "",
+    "Shipping address:",
+    ...shippingLines,
+    "",
+    "Items:",
+    itemsText,
+  ].join("\n");
+}
+
+function buildAdminOrderPlacedHtml (data: OrderEmailData): string
+{
+  const orderNumber = getOrderNumber(data.order.id);
+  const orderUrl = `${getSiteUrl()}/orders/${data.order.id}`;
+  const shippingHtml = buildShippingAddressLines(data)
+    .map((line) => `<div style="color:#cbd5e1">${escapeHtml(line)}</div>`)
+    .join("");
+
+  const body = `
+    <div style="color:#e2e8f0">
+      <div style="margin-bottom:10px">Order number: <strong style="color:#fff">#${escapeHtml(orderNumber)}</strong></div>
+      <div style="margin-bottom:10px">Order ID: <span style="color:#fff">${escapeHtml(data.order.id)}</span></div>
+      <div style="margin-bottom:10px">Customer email: <span style="color:#fff">${escapeHtml(data.order.email)}</span></div>
+      <div style="margin-bottom:10px">Customer phone: <span style="color:#fff">${escapeHtml(data.order.phone ?? "n/a")}</span></div>
+      <div style="margin-bottom:10px">Payment method: <strong style="color:#fff">${escapeHtml(paymentMethodDisplay(data.order.paymentMethod))}</strong></div>
+      <div style="margin-bottom:16px">Total: <strong style="color:#fff">${escapeHtml(formatUsdFromCents(data.order.totalCents))}</strong></div>
+      <div style="margin-bottom:16px;padding:12px;border:1px solid rgba(255,255,255,0.12);border-radius:10px;background:#0b0f16">
+        <div style="color:#f8fafc;font-weight:700;margin-bottom:6px">Shipping address</div>
+        ${shippingHtml}
+      </div>
+      ${renderItemsHtml(data.items)}
+    </div>
+  `.trim();
+
+  return renderLayoutHtml("New order placed", "A customer just completed checkout.", body, "Open order details", orderUrl);
+}
+
 export async function sendOrderReceiptEmail (orderId: string): Promise<EmailSendResult>
 {
   const data = await loadOrderEmailData(orderId);
@@ -456,6 +571,20 @@ export async function sendOrderStatusUpdateEmail (orderId: string): Promise<Emai
   }
 
   return result;
+}
+
+export async function sendAdminOrderPlacedEmail (orderId: string): Promise<EmailSendResult>
+{
+  const adminEmail = getAdminEmail();
+  if (!adminEmail) return "skipped-no-provider";
+
+  const data = await loadOrderEmailData(orderId);
+  if (!data) return "failed";
+
+  const orderNumber = getOrderNumber(data.order.id);
+  const html = buildAdminOrderPlacedHtml(data);
+  const text = buildAdminOrderPlacedText(data);
+  return sendEmail(adminEmail, `New order placed #${orderNumber}`, html, text);
 }
 
 export async function getReceiptEmailAudit (orderId: string): Promise<{ sentAt: Date | null }>

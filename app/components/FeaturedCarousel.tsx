@@ -8,6 +8,7 @@ import type { Product } from "@/app/lib/products";
 import { getProductImagePath } from "@/app/lib/products";
 import { getMoleculesForProduct } from "@/app/lib/molecules";
 import LazyMoleculeViewer from "@/app/components/LazyMoleculeViewer";
+import BottleAura from "@/app/components/BottleAura";
 import ExpandableResearch from "@/app/components/ExpandableResearch";
 import { formatUsdFromCents } from "@/app/lib/money";
 import { useCart } from "@/app/cart/CartProvider";
@@ -100,12 +101,13 @@ export default function FeaturedCarousel ({
                             </div>
                             {activeImagePath && (
                                 <div className="relative mt-3 h-60">
+                                    <BottleAura />
                                     <Image
                                         src={activeImagePath}
                                         alt={`${active?.name ?? "Product"} ${active?.amount ?? ""} vial`}
                                         fill
                                         sizes="(max-width: 1024px) 100vw, 40vw"
-                                        className="object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)]"
+                                        className="relative z-10 object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)]"
                                     />
                                 </div>
                             )}

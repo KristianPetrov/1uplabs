@@ -72,9 +72,8 @@ function formatShippingAddress (order: AdminOrderRow): string
   ].filter(Boolean).join(", ");
 }
 
-const PAYMENT_METHOD_OPTIONS: { value: "cashapp" | "zelle" | "venmo" | "bitcoin"; label: string }[] = [
+const PAYMENT_METHOD_OPTIONS: { value: "cashapp" | "venmo" | "bitcoin"; label: string }[] = [
   { value: "venmo", label: "Venmo" },
-  { value: "zelle", label: "Zelle" },
   { value: "bitcoin", label: "Bitcoin" },
   { value: "cashapp", label: "Cash App" },
 ];
@@ -85,6 +84,9 @@ function AdminOrderCard ({ order }: { order: AdminOrderRow })
   const showShippingFields = status === "shipped";
   const showPaidViaField = status === "paid";
   const shippingAddress = formatShippingAddress(order);
+  const paymentMethodOptions = order.paymentMethod === "zelle"
+    ? [{ value: "zelle" as const, label: "Zelle (legacy)" }, ...PAYMENT_METHOD_OPTIONS]
+    : PAYMENT_METHOD_OPTIONS;
 
   return (
     <form
@@ -150,7 +152,7 @@ function AdminOrderCard ({ order }: { order: AdminOrderRow })
               required
               className="h-10 rounded-2xl border border-white/10 bg-zinc-950/50 px-3 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35"
             >
-              {PAYMENT_METHOD_OPTIONS.map((opt) => (
+              {paymentMethodOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
                 </option>

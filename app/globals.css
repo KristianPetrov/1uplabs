@@ -372,6 +372,122 @@ body {
   }
 }
 
+/* Bottle aura backdrop (behind vial product images) */
+.bottle-aura {
+  position: absolute;
+  inset: -6% -6% -18%;
+  z-index: 0;
+  pointer-events: none;
+  isolation: isolate;
+  opacity: 0.9;
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(ellipse 68% 88% at 50% 56%, #000 0%, rgba(0,0,0,0.94) 58%, rgba(0,0,0,0.42) 78%, transparent 100%);
+  mask-image: radial-gradient(ellipse 68% 88% at 50% 56%, #000 0%, rgba(0,0,0,0.94) 58%, rgba(0,0,0,0.42) 78%, transparent 100%);
+}
+
+.bottle-aura__layer {
+  position: absolute;
+  border-radius: 9999px;
+  transition: opacity 260ms ease, filter 260ms ease;
+}
+
+.bottle-aura__layer--core {
+  inset: 10% 20% 10%;
+  background:
+    radial-gradient(ellipse 58% 84% at 50% 56%, rgba(16, 185, 129, 0.64) 0%, rgba(16, 185, 129, 0.28) 42%, transparent 84%),
+    radial-gradient(ellipse 48% 80% at 50% 72%, rgba(14, 165, 233, 0.4) 0%, transparent 84%);
+  filter: blur(22px);
+  opacity: 0.72;
+  animation: bottleAuraPulse 5.8s ease-in-out infinite;
+}
+
+.bottle-aura__layer--halo {
+  inset: -4% 12% -14%;
+  background:
+    radial-gradient(ellipse 54% 78% at 50% 24%, rgba(236, 253, 245, 0.44) 0%, transparent 72%),
+    radial-gradient(ellipse 62% 92% at 50% 74%, rgba(14, 165, 233, 0.26) 0%, transparent 80%);
+  filter: blur(28px);
+  opacity: 0.76;
+  animation: bottleAuraFlicker 3.6s ease-in-out infinite;
+}
+
+.bottle-aura__layer--spark {
+  inset: 16% 27% 20%;
+  background: radial-gradient(circle at 50% 40%, rgba(240, 253, 250, 0.7) 0%, rgba(16, 185, 129, 0.38) 28%, transparent 72%);
+  filter: blur(12px);
+  opacity: 0.62;
+  animation: bottleAuraDrift 7.2s ease-in-out infinite;
+}
+
+.group:hover .bottle-aura {
+  opacity: 1;
+}
+
+.group:hover .bottle-aura__layer--core {
+  filter: blur(20px) brightness(1.14) saturate(1.08);
+}
+
+@keyframes bottleAuraPulse {
+  0%,
+  100% {
+    opacity: 0.54;
+    transform: translateY(2%) scale(0.96);
+  }
+  38% {
+    opacity: 0.8;
+    transform: translateY(-1.5%) scale(1.03);
+  }
+  70% {
+    opacity: 0.66;
+    transform: translateY(0.5%) scale(0.99);
+  }
+}
+
+@keyframes bottleAuraFlicker {
+  0%,
+  100% {
+    opacity: 0.64;
+    transform: scale(0.98);
+  }
+  30% {
+    opacity: 0.84;
+    transform: scale(1.04);
+  }
+  56% {
+    opacity: 0.58;
+    transform: scale(0.95);
+  }
+  84% {
+    opacity: 0.79;
+    transform: scale(1.03);
+  }
+}
+
+@keyframes bottleAuraDrift {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translateY(3%) scale(0.96);
+  }
+  46% {
+    opacity: 0.72;
+    transform: translateY(-4%) scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottle-aura__layer--core,
+  .bottle-aura__layer--halo,
+  .bottle-aura__layer--spark {
+    animation: none;
+    transform: none;
+  }
+
+  .bottle-aura {
+    opacity: 0.7;
+  }
+}
+
 /* Candle flicker glow animation */
 @keyframes candle-flicker {
   0%, 100% {

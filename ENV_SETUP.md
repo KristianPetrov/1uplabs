@@ -13,6 +13,7 @@ This repo intentionally ignores `.env*` files via `.gitignore`.
 - `NEXT_PUBLIC_SITE_URL`: used for metadata base URL (defaults to `http://localhost:3000`).
 - `RESEND_API_KEY`: API key for transactional customer emails.
 - `RESEND_FROM`: sender identity used for emails (example: `1UpLabs <orders@your-domain.com>`).
+- `ADMIN_EMAIL`: email address that should receive new-order notifications from checkout.
 
 ## Optional payment destinations (shown on the order confirmation page)
 

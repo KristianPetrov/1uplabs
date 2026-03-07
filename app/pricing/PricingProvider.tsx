@@ -85,28 +85,28 @@ export function PricingProvider ({ children }: { children: React.ReactNode }): R
     }
   }, []);
 
-  useEffect(() =>
-  {
-    void refresh();
+  // useEffect(() =>
+  // {
+  //   void refresh();
 
-    // Keep prices fresh if you change them in the admin dashboard.
-    const id = window.setInterval(() => void refresh(), 12_000);
+  //   // Keep prices fresh if you change them in the admin dashboard.
+  //  // const id = window.setInterval(() => void refresh(), 12_000);
 
-    // Listen for updates from other tabs (e.g. admin saves in another tab).
-    let channel: BroadcastChannel | null = null;
-    try
-    {
-      channel = new BroadcastChannel(PRICING_BROADCAST_CHANNEL);
-      channel.onmessage = () => void refresh();
-    }
-    catch { /* BroadcastChannel not supported */ }
+  //   // Listen for updates from other tabs (e.g. admin saves in another tab).
+  //   let channel: BroadcastChannel | null = null;
+  //   try
+  //   {
+  //     channel = new BroadcastChannel(PRICING_BROADCAST_CHANNEL);
+  //     channel.onmessage = () => void refresh();
+  //   }
+  //   catch { /* BroadcastChannel not supported */ }
 
-    return () =>
-    {
-      window.clearInterval(id);
-      channel?.close();
-    };
-  }, [refresh]);
+  //   return () =>
+  //   {
+  //     window.clearInterval(id);
+  //     channel?.close();
+  //   };
+  // }, [refresh]);
 
   const getPriceCents = useCallback((slug: string, fallbackCents: number): number =>
   {

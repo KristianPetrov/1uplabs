@@ -7,6 +7,7 @@ import type { MoleculeDefinition } from "@/app/lib/molecules";
 import type { Product } from "@/app/lib/products";
 import { getProductImagePath } from "@/app/lib/products";
 import LazyMoleculeViewer from "@/app/components/LazyMoleculeViewer";
+import BottleAura from "@/app/components/BottleAura";
 import ExpandableResearch from "@/app/components/ExpandableResearch";
 import { formatUsdFromCents } from "@/app/lib/money";
 import { useCart } from "@/app/cart/CartProvider";
@@ -51,12 +52,13 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
             </div>
             {selectedImagePath && (
                 <div className="relative mb-4 h-84">
+                    <BottleAura />
                     <Image
                         src={selectedImagePath}
                         alt={`${selected.name} ${selected.amount} vial`}
                         fill
                         sizes="(max-width: 640px) 100vw, 33vw"
-                        className="object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)]"
+                        className="relative z-10 object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)]"
                     />
                 </div>
             )}

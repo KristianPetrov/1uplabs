@@ -1,6 +1,6 @@
 import { formatUsdFromCents } from "@/app/lib/money";
 
-export type ManualPaymentMethodKey = "cashapp" | "venmo" | "zelle" | "bitcoin";
+export type ManualPaymentMethodKey = "cashapp" | "venmo" | "bitcoin";
 
 export type ManualPaymentMethod = {
   key: ManualPaymentMethodKey;
@@ -84,7 +84,6 @@ export async function getManualPaymentMethods (orderId: string, totalCents: numb
   const venmoHandleRaw = (process.env.NEXT_PUBLIC_VENMO_HANDLE ?? process.env.VENMO_HANDLE ?? "@Shop_1-upLabs").trim();
   const venmoHandlePath = normalizeVenmoHandleForPath(venmoHandleRaw) || "Shop_1-upLabs";
 
-  const zelleRecipient = (process.env.NEXT_PUBLIC_ZELLE_RECIPIENT ?? process.env.ZELLE_RECIPIENT ?? "you@example.com").trim();
   const btcAddress = (process.env.NEXT_PUBLIC_BTC_ADDRESS ?? process.env.BTC_ADDRESS ?? "bc1q8rtqf33xn8mjhcwuwrrcamcpvcyvg39u0qfn36").trim();
   const btcPriceUsd = await fetchBitcoinPriceUsd();
   const btcAmount = btcPriceUsd ? formatBtcFromUsdCents(totalCents, btcPriceUsd) : null;
@@ -108,16 +107,6 @@ export async function getManualPaymentMethods (orderId: string, totalCents: numb
       destinationValue: venmoHandleRaw,
       paymentUrl: `https://venmo.com/${encodeURIComponent(venmoHandlePath)}?txn=pay&amount=${amount}&note=${encodeURIComponent(memo)}`,
       note: "Tap to open Venmo. Amount and memo are pre-filled.",
-      bitcoinAmountBtc: null,
-      bitcoinRateUsd: null,
-    },
-    {
-      key: "zelle",
-      title: "Zelle",
-      destinationLabel: "Zelle recipient",
-      destinationValue: zelleRecipient,
-      paymentUrl: null,
-      note: "Copy recipient and add your Order ID in the memo.",
       bitcoinAmountBtc: null,
       bitcoinRateUsd: null,
     },
@@ -163,6 +152,5 @@ export async function buildPaymentInstructionsText (orderId: string, totalCents:
     }),
     "",
     `Memo to include: ${memo}`,
-    "For Zelle, add the Order ID in the memo before sending.",
   ].join("\n");
 }
