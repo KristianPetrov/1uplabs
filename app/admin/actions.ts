@@ -1,13 +1,14 @@
 "use server";
 
 import { getServerSession } from "next-auth";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 
 import { authOptions } from "@/app/auth";
 import { db } from "@/app/db";
 import { orders, productOverrides } from "@/app/db/schema";
 import { sendOrderStatusUpdateEmail } from "@/app/lib/orderEmails";
+import { PRICING_CACHE_TAG } from "@/app/lib/pricing";
 import { eq } from "drizzle-orm";
 
 const upsertSchema = z.object({
@@ -41,6 +42,7 @@ export async function upsertProductOverride (input: z.infer<typeof upsertSchema>
   if (data.priceCents == null && data.inventory == null)
   {
     await db.delete(productOverrides).where(eq(productOverrides.slug, data.slug));
+    revalidateTag(PRICING_CACHE_TAG, "max");
     return;
   }
   const now = new Date();
@@ -61,6 +63,8 @@ export async function upsertProductOverride (input: z.infer<typeof upsertSchema>
         updatedAt: now,
       },
     });
+
+  revalidateTag(PRICING_CACHE_TAG, "max");
 }
 
 export async function deleteProductOverride (slug: string): Promise<void>
@@ -68,6 +72,7 @@ export async function deleteProductOverride (slug: string): Promise<void>
   await requireAdmin();
   const s = z.string().min(1).parse(slug);
   await db.delete(productOverrides).where(eq(productOverrides.slug, s));
+  revalidateTag(PRICING_CACHE_TAG, "max");
 }
 
 function readFormString (formData: FormData, key: string): string
@@ -139,5 +144,3 @@ export async function updateOrderAdmin (formData: FormData): Promise<void>
   revalidatePath("/account");
   revalidatePath(`/orders/${parsed.orderId}`);
 }
-
-
