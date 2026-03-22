@@ -10,7 +10,7 @@ import LazyMoleculeViewer from "@/app/components/LazyMoleculeViewer";
 import BottleAura from "@/app/components/BottleAura";
 import ExpandableResearch from "@/app/components/ExpandableResearch";
 import { formatUsdFromCents } from "@/app/lib/money";
-import { useCart } from "@/app/cart/CartProvider";
+import AddToCartButton from "@/app/components/AddToCartButton";
 import { usePricing } from "@/app/pricing/PricingProvider";
 
 type Props = {
@@ -28,7 +28,6 @@ function amountSortKey (amount: string): number
 
 export default function ProductCard ({ title, moleculeKey, molecules, variants }: Props)
 {
-    const cart = useCart();
     const pricing = usePricing();
     const sorted = useMemo(() => [...variants].sort((a, b) => amountSortKey(a.amount) - amountSortKey(b.amount)), [variants]);
     const [selectedSlug, setSelectedSlug] = useState<string>(() => sorted[0]?.slug ?? "");
@@ -103,17 +102,14 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
                 </div>
             </div>
 
-            <div className="mt-4 flex items-center justify-between gap-3">
-                <div className="text-xs text-white/55">
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                <div className="min-w-0 text-xs leading-relaxed text-white/55">
                     Sold for laboratory research purposes only.
                 </div>
-                <button
-                    type="button"
-                    onClick={() => cart.add(selected.slug, 1)}
-                    className="inline-flex h-9 items-center justify-center rounded-full bg-emerald-500 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 neon-edge"
-                >
-                    Add to cart
-                </button>
+                <AddToCartButton
+                    slug={selected.slug}
+                    className="inline-flex min-h-10 w-full shrink-0 items-center justify-center rounded-full bg-emerald-500 px-4 py-2.5 text-center text-sm font-semibold leading-none text-zinc-950 whitespace-nowrap transition hover:bg-emerald-400 neon-edge sm:w-auto"
+                />
             </div>
 
             {selected.research && (

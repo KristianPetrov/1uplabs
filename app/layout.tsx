@@ -6,6 +6,7 @@ import { CartProvider } from "@/app/cart/CartProvider";
 import FloatingCart from "@/app/components/FloatingCart";
 import { PricingProvider } from "@/app/pricing/PricingProvider";
 import AuthSessionProvider from "@/app/auth/SessionProvider";
+import { Analytics } from "@vercel/analytics/react";
 import LabBackground from "@/app/components/LabBackground";
 import { SharedUiAdaptersProvider } from "@/app/shared/SharedUiAdaptersProvider";
 
@@ -93,6 +94,7 @@ export default function RootLayout ({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Analytics />
         <LabBackground />
         <div className="relative z-10 min-h-screen">
           <AuthSessionProvider>

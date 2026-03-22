@@ -11,7 +11,7 @@ import LazyMoleculeViewer from "@/app/components/LazyMoleculeViewer";
 import BottleAura from "@/app/components/BottleAura";
 import ExpandableResearch from "@/app/components/ExpandableResearch";
 import { formatUsdFromCents } from "@/app/lib/money";
-import { useCart } from "@/app/cart/CartProvider";
+import AddToCartButton from "@/app/components/AddToCartButton";
 import { usePricing } from "@/app/pricing/PricingProvider";
 
 type Props = {
@@ -43,7 +43,6 @@ export default function FeaturedCarousel ({
     autoAdvanceMs = 6500,
 }: Props)
 {
-    const cart = useCart();
     const pricing = usePricing();
     const items = useMemo(() => products.filter(Boolean), [products]);
     const [index, setIndex] = useState(0);
@@ -136,17 +135,16 @@ export default function FeaturedCarousel ({
                         <div className="flex flex-col gap-3">
                             <Link
                                 href={href}
-                                className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400"
+                                className="inline-flex min-h-11 items-center justify-center rounded-full bg-emerald-500 px-6 py-2.5 text-center text-sm font-semibold leading-none text-zinc-950 whitespace-nowrap shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400"
                             >
                                 View in store
                             </Link>
-                            <button
-                                type="button"
-                                onClick={() => active && cart.add(active.slug, 1)}
-                                className="inline-flex h-11 items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 text-sm font-semibold text-white transition hover:border-emerald-500/30 hover:bg-white/8"
-                            >
-                                Add to cart
-                            </button>
+                            {active ? (
+                                <AddToCartButton
+                                    slug={active.slug}
+                                    className="inline-flex min-h-11 w-full items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 py-2.5 text-center text-sm font-semibold leading-none text-white whitespace-nowrap transition hover:border-emerald-500/30 hover:bg-white/8"
+                                />
+                            ) : null}
 
                             <div className="flex items-center justify-between gap-3">
                                 <div className="flex items-center gap-2">

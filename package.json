@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "3dmol": "^2.5.3",
+    "@vercel/analytics": "^2.0.1",
     "@ap/shared-core": "workspace:*",
     "@ap/shared-ui": "workspace:*",
     "@react-three/fiber": "^9.5.0",

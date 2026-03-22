@@ -102,11 +102,11 @@ export default async function ProductPage ({ params }: Props)
                             <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
                                 <AddToCartButton
                                     slug={p.slug}
-                                    className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400"
+                                    className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-emerald-500 px-5 py-2.5 text-center text-sm font-semibold leading-none text-zinc-950 whitespace-nowrap transition hover:bg-emerald-400 sm:flex-none sm:px-6"
                                 />
                                 <Link
                                     href="/store"
-                                    className="inline-flex h-11 items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 text-sm font-semibold text-white transition hover:border-emerald-500/30 hover:bg-white/8"
+                                    className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-center text-sm font-semibold leading-none text-white whitespace-nowrap transition hover:border-emerald-500/30 hover:bg-white/8 sm:flex-none sm:px-6"
                                 >
                                     Continue shopping
                                 </Link>
