@@ -28,6 +28,12 @@ export default function FloatingCart ()
             .filter(Boolean) as Array<{ slug: string; qty: number; product: (typeof products)[number]; unitPriceCents: number; lineTotalCents: number }>;
     }, [cart.lines, pricing]);
 
+    const estimatedTotalCents = useMemo(() =>
+    {
+        if (!lines.length) return cart.subtotalCents;
+        return cart.subtotalCents + pricing.flatShippingCents;
+    }, [cart.subtotalCents, lines.length, pricing.flatShippingCents]);
+
     return (
         <>
             <button
@@ -38,7 +44,7 @@ export default function FloatingCart ()
             >
                 <span>Cart</span>
                 <span className="text-white/70">
-                    {formatUsdFromCents(cart.subtotalCents)}
+                    {formatUsdFromCents(estimatedTotalCents)}
                 </span>
                 <span className="rounded-full bg-white/10 px-2.5 py-1 text-xs text-white/80">
                     {cart.totalItems}
@@ -134,6 +140,18 @@ export default function FloatingCart ()
                                 <div className="text-white/70">Subtotal</div>
                                 <div className="font-semibold text-white">
                                     {formatUsdFromCents(cart.subtotalCents)}
+                                </div>
+                            </div>
+                            <div className="mt-2 flex items-center justify-between text-sm">
+                                <div className="text-white/70">Shipping (flat)</div>
+                                <div className="font-semibold text-white">
+                                    {lines.length ? formatUsdFromCents(pricing.flatShippingCents) : "—"}
+                                </div>
+                            </div>
+                            <div className="mt-2 flex items-center justify-between text-sm">
+                                <div className="text-white/70">Estimated total</div>
+                                <div className="font-semibold text-white">
+                                    {lines.length ? formatUsdFromCents(estimatedTotalCents) : formatUsdFromCents(0)}
                                 </div>
                             </div>
 

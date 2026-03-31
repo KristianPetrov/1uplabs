@@ -85,6 +85,8 @@ export default function CheckoutClient ({
   const hasIssues = lines.some((l) => l.outOfStock);
 
   const subtotalCents = useMemo(() => lines.reduce((sum, l) => sum + l.lineTotalCents, 0), [lines]);
+  const flatShippingCents = pricing.flatShippingCents;
+  const totalCents = subtotalCents + flatShippingCents;
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
@@ -328,8 +330,12 @@ export default function CheckoutClient ({
                 <div className="font-semibold text-white">{formatUsdFromCents(subtotalCents)}</div>
               </div>
               <div className="mt-2 flex items-center justify-between text-sm">
+                <div className="text-white/70">Shipping (flat rate)</div>
+                <div className="font-semibold text-white">{formatUsdFromCents(flatShippingCents)}</div>
+              </div>
+              <div className="mt-2 flex items-center justify-between text-sm">
                 <div className="text-white/70">Total</div>
-                <div className="font-semibold text-white">{formatUsdFromCents(subtotalCents)}</div>
+                <div className="font-semibold text-white">{formatUsdFromCents(totalCents)}</div>
               </div>
             </div>
             </div>

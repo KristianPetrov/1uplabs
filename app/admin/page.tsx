@@ -6,11 +6,13 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/app/auth";
 import AdminOrdersSection from "@/app/admin/AdminOrdersSection";
 import SignOutButton from "@/app/admin/SignOutButton";
+import AdminFlatShipping from "@/app/admin/AdminFlatShipping";
 import AdminProductOverrides from "@/app/admin/AdminProductOverrides";
 import CircuitOverlay from "@/app/components/CircuitOverlay";
 import { db } from "@/app/db";
 import { orders, productOverrides } from "@/app/db/schema";
 import { products } from "@/app/lib/products";
+import { getFlatShippingCents } from "@/app/lib/shopSettings";
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -51,6 +53,8 @@ export default async function AdminPage ({ searchParams }: Props)
       inventory: productOverrides.inventory,
     })
     .from(productOverrides);
+
+  const flatShippingCents = await getFlatShippingCents();
 
   const recentOrders = await db
     .select({
@@ -110,26 +114,29 @@ export default async function AdminPage ({ searchParams }: Props)
           </div>
 
           {activeTab === "inventory" ? (
-            <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-              <AdminProductOverrides products={products} overrides={overrides} />
+            <div className="mt-6 flex flex-col gap-6">
+              <AdminFlatShipping initialFlatShippingCents={flatShippingCents} />
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <AdminProductOverrides products={products} overrides={overrides} />
 
-              <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6">
-                <CircuitOverlay variant="panel" className="opacity-45" animated={false} />
-                <div className="relative z-10">
-                  <div className="text-sm font-semibold text-white">Quick actions</div>
-                  <div className="mt-4 flex flex-col gap-3">
-                    <Link
-                      href="/store"
-                      className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400"
-                    >
-                      Preview store
-                    </Link>
-                    <div className="text-xs leading-5 text-white/55">
-                      This page is protected by middleware (admin-only).
+                <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6">
+                  <CircuitOverlay variant="panel" className="opacity-45" animated={false} />
+                  <div className="relative z-10">
+                    <div className="text-sm font-semibold text-white">Quick actions</div>
+                    <div className="mt-4 flex flex-col gap-3">
+                      <Link
+                        href="/store"
+                        className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400"
+                      >
+                        Preview store
+                      </Link>
+                      <div className="text-xs leading-5 text-white/55">
+                        This page is protected by middleware (admin-only).
+                      </div>
                     </div>
                   </div>
-                </div>
-              </aside>
+                </aside>
+              </div>
             </div>
           ) : (
             <AdminOrdersSection orders={recentOrders} />

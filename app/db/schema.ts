@@ -24,6 +24,12 @@ export const productOverrides = pgTable("product_overrides", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const shopSettings = pgTable("shop_settings", {
+  id: text("id").primaryKey().default("default"),
+  flatShippingCents: integer("flat_shipping_cents").notNull().default(1000),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   email: text("email").notNull().unique(),

@@ -36,6 +36,7 @@ export default async function ThankYouOrderPage ({ params }: Props)
       id: orders.id,
       status: orders.status,
       email: orders.email,
+      subtotalCents: orders.subtotalCents,
       totalCents: orders.totalCents,
     })
     .from(orders)
@@ -53,6 +54,7 @@ export default async function ThankYouOrderPage ({ params }: Props)
   const orderNumber = formatOrderNumberFromId(order.id);
   const memo = orderIdToMemo(order.id);
   const methods = await getManualPaymentMethods(order.id, order.totalCents);
+  const shippingCents = Math.max(0, order.totalCents - order.subtotalCents);
 
   return (
     <div className="min-h-screen text-zinc-50">
@@ -140,6 +142,14 @@ export default async function ThankYouOrderPage ({ params }: Props)
               </div>
               <div className="mt-5 border-t border-white/10 pt-4">
                 <div className="flex items-center justify-between text-sm">
+                  <div className="text-white/70">Subtotal</div>
+                  <div className="font-semibold text-white">{formatUsdFromCents(order.subtotalCents)}</div>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <div className="text-white/70">Shipping</div>
+                  <div className="font-semibold text-white">{formatUsdFromCents(shippingCents)}</div>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-sm">
                   <div className="text-white/70">Total</div>
                   <div className="font-semibold text-white">{formatUsdFromCents(order.totalCents)}</div>
                 </div>

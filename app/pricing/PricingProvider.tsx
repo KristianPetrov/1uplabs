@@ -2,6 +2,8 @@
 
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
+import { DEFAULT_FLAT_SHIPPING_CENTS } from "@/app/lib/flatShippingDefaults";
+
 export type PricingRow = {
   slug: string;
   priceCents: number | null;
@@ -12,6 +14,7 @@ type PricingContextValue = {
   revision: number;
   loading: boolean;
   error: string | null;
+  flatShippingCents: number;
   refresh: () => Promise<void>;
   getPriceCents: (slug: string, fallbackCents: number) => number;
   getInventory: (slug: string, fallbackInventory?: number) => number | undefined;
@@ -19,13 +22,23 @@ type PricingContextValue = {
 
 const PricingContext = createContext<PricingContextValue | null>(null);
 
-async function fetchPricing (): Promise<PricingRow[]>
+type FetchPricingResult = {
+  rows: PricingRow[];
+  flatShippingCents: number;
+};
+
+async function fetchPricing (): Promise<FetchPricingResult>
 {
   const res = await fetch("/api/pricing", { cache: "no-store" });
   if (!res.ok) throw new Error(`Failed to load pricing (${res.status})`);
-  const data = (await res.json()) as { rows?: unknown };
+  const data = (await res.json()) as { rows?: unknown; flatShippingCents?: unknown };
   const rows = Array.isArray((data as any).rows) ? ((data as any).rows as PricingRow[]) : [];
-  return rows
+  const flatRaw = (data as any).flatShippingCents;
+  const flatShippingCents =
+    flatRaw != null && Number.isFinite(Number(flatRaw)) && Number(flatRaw) >= 0
+      ? Number(flatRaw)
+      : DEFAULT_FLAT_SHIPPING_CENTS;
+  const normalizedRows = rows
     .filter((r) => typeof r?.slug === "string")
     .map((r) =>
     {
@@ -43,11 +56,13 @@ async function fetchPricing (): Promise<PricingRow[]>
         inventory: nextInv,
       } as PricingRow;
     });
+  return { rows: normalizedRows, flatShippingCents };
 }
 
 export function PricingProvider ({ children }: { children: React.ReactNode }): React.JSX.Element
 {
   const [bySlug, setBySlug] = useState<Record<string, PricingRow>>({});
+  const [flatShippingCents, setFlatShippingCents] = useState(DEFAULT_FLAT_SHIPPING_CENTS);
   const [revision, setRevision] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,10 +72,11 @@ export function PricingProvider ({ children }: { children: React.ReactNode }): R
     try
     {
       setError(null);
-      const rows = await fetchPricing();
+      const { rows, flatShippingCents: flat } = await fetchPricing();
       const next: Record<string, PricingRow> = {};
       for (const row of rows) next[row.slug] = row;
       setBySlug(next);
+      setFlatShippingCents(flat);
       setRevision((r) => r + 1);
     }
     catch (e)
@@ -96,10 +112,11 @@ export function PricingProvider ({ children }: { children: React.ReactNode }): R
     revision,
     loading,
     error,
+    flatShippingCents,
     refresh,
     getPriceCents,
     getInventory,
-  }), [error, getInventory, getPriceCents, loading, refresh, revision]);
+  }), [error, flatShippingCents, getInventory, getPriceCents, loading, refresh, revision]);
 
   return <PricingContext.Provider value={value}>{children}</PricingContext.Provider>;
 }

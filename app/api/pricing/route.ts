@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { products } from "@/app/lib/products";
 import { getPricingRows } from "@/app/lib/pricing";
+import { getFlatShippingCents } from "@/app/lib/shopSettings";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,9 +14,12 @@ export async function GET (request: Request): Promise<Response>
   const slugs = (slugsParam
     ? slugsParam.split(",").map((s) => s.trim()).filter(Boolean)
     : products.map((p) => p.slug));
-  const rows = await getPricingRows(slugs);
+  const [rows, flatShippingCents] = await Promise.all([
+    getPricingRows(slugs),
+    getFlatShippingCents(),
+  ]);
   return NextResponse.json(
-    { rows },
+    { rows, flatShippingCents },
     {
       headers: {
         "Cache-Control": "no-store, max-age=0",

@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import { authOptions } from "@/app/auth";
 import { db } from "@/app/db";
-import { orders, productOverrides } from "@/app/db/schema";
+import { orders, productOverrides, shopSettings } from "@/app/db/schema";
 import { sendOrderStatusUpdateEmail } from "@/app/lib/orderEmails";
 import { PRICING_CACHE_TAG } from "@/app/lib/pricing";
 import { eq } from "drizzle-orm";
@@ -15,6 +15,10 @@ const upsertSchema = z.object({
   slug: z.string().min(1),
   priceCents: z.number().int().min(0).nullable(),
   inventory: z.number().int().min(0).nullable(),
+});
+
+const flatShippingSchema = z.object({
+  flatShippingCents: z.number().int().min(0).max(10_000_000),
 });
 
 const adminOrderStatusSchema = z.enum(["pending", "paid", "shipped", "canceled"]);
@@ -73,6 +77,31 @@ export async function deleteProductOverride (slug: string): Promise<void>
   const s = z.string().min(1).parse(slug);
   await db.delete(productOverrides).where(eq(productOverrides.slug, s));
   revalidateTag(PRICING_CACHE_TAG, "max");
+}
+
+export async function updateFlatShippingCents (input: z.infer<typeof flatShippingSchema>): Promise<void>
+{
+  await requireAdmin();
+  const data = flatShippingSchema.parse(input);
+  const now = new Date();
+
+  await db
+    .insert(shopSettings)
+    .values({
+      id: "default",
+      flatShippingCents: data.flatShippingCents,
+      updatedAt: now,
+    })
+    .onConflictDoUpdate({
+      target: shopSettings.id,
+      set: {
+        flatShippingCents: data.flatShippingCents,
+        updatedAt: now,
+      },
+    });
+
+  revalidatePath("/admin");
+  revalidatePath("/checkout");
 }
 
 function readFormString (formData: FormData, key: string): string

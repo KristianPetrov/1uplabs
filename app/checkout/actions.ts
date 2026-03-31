@@ -9,6 +9,7 @@ import { db } from "@/app/db";
 import { customerAddresses, orderItems, orders, productOverrides, users } from "@/app/db/schema";
 import { products } from "@/app/lib/products";
 import { sendAdminOrderPlacedEmail, sendOrderReceiptEmail } from "@/app/lib/orderEmails";
+import { getFlatShippingCents } from "@/app/lib/shopSettings";
 
 const paymentMethodSchema = z.enum(["cashapp", "zelle", "venmo", "bitcoin"]);
 
@@ -81,7 +82,8 @@ export async function createOrder (input: CreateOrderInput): Promise<{ orderId: 
   });
 
   const subtotalCents = computed.reduce((sum, l) => sum + l.lineTotalCents, 0);
-  const totalCents = subtotalCents;
+  const shippingCents = await getFlatShippingCents();
+  const totalCents = subtotalCents + shippingCents;
   const now = new Date();
 
   const created = await db.transaction(async (tx) =>

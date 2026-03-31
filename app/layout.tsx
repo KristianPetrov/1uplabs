@@ -94,7 +94,7 @@ export default function RootLayout ({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Analytics />
+        <Analytics mode="auto"/>
         <LabBackground />
         <div className="relative z-10 min-h-screen">
           <AuthSessionProvider>

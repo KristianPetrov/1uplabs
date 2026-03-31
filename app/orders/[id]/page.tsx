@@ -72,6 +72,7 @@ export default async function OrderPage ({ params }: Props)
       paymentMethod: orders.paymentMethod,
       mailService: orders.mailService,
       trackingNumber: orders.trackingNumber,
+      subtotalCents: orders.subtotalCents,
       totalCents: orders.totalCents,
     })
     .from(orders)
@@ -93,6 +94,7 @@ export default async function OrderPage ({ params }: Props)
 
   const memo = orderIdToMemo(o.id);
   const manualMethods = await getManualPaymentMethods(o.id, o.totalCents);
+  const shippingCents = Math.max(0, o.totalCents - o.subtotalCents);
   const statusLabel = orderStatusLabel(o.status);
   const isPaid = o.status === "paid";
   const isShipped = o.status === "shipped";
@@ -192,6 +194,14 @@ export default async function OrderPage ({ params }: Props)
               </div>
               <div className="mt-5 border-t border-white/10 pt-4">
                 <div className="flex items-center justify-between text-sm">
+                  <div className="text-white/70">Subtotal</div>
+                  <div className="font-semibold text-white">{formatUsdFromCents(o.subtotalCents)}</div>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <div className="text-white/70">Shipping</div>
+                  <div className="font-semibold text-white">{formatUsdFromCents(shippingCents)}</div>
+                </div>
+                <div className="mt-2 flex items-center justify-between text-sm">
                   <div className="text-white/70">Total</div>
                   <div className="font-semibold text-white">{formatUsdFromCents(o.totalCents)}</div>
                 </div>
