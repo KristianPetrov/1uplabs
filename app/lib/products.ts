@@ -359,7 +359,7 @@ export const products: Product[] = [
         },
     },
     {
-        slug: "cjc-1295-no-dac-5mg-plus-ipa-5mg",
+        slug: "cjc-1295-ipa-5mg",
         name: "CJC-1295 (No DAC) + IPA",
         amount: "5mg + 5mg",
         moleculeKey: "CJC-1295 + IPA",
@@ -663,6 +663,8 @@ export function getFeaturedProducts (limit = 3): Product[]
 const productImagePathBySlug: Record<string, string> = {
     "semaglutide-5mg": "/products/semaglutide-5mg-vial.png",
     "semaglutide-10mg": "/products/semaglutide-10mg-vial.png",
+    "ss-31-50mg": "/products/SS-31-50mg-vial.png",
+    "tirzepatide-15mg": "/products/tirzepatide-15mg-vial.png",
     "tirzepatide-30mg": "/products/tirzepatide-30mg-vial.png",
     "retatrutide-10mg": "/products/retatrutide-10mg-vial.png",
     "bpc-157-10mg": "/products/bpc-157-10mg-vial.png",
@@ -671,6 +673,7 @@ const productImagePathBySlug: Record<string, string> = {
     "ghk-cu-50mg": "/products/ghk-cu-50mg-vial.png",
     "ipamorelin-5mg": "/products/ipamorelin-5mg-vial.png",
     "cjc-1295-no-dac-5mg": "/products/cjc-1295-no-dac-5mg-vial.png",
+    "cjc-1295-ipa-5mg": "/products/cjc-1295-ipa-5mg-vial.png",
     "tesamorelin-10mg": "/products/tesamorelin-10mg-vial.png",
     "epithalon-10mg": "/products/epithalon-10mg-vial.png",
     "melanotan-ii-10mg": "/products/melanotan-II-10mg-vial .png",
@@ -678,6 +681,16 @@ const productImagePathBySlug: Record<string, string> = {
     "nad-plus-500mg": "/products/nad-500mg-vial.png",
     "glutathione-600mg": "/products/glutathione-600mg-vial.png",
     "hgh-5mg": "/products/hgh-5mg-vial.png",
+    "kpv-10mg": "/products/kpv-10mg-vial.png",
+    "snap-8-10mg": "/products/snap-8-10mg-vial.png",
+    "5-amino-1mq-50mg": "/products/5-amino-1mq-50mg-vial.png",
+    "glow-70mg": "/products/glow-70mg-vial.png",
+    "klow-80mg": "/products/klow-80mg-vial.png",
+    // "b-12-1mg": "/products/b-12-1mg-vial.png",
+    // "dsip-5mg": "/products/dsip-5mg-vial.png",
+    "oxytocin-2mg": "/products/oxytocin-2mg-vial.png",
+    // "bac-3ml": "/products/bac-3ml-vial.png",
+    // "bac-10ml": "/products/bac-10ml-vial.png",
 };
 
 export function getProductImagePath (slug: string): string | null
