@@ -16,6 +16,53 @@ export const metadata: Metadata = {
 
 export default function StorePage ()
 {
+    const groupedProducts = (() =>
+    {
+        const countsByMoleculeKey = new Map<string, number>();
+
+        for (const product of products)
+        {
+            if (!product.amount.toLowerCase().endsWith("mg")) continue;
+            countsByMoleculeKey.set(product.moleculeKey, (countsByMoleculeKey.get(product.moleculeKey) ?? 0) + 1);
+        }
+
+        const cards: Array<{
+            key: string;
+            title: string;
+            moleculeKey: string;
+            variants: typeof products;
+        }> = [];
+        const groupedKeys = new Set<string>();
+
+        for (const product of products)
+        {
+            const groupCount = countsByMoleculeKey.get(product.moleculeKey) ?? 0;
+
+            if (groupCount > 1)
+            {
+                if (groupedKeys.has(product.moleculeKey)) continue;
+
+                groupedKeys.add(product.moleculeKey);
+                cards.push({
+                    key: product.moleculeKey,
+                    title: product.name,
+                    moleculeKey: product.moleculeKey,
+                    variants: products.filter((p) => p.moleculeKey === product.moleculeKey && p.amount.toLowerCase().endsWith("mg")),
+                });
+                continue;
+            }
+
+            cards.push({
+                key: product.slug,
+                title: product.name,
+                moleculeKey: product.moleculeKey,
+                variants: [product],
+            });
+        }
+
+        return cards;
+    })();
+
     return (
         <div className="min-h-screen text-zinc-50">
             <SiteHeader
@@ -48,37 +95,15 @@ export default function StorePage ()
                     </div>
 
                     <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {(() =>
-                        {
-                            const semaglutide = products.filter((p) => p.moleculeKey === "Semaglutide");
-                            const rest = products.filter((p) => p.moleculeKey !== "Semaglutide");
-                            const cards = [
-                                ...(semaglutide.length
-                                    ? [{
-                                        key: "semaglutide",
-                                        title: "Semaglutide",
-                                        moleculeKey: "Semaglutide",
-                                        variants: semaglutide,
-                                    }]
-                                    : []),
-                                ...rest.map((p) => ({
-                                    key: p.slug,
-                                    title: p.name,
-                                    moleculeKey: p.moleculeKey,
-                                    variants: [p],
-                                })),
-                            ];
-
-                            return cards.map((c) => (
-                                <ProductCard
-                                    key={c.key}
-                                    title={c.title}
-                                    moleculeKey={c.moleculeKey}
-                                    molecules={getMoleculesForProduct(c.moleculeKey)}
-                                    variants={c.variants}
-                                />
-                            ));
-                        })()}
+                        {groupedProducts.map((productGroup) => (
+                            <ProductCard
+                                key={productGroup.key}
+                                title={productGroup.title}
+                                moleculeKey={productGroup.moleculeKey}
+                                molecules={getMoleculesForProduct(productGroup.moleculeKey)}
+                                variants={productGroup.variants}
+                            />
+                        ))}
                     </div>
                 </div>
             </main>

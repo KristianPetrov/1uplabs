@@ -18,17 +18,55 @@ export default function ExpandableResearch ({
 {
     if (!summary && paragraphs.length === 0 && bullets.length === 0) return null;
 
+    const hasBody = paragraphs.length > 0 || bullets.length > 0;
+    const panelClass =
+        "rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70";
+
+    if (!hasBody && summary) {
+        return (
+            <div className={[panelClass, className].filter(Boolean).join(" ")}>
+                <div className="font-semibold text-white">
+                    <span>{title}:</span>{" "}
+                    <span className="font-normal text-white/75">{summary}</span>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <details
             open={defaultOpen}
             className={[
-                "rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70",
+                "group/research",
+                panelClass,
+                "open:[&_summary_.research-chevron]:rotate-180",
+                "open:[&_summary_.research-more-hint]:hidden open:[&_summary_.research-less-hint]:inline",
                 className,
             ].filter(Boolean).join(" ")}
         >
-            <summary className="cursor-pointer list-none select-none font-semibold text-white outline-none">
-                <span className="text-white">{title}:</span>{" "}
-                <span className="text-white/75">{summary}</span>
+            <summary className="flex cursor-pointer list-none items-start justify-between gap-3 select-none font-semibold text-white outline-none [&::-webkit-details-marker]:hidden">
+                <span className="min-w-0">
+                    <span className="text-white">{title}:</span>{" "}
+                    <span className="font-normal text-white/75">{summary}</span>
+                </span>
+                <span className="mt-0.5 flex shrink-0 flex-col items-end gap-1">
+                    <svg
+                        className="research-chevron h-4 w-4 text-emerald-400/90 transition-transform duration-200"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden
+                    >
+                        <path
+                            fillRule="evenodd"
+                            d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                            clipRule="evenodd"
+                        />
+                    </svg>
+                    <span className="text-xs font-medium leading-none text-emerald-400/90">
+                        <span className="research-more-hint">Read more</span>
+                        <span className="research-less-hint hidden">Read less</span>
+                    </span>
+                </span>
             </summary>
             <div className="mt-3 space-y-3 leading-6">
                 {paragraphs.map((p, idx) => (

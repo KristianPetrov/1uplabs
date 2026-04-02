@@ -120,7 +120,7 @@ const withMolecule = (
 });
 
 export const moleculesByProduct: MoleculeMap = {
-    "5-Amino-1MQ": [
+    "5-AMINO-1MQ": [
 
         createLocalMoleculeDefinition(
             "5-amino-1q-iodide",
@@ -152,6 +152,21 @@ export const moleculesByProduct: MoleculeMap = {
 
 
     ],
+    BAC: [createLocalMoleculeDefinition("water", "Water (H₂O)", {
+        fallback: pubchemSource("Water"),
+    }), createLocalMoleculeDefinition(
+        "benzyl-alcohol",
+        "Benzyl Alcohol (0.9%)",
+        {
+            fallback: pubchemSource("Benzyl alcohol"),
+        }
+    ),
+    ],
+    "B-12": [
+        createLocalMoleculeDefinition("b12", "Cyanocobalamin (B12)", {
+            fallback: pubchemSource("Cyanocobalamin"),
+        }),
+    ],
     "Vitamin B12 1mg/mL - 10ml Bottle": [
         createLocalMoleculeDefinition("b12", "Cyanocobalamin (B12)", {
             fallback: pubchemSource("Cyanocobalamin"),
@@ -173,12 +188,27 @@ export const moleculesByProduct: MoleculeMap = {
             fallback: pubchemSource("CJC-1295", { recordType: "2d" }),
         }),
     ],
+    "CJC-1295 + IPA": [
+        createLocalMoleculeDefinition("cjc-1295", "CJC-1295", {
+            subtitle: "Included in CJC-1295 + IPA blend",
+            fallback: pubchemSource("CJC-1295", { recordType: "2d" }),
+        }),
+        createLocalMoleculeDefinition("ipamorelin", "Ipamorelin", {
+            subtitle: "Included in CJC-1295 + IPA blend",
+            fallback: pubchemSource("Ipamorelin", { recordType: "2d" }),
+        }),
+    ],
     Epithalon: [
         createLocalMoleculeDefinition("epitalon", "Epitalon", {
             fallback: pubchemSource("219042", { queryType: "cid" }),
         }),
     ],
-    "GHK-CU": [
+    DSIP: [
+        createLocalMoleculeDefinition("DSIP", "DSIP", {
+            fallback: pubchemSource("DSIP", { recordType: "2d" }),
+        }),
+    ],
+    "GHK-Cu": [
         withMolecule(canonicalMolecules.ghkCu, {
             subtitle: "Copper tripeptide-1",
         }),
@@ -283,6 +313,11 @@ export const moleculesByProduct: MoleculeMap = {
             fallback: pubchemSource("NAD+"),
         }),
     ],
+    Oxytocin: [
+        createLocalMoleculeDefinition("oxytocin", "Oxytocin", {
+            fallback: pubchemSource("Oxytocin", { recordType: "2d" }),
+        }),
+    ],
     Semaglutide: [
         createLocalMoleculeDefinition("semaglutide", "Semaglutide", {
             fallback: pubchemSource("56843331", { queryType: "cid", recordType: "2d" }),
@@ -303,6 +338,11 @@ export const moleculesByProduct: MoleculeMap = {
             fallback: pubchemSource("9811102", { queryType: "cid" }),
         }),
     ],
+    "SS-31": [
+        createLocalMoleculeDefinition("ss-31", "SS-31", {
+            fallback: pubchemSource("SS-31", { recordType: "2d" }),
+        }),
+    ],
     "Melanotan-II": [
         createLocalMoleculeDefinition("melanotan-ii", "Melanotan-II", {
             fallback: pubchemSource("92432", { queryType: "cid", recordType: "2d" }),
@@ -311,6 +351,11 @@ export const moleculesByProduct: MoleculeMap = {
     "PT-141": [
         createLocalMoleculeDefinition("pt-141", "PT-141 (Bremelanotide)", {
             fallback: pubchemSource("9941379", { queryType: "cid", recordType: "2d" }),
+        }),
+    ],
+    "SNAP-8": [
+        createLocalMoleculeDefinition("snap-8", "SNAP-8", {
+            fallback: pubchemSource("SNAP-8", { recordType: "2d" }),
         }),
     ],
     Sermorelin: [createLocalMoleculeDefinition("sermorelin", "Sermorelin", { fallback: pubchemSource("16132413", { queryType: "cid", recordType: "2d" }) }),

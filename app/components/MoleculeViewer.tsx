@@ -52,6 +52,8 @@ type LoadedStructure = {
     format: "pdb" | "sdf";
 };
 
+const MOLECULE_SLIDESHOW_MS = 10000;
+
 const moduleState: { promise: Promise<ThreeDMolGlobal> | null } = {
     promise: null,
 };
@@ -147,6 +149,26 @@ export default function MoleculeViewer ({
         mediaQuery.addEventListener("change", handleChange);
         return () => mediaQuery.removeEventListener("change", handleChange);
     }, []);
+
+    useEffect(() =>
+    {
+        if (!isInView) {
+            return;
+        }
+        if (prefersReducedMotion) {
+            return;
+        }
+        if (molecules.length <= 1) {
+            return;
+        }
+
+        const id = window.setInterval(() =>
+        {
+            setActiveIndex((prev) => (prev + 1) % molecules.length);
+        }, MOLECULE_SLIDESHOW_MS);
+
+        return () => window.clearInterval(id);
+    }, [isInView, molecules.length, prefersReducedMotion]);
 
     useEffect(() =>
     {
