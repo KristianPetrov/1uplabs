@@ -44,14 +44,14 @@ export default function ExpandableResearch ({
                 className,
             ].filter(Boolean).join(" ")}
         >
-            <summary className="flex cursor-pointer list-none items-start justify-between gap-3 select-none font-semibold text-white outline-none [&::-webkit-details-marker]:hidden">
-                <span className="min-w-0">
+            <summary className="flex cursor-pointer list-none flex-col gap-2 select-none font-semibold text-white outline-none [&::-webkit-details-marker]:hidden">
+                <div className="min-w-0">
                     <span className="text-white">{title}:</span>{" "}
                     <span className="font-normal text-white/75">{summary}</span>
-                </span>
-                <span className="mt-0.5 flex shrink-0 flex-col items-end gap-1">
+                </div>
+                <div className="flex items-center justify-end gap-1.5 border-t border-white/10 pt-2">
                     <svg
-                        className="research-chevron h-4 w-4 text-emerald-400/90 transition-transform duration-200"
+                        className="research-chevron h-4 w-4 shrink-0 text-emerald-400/90 transition-transform duration-200"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                         aria-hidden
@@ -62,11 +62,11 @@ export default function ExpandableResearch ({
                             clipRule="evenodd"
                         />
                     </svg>
-                    <span className="text-xs font-medium leading-none text-emerald-400/90">
+                    <span className="text-xs font-medium text-emerald-400/90">
                         <span className="research-more-hint">Read more</span>
                         <span className="research-less-hint hidden">Read less</span>
                     </span>
-                </span>
+                </div>
             </summary>
             <div className="mt-3 space-y-3 leading-6">
                 {paragraphs.map((p, idx) => (
