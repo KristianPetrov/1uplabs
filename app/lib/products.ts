@@ -667,6 +667,8 @@ const productImagePathBySlug: Record<string, string> = {
     "tirzepatide-15mg": "/products/tirzepatide-15mg-vial.png",
     "tirzepatide-30mg": "/products/tirzepatide-30mg-vial.png",
     "retatrutide-10mg": "/products/retatrutide-10mg-vial.png",
+    "retatrutide-20mg": "/products/retatrutide-20mg-vial.png",
+    "retatrutide-30mg": "/products/retatrutide-30mg-vial.png",
     "bpc-157-10mg": "/products/bpc-157-10mg-vial.png",
     "tb-500-10mg": "/products/tb-500-10mg-vial.png",
     "mots-c-10mg": "/products/mots-c-10mg-vial.png",
