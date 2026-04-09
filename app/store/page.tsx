@@ -77,7 +77,7 @@ export default function StorePage ()
                 )}
             />
 
-            <main id="catalog" className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
+            <main id="catalog" className="relative mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
                 <CircuitOverlay variant="panel" className="opacity-30" animated />
                 <div className="relative z-10">
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -94,7 +94,7 @@ export default function StorePage ()
                         </div>
                     </div>
 
-                    <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
                         {groupedProducts.map((productGroup) => (
                             <ProductCard
                                 key={productGroup.key}

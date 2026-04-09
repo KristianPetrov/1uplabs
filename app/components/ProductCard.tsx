@@ -39,9 +39,9 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
     if (!selected) return null;
 
     return (
-        <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-emerald-500/25 hover:bg-white/6 neon-edge">
+        <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-emerald-500/25 hover:bg-white/6 neon-edge sm:p-5">
             <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-sky-500/0 blur-2xl transition group-hover:bg-sky-500/20" />
-            <div className="mb-1 h-40">
+            <div className="mb-0.5 h-28 sm:mb-1 sm:h-40">
                 <LazyMoleculeViewer
                     productName={moleculeKey}
                     molecules={molecules}
@@ -50,14 +50,14 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
                 />
             </div>
             {selectedImagePath && (
-                <div className="relative mb-4 h-84">
+                <div className="relative mb-3 h-56 sm:mb-4 sm:h-84">
                     <BottleAura />
                     <Image
                         src={selectedImagePath}
                         alt={`${selected.name} ${selected.amount} vial`}
                         fill
                         sizes="(max-width: 640px) 100vw, 33vw"
-                        className="relative z-10 object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)]"
+                        className="relative z-10 object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)] transform-[scale(1.12)] sm:transform-none"
                     />
                 </div>
             )}
@@ -97,7 +97,7 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
                     </div>
                 </div>
 
-                <div className="shrink-0 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-200">
+                <div className="hidden shrink-0 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-200 sm:inline-flex">
                     Research
                 </div>
             </div>
