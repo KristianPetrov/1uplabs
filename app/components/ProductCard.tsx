@@ -26,10 +26,21 @@ function amountSortKey (amount: string): number
     return Number.isFinite(n) ? n : Number.POSITIVE_INFINITY;
 }
 
+function getVariantSelectorLabel (variants: Product[]): string
+{
+    const normalizedAmounts = variants.map((variant) => variant.amount.trim().toLowerCase());
+
+    if (normalizedAmounts.every((amount) => amount.endsWith("ml"))) return "Size";
+    if (normalizedAmounts.every((amount) => amount.endsWith("mg"))) return "Strength";
+
+    return "Option";
+}
+
 export default function ProductCard ({ title, moleculeKey, molecules, variants }: Props)
 {
     const pricing = usePricing();
     const sorted = useMemo(() => [...variants].sort((a, b) => amountSortKey(a.amount) - amountSortKey(b.amount)), [variants]);
+    const variantSelectorLabel = useMemo(() => getVariantSelectorLabel(sorted), [sorted]);
     const [selectedSlug, setSelectedSlug] = useState<string>(() => sorted[0]?.slug ?? "");
 
     const selected = useMemo(() => sorted.find((v) => v.slug === selectedSlug) ?? sorted[0], [selectedSlug, sorted]);
@@ -39,9 +50,9 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
     if (!selected) return null;
 
     return (
-        <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-emerald-500/25 hover:bg-white/6 neon-edge sm:p-5">
+        <div className="group relative isolate overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-emerald-500/25 hover:bg-white/6 neon-edge sm:p-5">
             <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-sky-500/0 blur-2xl transition group-hover:bg-sky-500/20" />
-            <div className="mb-0.5 h-28 sm:mb-1 sm:h-40">
+            <div className="relative z-20 mb-0.5 h-28 sm:mb-1 sm:h-40">
                 <LazyMoleculeViewer
                     productName={moleculeKey}
                     molecules={molecules}
@@ -50,7 +61,7 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
                 />
             </div>
             {selectedImagePath && (
-                <div className="relative mb-3 h-56 sm:mb-4 sm:h-84">
+                <div className="relative z-0 mb-3 h-56 sm:mb-4 sm:h-84">
                     <BottleAura />
                     <Image
                         src={selectedImagePath}
@@ -71,7 +82,7 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
                     <div className="mt-2">
                         {isMulti ? (
                             <label className="flex flex-col gap-1">
-                                <span className="text-xs text-white/60">Strength</span>
+                                <span className="text-xs text-white/60">{variantSelectorLabel}</span>
                                 <select
                                     value={selectedSlug}
                                     onChange={(e) => setSelectedSlug(e.target.value)}
@@ -86,7 +97,7 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
                             </label>
                         ) : (
                             <div className="text-sm text-white/65">
-                                Vial strength:{" "}
+                                {variantSelectorLabel === "Size" ? "Vial size:" : "Vial strength:"}{" "}
                                 <span className="font-medium text-white">{selected.amount}</span>
                             </div>
                         )}

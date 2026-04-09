@@ -22,7 +22,6 @@ export default function StorePage ()
 
         for (const product of products)
         {
-            if (!product.amount.toLowerCase().endsWith("mg")) continue;
             countsByMoleculeKey.set(product.moleculeKey, (countsByMoleculeKey.get(product.moleculeKey) ?? 0) + 1);
         }
 
@@ -47,7 +46,7 @@ export default function StorePage ()
                     key: product.moleculeKey,
                     title: product.name,
                     moleculeKey: product.moleculeKey,
-                    variants: products.filter((p) => p.moleculeKey === product.moleculeKey && p.amount.toLowerCase().endsWith("mg")),
+                    variants: products.filter((p) => p.moleculeKey === product.moleculeKey),
                 });
                 continue;
             }
