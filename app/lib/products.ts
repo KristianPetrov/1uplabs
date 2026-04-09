@@ -682,7 +682,7 @@ const productImagePathBySlug: Record<string, string> = {
     "glutathione-600mg": "/products/glutathione-600mg-vial.png",
     "hgh-5mg": "/products/hgh-5mg-vial.png",
     "kpv-10mg": "/products/kpv-10mg-vial.png",
-    "snap-8-10mg": "/products/snap-8-10mg-vial.png",
+    "snap-8-10mg": "/products/SNAP-8-10mg-vial.png",
     "5-amino-1mq-50mg": "/products/5-amino-1mq-50mg-vial.png",
     "glow-70mg": "/products/glow-70mg-vial.png",
     "klow-80mg": "/products/klow-80mg-vial.png",
