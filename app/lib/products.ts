@@ -687,7 +687,7 @@ const productImagePathBySlug: Record<string, string> = {
     "glow-70mg": "/products/glow-70mg-vial.png",
     "klow-80mg": "/products/klow-80mg-vial.png",
     // "b-12-1mg": "/products/b-12-1mg-vial.png",
-    // "dsip-5mg": "/products/dsip-5mg-vial.png",
+     "dsip-5mg": "/products/dsip-5mg-vial.png",
     "oxytocin-2mg": "/products/oxytocin-2mg-vial.png",
     // "bac-3ml": "/products/bac-3ml-vial.png",
     // "bac-10ml": "/products/bac-10ml-vial.png",
