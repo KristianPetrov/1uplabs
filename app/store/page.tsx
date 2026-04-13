@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { getMoleculesForProduct } from "@/app/lib/molecules";
 import { products } from "@/app/lib/products";
 import ProductCard from "@/app/components/ProductCard";
 import CircuitOverlay from "@/app/components/CircuitOverlay";
@@ -9,8 +8,7 @@ import SiteHeader from "@/app/components/SiteHeader";
 
 export const metadata: Metadata = {
     title: "Store",
-    description:
-        "Browse the 1UpLabs research-only catalog with molecular structure previews.",
+    description: "Browse the 1UpLabs research-only catalog.",
     alternates: { canonical: "/store" },
 };
 
@@ -85,7 +83,7 @@ export default function StorePage ()
                                 Store
                             </h1>
                             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65 sm:text-base">
-                                Full catalog with molecular structure previews.
+                                Full research-only catalog.
                             </p>
                         </div>
                         <div className="text-xs text-white/55">
@@ -98,8 +96,6 @@ export default function StorePage ()
                             <ProductCard
                                 key={productGroup.key}
                                 title={productGroup.title}
-                                moleculeKey={productGroup.moleculeKey}
-                                molecules={getMoleculesForProduct(productGroup.moleculeKey)}
                                 variants={productGroup.variants}
                             />
                         ))}

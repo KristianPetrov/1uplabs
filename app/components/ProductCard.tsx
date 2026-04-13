@@ -3,10 +3,8 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 
-import type { MoleculeDefinition } from "@/app/lib/molecules";
 import type { Product } from "@/app/lib/products";
 import { getProductImagePath } from "@/app/lib/products";
-import LazyMoleculeViewer from "@/app/components/LazyMoleculeViewer";
 import BottleAura from "@/app/components/BottleAura";
 import ExpandableResearch from "@/app/components/ExpandableResearch";
 import { formatUsdFromCents } from "@/app/lib/money";
@@ -15,8 +13,6 @@ import { usePricing } from "@/app/pricing/PricingProvider";
 
 type Props = {
     title: string;
-    moleculeKey: string;
-    molecules: MoleculeDefinition[];
     variants: Product[];
 };
 
@@ -36,7 +32,7 @@ function getVariantSelectorLabel (variants: Product[]): string
     return "Option";
 }
 
-export default function ProductCard ({ title, moleculeKey, molecules, variants }: Props)
+export default function ProductCard ({ title, variants }: Props)
 {
     const pricing = usePricing();
     const sorted = useMemo(() => [...variants].sort((a, b) => amountSortKey(a.amount) - amountSortKey(b.amount)), [variants]);
@@ -52,14 +48,6 @@ export default function ProductCard ({ title, moleculeKey, molecules, variants }
     return (
         <div className="group relative isolate overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-emerald-500/25 hover:bg-white/6 neon-edge sm:p-5">
             <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-sky-500/0 blur-2xl transition group-hover:bg-sky-500/20" />
-            <div className="relative z-20 mb-0.5 h-28 sm:mb-1 sm:h-40">
-                <LazyMoleculeViewer
-                    productName={moleculeKey}
-                    molecules={molecules}
-                    variant="hero"
-                    className="h-full"
-                />
-            </div>
             {selectedImagePath && (
                 <div className="relative z-0 mb-3 h-56 sm:mb-4 sm:h-84">
                     <BottleAura />
