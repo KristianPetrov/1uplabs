@@ -412,24 +412,24 @@ export const products: Product[] = [
             ],
         },
     },
-    {
-        slug: "hgh-5mg",
-        name: "HGH-frag",
-        amount: "5mg",
-        moleculeKey: "HGH",
-        priceCents: 3000,
-        research: {
-            summary: "Peptide fragment characterization + controlled assay preparation",
-            paragraphs: [
-                "HGH-frag is commonly used as a peptide fragment reference in laboratory workflows focused on identity confirmation, handling, and reproducible assay setup.",
-            ],
-            bullets: [
-                "Fragment identity/purity confirmation and analytical method development.",
-                "Stability testing across common buffer and storage conditions.",
-                "Recovery and adsorption studies in peptide preparation workflows.",
-            ],
-        },
-    },
+    // {
+    //     slug: "hgh-5mg",
+    //     name: "HGH-frag",
+    //     amount: "5mg",
+    //     moleculeKey: "HGH",
+    //     priceCents: 3000,
+    //     research: {
+    //         summary: "Peptide fragment characterization + controlled assay preparation",
+    //         paragraphs: [
+    //             "HGH-frag is commonly used as a peptide fragment reference in laboratory workflows focused on identity confirmation, handling, and reproducible assay setup.",
+    //         ],
+    //         bullets: [
+    //             "Fragment identity/purity confirmation and analytical method development.",
+    //             "Stability testing across common buffer and storage conditions.",
+    //             "Recovery and adsorption studies in peptide preparation workflows.",
+    //         ],
+    //     },
+    // },
     {
         slug: "melanotan-ii-10mg",
         name: "Melanotan-II",
@@ -676,13 +676,13 @@ const productImagePathBySlug: Record<string, string> = {
     "ipamorelin-5mg": "/products/ipamorelin-5mg-vial.png",
     "cjc-1295-no-dac-5mg": "/products/cjc-1295-no-dac-5mg-vial.png",
     "cjc-1295-ipa-5mg": "/products/cjc-1295-ipa-5mg-vial.png",
-    "tesamorelin-10mg": "/products/tesamorelin-10mg-vial.png",
+    "tesamorelin-10mg": "/products/tesamorelin-10mg.png",
     "epithalon-10mg": "/products/epithalon-10mg-vial.png",
     "melanotan-ii-10mg": "/products/melanotan-II-10mg-vial .png",
     "pt-141-10mg": "/products/pt-141-10mg-vial.png",
     "nad-plus-500mg": "/products/nad-500mg-vial.png",
     "glutathione-600mg": "/products/glutathione-600mg-vial.png",
-    "hgh-5mg": "/products/hgh-5mg-vial.png",
+    //"hgh-5mg": "/products/hgh-5mg-vial.png",
     "kpv-10mg": "/products/kpv-10mg-vial.png",
     "snap-8-10mg": "/products/SNAP-8-10mg-vial.png",
     "5-amino-1mq-50mg": "/products/5-amino-1mq-50mg-vial.png",
