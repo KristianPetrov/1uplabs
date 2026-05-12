@@ -672,7 +672,7 @@ const productImagePathBySlug: Record<string, string> = {
     "bpc-157-10mg": "/products/bpc-157-10mg-vial.png",
     "tb-500-10mg": "/products/tb-500-10mg-vial.png",
     "mots-c-10mg": "/products/mots-c-10mg-vial.png",
-    "ghk-cu-50mg": "/products/ghk-cu-50mg-vial.png",
+    "ghk-cu-50mg": "/products/ghkcu-50mg-vial.png",
     "ipamorelin-5mg": "/products/ipamorelin-5mg-vial.png",
     "cjc-1295-no-dac-5mg": "/products/cjc-1295-no-dac-5mg-vial.png",
     "cjc-1295-ipa-5mg": "/products/cjc-1295-ipa-5mg-vial.png",

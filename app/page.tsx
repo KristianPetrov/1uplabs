@@ -81,7 +81,6 @@ export default function Home ()
                 </div>
               </div>
             </div>
-
             <div className="relative hidden lg:block">
               <div className="absolute -inset-4 rounded-3xl bg-linear-to-br from-emerald-500/14 via-transparent to-sky-500/12 blur-xl" />
               <div className="relative rounded-3xl p-4">
