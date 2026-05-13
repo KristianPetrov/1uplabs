@@ -99,14 +99,14 @@ export default function FeaturedCarousel ({
                                 {active?.name}
                             </div>
                             {activeImagePath && (
-                                <div className="relative mt-3 h-60">
+                                <div className="relative mt-3 h-60 overflow-hidden">
                                     <BottleAura />
                                     <Image
                                         src={activeImagePath}
                                         alt={`${active?.name ?? "Product"} ${active?.amount ?? ""} vial`}
                                         fill
                                         sizes="(max-width: 1024px) 100vw, 40vw"
-                                        className="relative z-10 object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)]"
+                                        className="relative z-10 origin-center scale-[1.28] object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)] sm:scale-[1.24]"
                                     />
                                 </div>
                             )}
