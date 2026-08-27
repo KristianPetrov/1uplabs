@@ -6,8 +6,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { Product } from "@/app/lib/products";
 import { getProductImagePath } from "@/app/lib/products";
-import { getMoleculesForProduct } from "@/app/lib/molecules";
-import LazyMoleculeViewer from "@/app/components/LazyMoleculeViewer";
 import BottleAura from "@/app/components/BottleAura";
 import ExpandableResearch from "@/app/components/ExpandableResearch";
 import { formatUsdFromCents } from "@/app/lib/money";
@@ -78,16 +76,18 @@ export default function FeaturedCarousel ({
 
                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-5 lg:items-stretch">
                     <div className="lg:col-span-3">
-                        <div className="h-64 overflow-hidden rounded-2xl border border-white/10">
-                            {active ? (
-                                <LazyMoleculeViewer
-                                    productName={active.moleculeKey}
-                                    molecules={getMoleculesForProduct(active.moleculeKey)}
-                                    variant="hero"
-                                    className="h-full"
+                        {activeImagePath ? (
+                            <div className="relative h-64 overflow-hidden rounded-2xl sm:h-80">
+                                <BottleAura />
+                                <Image
+                                    src={activeImagePath}
+                                    alt={`${active?.name ?? "Product"} ${active?.amount ?? ""} vial`}
+                                    fill
+                                    sizes="(max-width: 1024px) 100vw, 60vw"
+                                    className="relative z-10 origin-center scale-[1.18] object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)] sm:scale-[1.12]"
                                 />
-                            ) : null}
-                        </div>
+                            </div>
+                        ) : null}
                     </div>
 
                     <div className="flex flex-col justify-between gap-5 lg:col-span-2">
@@ -98,18 +98,6 @@ export default function FeaturedCarousel ({
                             <div className="mt-3 text-2xl font-semibold tracking-tight text-white">
                                 {active?.name}
                             </div>
-                            {activeImagePath && (
-                                <div className="relative mt-3 h-60 overflow-hidden">
-                                    <BottleAura />
-                                    <Image
-                                        src={activeImagePath}
-                                        alt={`${active?.name ?? "Product"} ${active?.amount ?? ""} vial`}
-                                        fill
-                                        sizes="(max-width: 1024px) 100vw, 40vw"
-                                        className="relative z-10 origin-center scale-[1.28] object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)] sm:scale-[1.24]"
-                                    />
-                                </div>
-                            )}
                             <div className="mt-2 text-sm text-white/70">
                                 Vial strength:{" "}
                                 <span className="font-semibold text-white">{active?.amount}</span>

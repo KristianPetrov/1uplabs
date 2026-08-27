@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getFeaturedProducts } from "@/app/lib/products";
-import CircuitOverlay from "@/app/components/CircuitOverlay";
 import FeaturedCarousel from "@/app/components/FeaturedCarousel";
 import SiteHeader from "@/app/components/SiteHeader";
 
@@ -26,7 +25,6 @@ export default function Home ()
       <main>
         <section className="relative overflow-hidden">
           <div className="pointer-events-none absolute inset-0">
-            <CircuitOverlay variant="hero" className="opacity-55" />
             <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-emerald-500/18 blur-3xl" />
             <div className="absolute -bottom-64 right-[-10%] h-[520px] w-[520px] rounded-full bg-sky-500/12 blur-3xl" />
             <div className="absolute inset-0 bg-[radial-gradient(900px_400px_at_50%_0%,rgba(16,185,129,0.12),transparent_60%)]" />
@@ -104,7 +102,6 @@ export default function Home ()
 
         <section className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
           <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge sm:p-8">
-            <CircuitOverlay variant="panel" className="opacity-45" animated />
             <div className="relative z-10">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
@@ -130,7 +127,6 @@ export default function Home ()
 
         <section className="mx-auto max-w-6xl px-6 pb-12 sm:pb-16">
           <div className="lab-scanlines rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge sm:p-8">
-            <CircuitOverlay variant="panel" className="opacity-40" animated={false} />
             <div className="relative z-10">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
                 <div className="max-w-2xl">
@@ -171,7 +167,7 @@ export default function Home ()
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <div className="text-sm font-semibold text-white">Transparent UX</div>
                   <div className="mt-1 text-xs leading-5 text-white/60">
-                    Clear product details with molecular previews for researchers.
+                    Clear product details and vial strengths for researchers.
                   </div>
                 </div>
               </div>
@@ -180,7 +176,6 @@ export default function Home ()
         </section>
 
         <footer className="relative overflow-hidden border-t border-white/10">
-          <CircuitOverlay variant="footer" className="opacity-45" animated={false} />
           <div className="relative mx-auto max-w-6xl px-6 py-10">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-sm font-semibold text-white">1UpLabs</div>
