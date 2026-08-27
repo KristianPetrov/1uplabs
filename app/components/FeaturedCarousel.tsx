@@ -71,21 +71,27 @@ export default function FeaturedCarousel ({
 
     return (
         <div className="mt-8">
-            <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6">
-                <div className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-sky-500/0 blur-3xl transition duration-700 group-hover:bg-sky-500/15" />
+            <div className="group relative overflow-visible rounded-3xl border border-white/10 bg-white/5 p-5 sm:p-6">
+                <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
+                    <div className="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-sky-500/0 blur-3xl transition duration-700 group-hover:bg-sky-500/15" />
+                </div>
 
                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-5 lg:items-stretch">
                     <div className="lg:col-span-3">
                         {activeImagePath ? (
-                            <div className="relative h-64 overflow-hidden rounded-2xl sm:h-80">
+                            <div className="relative h-64 sm:h-80">
                                 <BottleAura />
-                                <Image
-                                    src={activeImagePath}
-                                    alt={`${active?.name ?? "Product"} ${active?.amount ?? ""} vial`}
-                                    fill
-                                    sizes="(max-width: 1024px) 100vw, 60vw"
-                                    className="relative z-10 origin-center scale-[1.18] object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)] sm:scale-[1.12]"
-                                />
+                                <div className="absolute inset-0 z-10 flex items-center justify-center">
+                                    <div className="vial-photo relative h-full w-auto aspect-square max-w-full">
+                                        <Image
+                                            src={activeImagePath}
+                                            alt={`${active?.name ?? "Product"} ${active?.amount ?? ""} vial`}
+                                            fill
+                                            sizes="(max-width: 1024px) 100vw, 60vw"
+                                            className="origin-center scale-[1.12] object-contain sm:scale-[1.08]"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         ) : null}
                     </div>

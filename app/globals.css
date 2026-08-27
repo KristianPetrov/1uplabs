@@ -372,27 +372,32 @@ body {
   }
 }
 
+.vial-photo {
+  -webkit-mask-image: radial-gradient(ellipse 54% 70% at 50% 48%, #000 0%, #000 42%, rgba(0,0,0,0.7) 58%, transparent 74%);
+  mask-image: radial-gradient(ellipse 54% 70% at 50% 48%, #000 0%, #000 42%, rgba(0,0,0,0.7) 58%, transparent 74%);
+}
+
 /* Bottle aura backdrop (behind vial product images) */
 .bottle-aura {
   position: absolute;
-  inset: -6% -6% -18%;
+  inset: -28% -18% -32%;
   z-index: 0;
   pointer-events: none;
-  isolation: isolate;
-  opacity: 0.9;
-  mix-blend-mode: screen;
-  -webkit-mask-image: radial-gradient(ellipse 68% 88% at 50% 56%, #000 0%, rgba(0,0,0,0.94) 58%, rgba(0,0,0,0.42) 78%, transparent 100%);
-  mask-image: radial-gradient(ellipse 68% 88% at 50% 56%, #000 0%, rgba(0,0,0,0.94) 58%, rgba(0,0,0,0.42) 78%, transparent 100%);
+  overflow: visible;
+  opacity: 0.88;
+  -webkit-mask-image: radial-gradient(ellipse 42% 58% at 50% 48%, #000 0%, rgba(0,0,0,0.78) 36%, rgba(0,0,0,0.28) 62%, transparent 78%);
+  mask-image: radial-gradient(ellipse 42% 58% at 50% 48%, #000 0%, rgba(0,0,0,0.78) 36%, rgba(0,0,0,0.28) 62%, transparent 78%);
 }
 
 .bottle-aura__layer {
   position: absolute;
   border-radius: 9999px;
+  mix-blend-mode: screen;
   transition: opacity 260ms ease, filter 260ms ease;
 }
 
 .bottle-aura__layer--core {
-  inset: 10% 20% 10%;
+  inset: 18% 28% 16%;
   background:
     radial-gradient(ellipse 58% 84% at 50% 56%, rgba(16, 185, 129, 0.64) 0%, rgba(16, 185, 129, 0.28) 42%, transparent 84%),
     radial-gradient(ellipse 48% 80% at 50% 72%, rgba(14, 165, 233, 0.4) 0%, transparent 84%);
@@ -402,7 +407,7 @@ body {
 }
 
 .bottle-aura__layer--halo {
-  inset: -4% 12% -14%;
+  inset: 8% 22% 4%;
   background:
     radial-gradient(ellipse 54% 78% at 50% 24%, rgba(236, 253, 245, 0.44) 0%, transparent 72%),
     radial-gradient(ellipse 62% 92% at 50% 74%, rgba(14, 165, 233, 0.26) 0%, transparent 80%);
@@ -412,7 +417,7 @@ body {
 }
 
 .bottle-aura__layer--spark {
-  inset: 16% 27% 20%;
+  inset: 22% 32% 24%;
   background: radial-gradient(circle at 50% 40%, rgba(240, 253, 250, 0.7) 0%, rgba(16, 185, 129, 0.38) 28%, transparent 72%);
   filter: blur(12px);
   opacity: 0.62;

@@ -101,7 +101,7 @@ export default function Home ()
         </section>
 
         <section className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
-          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge sm:p-8">
+          <div className="relative overflow-visible rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge sm:p-8">
             <div className="relative z-10">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>

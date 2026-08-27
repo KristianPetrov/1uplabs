@@ -46,18 +46,24 @@ export default function ProductCard ({ title, variants }: Props)
     if (!selected) return null;
 
     return (
-        <div className="group relative isolate overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-emerald-500/25 hover:bg-white/6 neon-edge sm:p-5">
-            <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-sky-500/0 blur-2xl transition group-hover:bg-sky-500/20" />
+        <div className="group relative isolate overflow-visible rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-emerald-500/25 hover:bg-white/6 neon-edge sm:p-5">
+            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+                <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-sky-500/0 blur-2xl transition group-hover:bg-sky-500/20" />
+            </div>
             {selectedImagePath && (
-                <div className="relative z-0 mb-3 h-56 overflow-hidden sm:mb-4 sm:h-72">
+                <div className="relative z-0 mb-3 h-56 sm:mb-4 sm:h-72">
                     <BottleAura />
-                    <Image
-                        src={selectedImagePath}
-                        alt={`${selected.name} ${selected.amount} vial`}
-                        fill
-                        sizes="(max-width: 640px) 100vw, 33vw"
-                        className="relative z-10 origin-center scale-[1.28] object-contain drop-shadow-[0_0_28px_rgba(56,189,248,0.24)] sm:scale-[1.24]"
-                    />
+                    <div className="absolute inset-0 z-10 flex items-center justify-center">
+                        <div className="vial-photo relative h-full w-auto aspect-square max-w-full">
+                            <Image
+                                src={selectedImagePath}
+                                alt={`${selected.name} ${selected.amount} vial`}
+                                fill
+                                sizes="(max-width: 640px) 100vw, 33vw"
+                                className="origin-center scale-[1.18] object-contain sm:scale-[1.14]"
+                            />
+                        </div>
+                    </div>
                 </div>
             )}
 
