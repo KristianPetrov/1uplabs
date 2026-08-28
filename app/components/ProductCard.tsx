@@ -1,12 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import type { Product } from "@/app/lib/products";
 import { getProductImagePath } from "@/app/lib/products";
 import BottleAura from "@/app/components/BottleAura";
-import ExpandableResearch from "@/app/components/ExpandableResearch";
 import { formatUsdFromCents } from "@/app/lib/money";
 import AddToCartButton from "@/app/components/AddToCartButton";
 import { usePricing } from "@/app/pricing/PricingProvider";
@@ -42,6 +42,7 @@ export default function ProductCard ({ title, variants }: Props)
     const selected = useMemo(() => sorted.find((v) => v.slug === selectedSlug) ?? sorted[0], [selectedSlug, sorted]);
     const isMulti = sorted.length > 1;
     const selectedImagePath = getProductImagePath(selected?.slug ?? "");
+    const productHref = selected ? `/products/${selected.slug}` : "/store";
 
     if (!selected) return null;
 
@@ -51,7 +52,11 @@ export default function ProductCard ({ title, variants }: Props)
                 <div className="absolute -right-10 -top-10 h-24 w-24 rounded-full bg-sky-500/0 blur-2xl transition group-hover:bg-sky-500/20" />
             </div>
             {selectedImagePath && (
-                <div className="relative z-0 mb-3 h-56 sm:mb-4 sm:h-72">
+                <Link
+                    href={productHref}
+                    aria-label={`View ${selected.name} ${selected.amount} details`}
+                    className="relative z-0 mb-3 block h-56 sm:mb-4 sm:h-72"
+                >
                     <BottleAura />
                     <div className="absolute inset-0 z-10 flex items-center justify-center">
                         <div className="vial-photo relative h-full w-auto aspect-square max-w-full">
@@ -64,14 +69,14 @@ export default function ProductCard ({ title, variants }: Props)
                             />
                         </div>
                     </div>
-                </div>
+                </Link>
             )}
 
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                    <div className="text-base font-semibold text-white">
+                    <Link href={productHref} className="text-base font-semibold text-white transition hover:text-emerald-200">
                         {title}
-                    </div>
+                    </Link>
 
                     <div className="mt-2">
                         {isMulti ? (
@@ -102,9 +107,12 @@ export default function ProductCard ({ title, variants }: Props)
                     </div>
                 </div>
 
-                <div className="hidden shrink-0 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-200 sm:inline-flex">
-                    Research
-                </div>
+                <Link
+                    href={productHref}
+                    className="inline-flex shrink-0 items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-200 transition hover:border-emerald-400/50 hover:bg-emerald-500/15"
+                >
+                    View details
+                </Link>
             </div>
 
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
@@ -116,15 +124,6 @@ export default function ProductCard ({ title, variants }: Props)
                     className="inline-flex min-h-10 w-full shrink-0 items-center justify-center rounded-full bg-emerald-500 px-4 py-2.5 text-center text-sm font-semibold leading-none text-zinc-950 whitespace-nowrap transition hover:bg-emerald-400 neon-edge sm:w-auto"
                 />
             </div>
-
-            {selected.research && (
-                <ExpandableResearch
-                    className="mt-4"
-                    summary={selected.research.summary}
-                    paragraphs={selected.research.paragraphs}
-                    bullets={selected.research.bullets}
-                />
-            )}
         </div>
     );
 }

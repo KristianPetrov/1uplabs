@@ -4,8 +4,35 @@ type Props = {
     paragraphs?: string[];
     bullets?: string[];
     defaultOpen?: boolean;
+    collapsible?: boolean;
     className?: string;
 };
+
+function ResearchBody ({
+    paragraphs,
+    bullets,
+}: {
+    paragraphs: string[];
+    bullets: string[];
+})
+{
+    return (
+        <div className="space-y-3 leading-6">
+            {paragraphs.map((p, idx) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <p key={idx}>{p}</p>
+            ))}
+            {bullets.length > 0 && (
+                <ul className="list-disc space-y-1 pl-5">
+                    {bullets.map((b, idx) => (
+                        // eslint-disable-next-line react/no-array-index-key
+                        <li key={idx}>{b}</li>
+                    ))}
+                </ul>
+            )}
+        </div>
+    );
+}
 
 export default function ExpandableResearch ({
     title = "Research description",
@@ -13,6 +40,7 @@ export default function ExpandableResearch ({
     paragraphs = [],
     bullets = [],
     defaultOpen = false,
+    collapsible = true,
     className = "",
 }: Props)
 {
@@ -21,6 +49,16 @@ export default function ExpandableResearch ({
     const hasBody = paragraphs.length > 0 || bullets.length > 0;
     const panelClass =
         "rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/70";
+
+    if (!collapsible) {
+        return (
+            <div className={[panelClass, className].filter(Boolean).join(" ")}>
+                <div className="font-semibold text-white">{title}</div>
+                {summary ? <p className="mt-2 leading-6 text-white/75">{summary}</p> : null}
+                {hasBody ? <div className="mt-3"><ResearchBody paragraphs={paragraphs} bullets={bullets} /></div> : null}
+            </div>
+        );
+    }
 
     if (!hasBody && summary) {
         return (
@@ -68,19 +106,8 @@ export default function ExpandableResearch ({
                     </span>
                 </div>
             </summary>
-            <div className="mt-3 space-y-3 leading-6">
-                {paragraphs.map((p, idx) => (
-                    // eslint-disable-next-line react/no-array-index-key
-                    <p key={idx}>{p}</p>
-                ))}
-                {bullets.length > 0 && (
-                    <ul className="list-disc space-y-1 pl-5">
-                        {bullets.map((b, idx) => (
-                            // eslint-disable-next-line react/no-array-index-key
-                            <li key={idx}>{b}</li>
-                        ))}
-                    </ul>
-                )}
+            <div className="mt-3">
+                <ResearchBody paragraphs={paragraphs} bullets={bullets} />
             </div>
         </details>
     );

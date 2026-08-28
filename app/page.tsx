@@ -120,7 +120,7 @@ export default function Home ()
                 </Link>
               </div>
 
-              <FeaturedCarousel products={featured} href="/store#catalog" />
+              <FeaturedCarousel products={featured} />
             </div>
           </div>
         </section>

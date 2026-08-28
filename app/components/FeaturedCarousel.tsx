@@ -7,14 +7,12 @@ import { useEffect, useMemo, useState } from "react";
 import type { Product } from "@/app/lib/products";
 import { getProductImagePath } from "@/app/lib/products";
 import BottleAura from "@/app/components/BottleAura";
-import ExpandableResearch from "@/app/components/ExpandableResearch";
 import { formatUsdFromCents } from "@/app/lib/money";
 import AddToCartButton from "@/app/components/AddToCartButton";
 import { usePricing } from "@/app/pricing/PricingProvider";
 
 type Props = {
     products: Product[];
-    href?: string;
     autoAdvanceMs?: number;
 };
 
@@ -37,7 +35,6 @@ function usePrefersReducedMotion (): boolean
 
 export default function FeaturedCarousel ({
     products,
-    href = "/store#catalog",
     autoAdvanceMs = 6500,
 }: Props)
 {
@@ -68,6 +65,7 @@ export default function FeaturedCarousel ({
 
     const goPrev = () => setIndex((prev) => (prev - 1 + items.length) % items.length);
     const goNext = () => setIndex((prev) => (prev + 1) % items.length);
+    const productHref = active ? `/products/${active.slug}` : "/store";
 
     return (
         <div className="mt-8">
@@ -79,7 +77,11 @@ export default function FeaturedCarousel ({
                 <div className="grid grid-cols-1 gap-5 lg:grid-cols-5 lg:items-stretch">
                     <div className="lg:col-span-3">
                         {activeImagePath ? (
-                            <div className="relative h-64 sm:h-80">
+                            <Link
+                                href={productHref}
+                                aria-label={`View ${active?.name ?? "product"} ${active?.amount ?? ""} details`}
+                                className="relative block h-64 sm:h-80"
+                            >
                                 <BottleAura />
                                 <div className="absolute inset-0 z-10 flex items-center justify-center">
                                     <div className="vial-photo relative h-full w-auto aspect-square max-w-full">
@@ -92,7 +94,7 @@ export default function FeaturedCarousel ({
                                         />
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
                         ) : null}
                     </div>
 
@@ -101,9 +103,12 @@ export default function FeaturedCarousel ({
                             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
                                 Featured
                             </div>
-                            <div className="mt-3 text-2xl font-semibold tracking-tight text-white">
+                            <Link
+                                href={productHref}
+                                className="mt-3 block text-2xl font-semibold tracking-tight text-white transition hover:text-emerald-200"
+                            >
                                 {active?.name}
-                            </div>
+                            </Link>
                             <div className="mt-2 text-sm text-white/70">
                                 Vial strength:{" "}
                                 <span className="font-semibold text-white">{active?.amount}</span>
@@ -115,23 +120,14 @@ export default function FeaturedCarousel ({
                                 Laboratory research only. Not for human consumption. No medical claims
                                 are made.
                             </div>
-
-                            {active?.research && (
-                                <ExpandableResearch
-                                    className="mt-4"
-                                    summary={active.research.summary}
-                                    paragraphs={active.research.paragraphs}
-                                    bullets={active.research.bullets}
-                                />
-                            )}
                         </div>
 
                         <div className="flex flex-col gap-3">
                             <Link
-                                href={href}
+                                href={productHref}
                                 className="inline-flex min-h-11 items-center justify-center rounded-full bg-emerald-500 px-6 py-2.5 text-center text-sm font-semibold leading-none text-zinc-950 whitespace-nowrap shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400"
                             >
-                                View in store
+                                View details
                             </Link>
                             {active ? (
                                 <AddToCartButton
