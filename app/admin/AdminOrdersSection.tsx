@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { updateOrderAdmin } from "@/app/admin/actions";
-import CircuitOverlay from "@/app/components/CircuitOverlay";
 import { formatUsdFromCents } from "@/app/lib/money";
 
 type AdminOrderRow = {
@@ -207,7 +206,6 @@ export default function AdminOrdersSection ({ orders }: Props)
 {
   return (
     <section className="relative mt-6 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:mt-8">
-      <CircuitOverlay variant="panel" className="opacity-40" animated={false} />
       <div className="relative z-10">
         <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
           Order management

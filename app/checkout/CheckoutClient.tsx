@@ -9,7 +9,6 @@ import { formatUsdFromCents } from "@/app/lib/money";
 import { products } from "@/app/lib/products";
 import { usePricing } from "@/app/pricing/PricingProvider";
 import { createOrder } from "@/app/checkout/actions";
-import CircuitOverlay from "@/app/components/CircuitOverlay";
 
 type Props = {
   initialEmail?: string;
@@ -97,7 +96,6 @@ export default function CheckoutClient ({
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
           className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-3 neon-edge"
         >
-            <CircuitOverlay variant="panel" className="opacity-42" animated />
             <div className="relative z-10">
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
               Shipping + contact
@@ -284,7 +282,6 @@ export default function CheckoutClient ({
           transition={{ duration: 0.55, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
           className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-2 neon-edge"
         >
-            <CircuitOverlay variant="panel" className="opacity-40" animated={false} />
             <div className="relative z-10">
             <div className="text-sm font-semibold text-white">Order summary</div>
             <div className="mt-4 flex flex-col gap-3">
