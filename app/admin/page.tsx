@@ -8,7 +8,6 @@ import AdminOrdersSection from "@/app/admin/AdminOrdersSection";
 import SignOutButton from "@/app/admin/SignOutButton";
 import AdminFlatShipping from "@/app/admin/AdminFlatShipping";
 import AdminProductOverrides from "@/app/admin/AdminProductOverrides";
-import CircuitOverlay from "@/app/components/CircuitOverlay";
 import { db } from "@/app/db";
 import { orders, productOverrides } from "@/app/db/schema";
 import { products } from "@/app/lib/products";
@@ -102,7 +101,6 @@ export default async function AdminPage ({ searchParams }: Props)
       </header>
 
       <main className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
-        <CircuitOverlay variant="panel" className="opacity-35" animated/>
         <div className="relative z-10">
           <div className="flex flex-wrap items-center gap-3">
             <Link href="/admin?tab=inventory" className={tabClassName(activeTab === "inventory")}>
@@ -120,7 +118,6 @@ export default async function AdminPage ({ searchParams }: Props)
                 <AdminProductOverrides products={products} overrides={overrides} />
 
                 <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6">
-                  <CircuitOverlay variant="panel" className="opacity-45" animated={false} />
                   <div className="relative z-10">
                     <div className="text-sm font-semibold text-white">Quick actions</div>
                     <div className="mt-4 flex flex-col gap-3">

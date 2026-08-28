@@ -10,7 +10,6 @@ import { getManualPaymentMethods, orderIdToMemo } from "@/app/lib/paymentMethods
 import CopyField from "@/app/orders/[id]/CopyField";
 import PaymentMethodsPanel from "@/app/orders/[id]/PaymentMethodsPanel";
 import SiteHeader from "@/app/components/SiteHeader";
-import CircuitOverlay from "@/app/components/CircuitOverlay";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -116,7 +115,6 @@ export default async function OrderPage ({ params }: Props)
       <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-3">
-            <CircuitOverlay variant="panel" className="opacity-42" animated />
             <div className="relative z-10">
               <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
                 Next step
@@ -165,7 +163,6 @@ export default async function OrderPage ({ params }: Props)
           </section>
 
           <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-2">
-            <CircuitOverlay variant="panel" className="opacity-40" animated={false} />
             <div className="relative z-10">
               <div className="text-sm font-semibold text-white">Order details</div>
               {(isPaid || isShipped) && o.paymentMethod ? (
