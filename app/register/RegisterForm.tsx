@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import { useMemo, useState, useTransition } from "react";
 
 import { registerCustomer } from "@/app/register/actions";
-import CircuitOverlay from "@/app/components/CircuitOverlay";
 
 export default function RegisterForm (): React.ReactNode
 {
@@ -55,7 +54,6 @@ export default function RegisterForm (): React.ReactNode
             transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
             className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge"
           >
-            <CircuitOverlay variant="panel" className="opacity-42" animated />
             <div className="relative z-10">
               <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
                 Customer account

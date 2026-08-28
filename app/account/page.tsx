@@ -6,7 +6,6 @@ import { and, desc, eq } from "drizzle-orm";
 
 import { authOptions } from "@/app/auth";
 import SiteHeader from "@/app/components/SiteHeader";
-import CircuitOverlay from "@/app/components/CircuitOverlay";
 import { db } from "@/app/db";
 import { customerAddresses, orders, users } from "@/app/db/schema";
 import { formatUsdFromCents } from "@/app/lib/money";
@@ -93,7 +92,6 @@ export default async function AccountPage ()
       <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge lg:col-span-2">
-          <CircuitOverlay variant="panel" className="opacity-45" animated />
           <div className="relative z-10">
             <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
               Profile
@@ -139,7 +137,6 @@ export default async function AccountPage ()
         </section>
 
         <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge">
-          <CircuitOverlay variant="panel" className="opacity-42" animated={false} />
           <div className="relative z-10">
             <div className="text-sm font-semibold text-white">Orders</div>
             <div className="mt-4 flex flex-col gap-3">
@@ -178,7 +175,6 @@ export default async function AccountPage ()
         </div>
 
         <section className="relative mt-6 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge">
-          <CircuitOverlay variant="panel" className="opacity-40" animated={false} />
           <div className="relative z-10">
             <div className="text-sm font-semibold text-white">Saved address</div>
             <p className="mt-2 text-sm leading-6 text-white/65">
