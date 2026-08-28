@@ -71,11 +71,14 @@ export default async function ProductPage ({ params }: Props)
 
             <main className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
                 <CircuitOverlay variant="panel" className="opacity-30" animated />
-                <div className="relative z-10 grid grid-cols-1 gap-8 lg:grid-cols-2 lg:items-start">
-                    <div className="space-y-4">
-                        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4">
-                            <CircuitOverlay variant="panel" className="opacity-45" animated={false} />
-                            {imagePath ? (
+                <div className={[
+                    "relative z-10 grid grid-cols-1 gap-8 lg:items-start",
+                    imagePath ? "lg:grid-cols-2" : "",
+                ].filter(Boolean).join(" ")}>
+                    {imagePath ? (
+                        <div>
+                            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4">
+                                <CircuitOverlay variant="panel" className="opacity-45" animated={false} />
                                 <div className="relative z-10 h-72 sm:h-96">
                                     <BottleAura />
                                     <div className="absolute inset-0 z-10 flex items-center justify-center">
@@ -91,32 +94,9 @@ export default async function ProductPage ({ params }: Props)
                                         </div>
                                     </div>
                                 </div>
-                            ) : (
-                                <div className="relative z-10 h-72 overflow-hidden rounded-2xl border border-white/10 sm:h-96">
-                                    <LazyMoleculeViewer
-                                        productName={p.moleculeKey}
-                                        molecules={molecules}
-                                        variant="hero"
-                                        className="h-full"
-                                    />
-                                </div>
-                            )}
-                        </div>
-
-                        {imagePath && molecules.length > 0 ? (
-                            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4">
-                                <CircuitOverlay variant="panel" className="opacity-45" animated={false} />
-                                <div className="relative z-10 h-56 overflow-hidden rounded-2xl border border-white/10 sm:h-72">
-                                    <LazyMoleculeViewer
-                                        productName={p.moleculeKey}
-                                        molecules={molecules}
-                                        variant="hero"
-                                        className="h-full"
-                                    />
-                                </div>
                             </div>
-                        ) : null}
-                    </div>
+                        </div>
+                    ) : null}
 
                     <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6">
                         <CircuitOverlay variant="panel" className="opacity-42" animated={false} />
@@ -189,6 +169,20 @@ export default async function ProductPage ({ params }: Props)
                         </div>
                     </div>
                 </div>
+
+                {molecules.length > 0 ? (
+                    <div className="relative z-10 mt-8 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-4">
+                        <CircuitOverlay variant="panel" className="opacity-45" animated={false} />
+                        <div className="relative z-10 h-56 overflow-hidden rounded-2xl border border-white/10 sm:h-72">
+                            <LazyMoleculeViewer
+                                productName={p.moleculeKey}
+                                molecules={molecules}
+                                variant="hero"
+                                className="h-full"
+                            />
+                        </div>
+                    </div>
+                ) : null}
             </main>
         </div>
     );
