@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { eq } from "drizzle-orm";
 
+import CheckoutSteps from "@/app/components/CheckoutSteps";
 import { db } from "@/app/db";
 import { orderItems, orders } from "@/app/db/schema";
 import { formatUsdFromCents } from "@/app/lib/money";
+import { formatOrderNumberFromId } from "@/app/lib/orderEmails";
 import { getManualPaymentMethods, orderIdToMemo } from "@/app/lib/paymentMethods";
 import CopyField from "@/app/orders/[id]/CopyField";
 import PaymentMethodsPanel from "@/app/orders/[id]/PaymentMethodsPanel";
@@ -30,7 +32,7 @@ function orderStatusLabel (status: "pending" | "paid" | "shipped" | "canceled"):
   switch (status)
   {
     case "pending":
-      return "pending";
+      return "awaiting payment";
     case "paid":
       return "paid";
     case "shipped":
@@ -80,11 +82,6 @@ export default async function OrderPage ({ params }: Props)
 
   const o = order[0];
   if (!o) notFound();
-  const isPending = o.status === "pending";
-  if (o.status === "pending" )
-  {
-   // redirect(`/orders/${o.id}/thank-you`);
-  }
 
   const items = await db
     .select()
@@ -92,16 +89,19 @@ export default async function OrderPage ({ params }: Props)
     .where(eq(orderItems.orderId, id));
 
   const memo = orderIdToMemo(o.id);
+  const orderNumber = formatOrderNumberFromId(o.id);
+  const amountLabel = formatUsdFromCents(o.totalCents);
   const manualMethods = await getManualPaymentMethods(o.id, o.totalCents);
   const shippingCents = Math.max(0, o.totalCents - o.subtotalCents);
   const statusLabel = orderStatusLabel(o.status);
+  const isPending = o.status === "pending";
   const isPaid = o.status === "paid";
   const isShipped = o.status === "shipped";
 
   return (
     <div className="min-h-screen text-zinc-50">
       <SiteHeader
-        subtitle="Order confirmation"
+        subtitle={isPending ? "Pay" : "Order confirmation"}
         actions={(
           <Link
             href="/store"
@@ -114,47 +114,54 @@ export default async function OrderPage ({ params }: Props)
 
       <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-          <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-3">
+          <section className="opaque-panel relative overflow-hidden rounded-3xl border border-white/12 p-6 lg:col-span-3">
             <div className="relative z-10">
-              <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
-                Next step
-              </div>
-              <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+              {isPending ? <CheckoutSteps current="pay" /> : (
+                <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
+                  Order #{orderNumber}
+                </div>
+              )}
+              <h1 className="mt-4 text-2xl font-semibold tracking-tight text-white">
                 {isPending
-                  ? "Complete payment"
+                  ? `Pay ${amountLabel} to complete your order`
                   : isPaid
                     ? "Payment received"
                     : isShipped
                       ? "Order shipped"
                       : "Order canceled"}
               </h1>
-              <p className="mt-2 text-sm leading-6 text-white/65">
-                Your order is currently <span className="font-semibold text-white">{statusLabel}</span>.
+              <p className="mt-2 text-sm leading-6 text-white/70">
                 {isPending
-                  ? " Choose any manual payment method below."
+                  ? "Shipping is saved. Payment is the last step — we ship after we receive it."
                   : isPaid
-                    ? " Your order will be shipped shortly. You'll receive a tracking number within 48 hours."
+                    ? "Thank you. Your order will be shipped shortly. You'll receive a tracking number within 48 hours."
                     : isShipped
-                      ? " Tracking details are included below."
-                      : ""}
+                      ? "Tracking details are included below."
+                      : `This order is ${statusLabel}.`}
               </p>
 
-              <div className="mt-6 grid grid-cols-1 gap-3">
-                <CopyField label="Order ID" value={o.id} />
-                <CopyField label="Amount (USD)" value={formatUsdFromCents(o.totalCents)} />
-                {(isPaid || isShipped) && o.paymentMethod ? (
-                  <CopyField label="Paid via" value={paymentMethodLabel(o.paymentMethod)} />
-                ) : null}
-                {isPending ? <CopyField label="Payment memo" value={memo} /> : null}
-                {isShipped && o.mailService ? (
-                  <CopyField label="Mail service" value={o.mailService} />
-                ) : null}
-                {isShipped && o.trackingNumber ? (
-                  <CopyField label="Tracking number" value={o.trackingNumber} />
-                ) : null}
-              </div>
+              {isPending ? (
+                <PaymentMethodsPanel memo={memo} methods={manualMethods} amountLabel={amountLabel} />
+              ) : (
+                <div className="mt-6 grid grid-cols-1 gap-3">
+                  <CopyField label="Order number" value={orderNumber} />
+                  {(isPaid || isShipped) && o.paymentMethod ? (
+                    <CopyField label="Paid via" value={paymentMethodLabel(o.paymentMethod)} />
+                  ) : null}
+                  {isShipped && o.mailService ? (
+                    <CopyField label="Mail service" value={o.mailService} />
+                  ) : null}
+                  {isShipped && o.trackingNumber ? (
+                    <CopyField label="Tracking number" value={o.trackingNumber} />
+                  ) : null}
+                </div>
+              )}
 
-              {isPending ? <PaymentMethodsPanel orderId={o.id} memo={memo} methods={manualMethods} /> : null}
+              {isPending ? (
+                <p className="mt-4 text-xs leading-5 text-white/50">
+                  Order #{orderNumber}. A receipt was sent to {o.email}.
+                </p>
+              ) : null}
 
               <div className="mt-6 text-xs leading-5 text-white/55">
                 Research-only items. Not for human consumption. No medical claims are made.
@@ -162,7 +169,7 @@ export default async function OrderPage ({ params }: Props)
             </div>
           </section>
 
-          <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-2">
+          <aside className="opaque-panel relative overflow-hidden rounded-3xl border border-white/12 p-6 lg:col-span-2">
             <div className="relative z-10">
               <div className="text-sm font-semibold text-white">Order details</div>
               {(isPaid || isShipped) && o.paymentMethod ? (
@@ -172,7 +179,7 @@ export default async function OrderPage ({ params }: Props)
               ) : null}
               <div className="mt-4 flex flex-col gap-3">
                 {items.map((it) => (
-                  <div key={it.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div key={it.id} className="opaque-field rounded-2xl border border-white/10 p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="truncate text-sm font-semibold text-white">
@@ -199,8 +206,8 @@ export default async function OrderPage ({ params }: Props)
                   <div className="font-semibold text-white">{formatUsdFromCents(shippingCents)}</div>
                 </div>
                 <div className="mt-2 flex items-center justify-between text-sm">
-                  <div className="text-white/70">Total</div>
-                  <div className="font-semibold text-white">{formatUsdFromCents(o.totalCents)}</div>
+                  <div className="text-white/70">Total due</div>
+                  <div className="font-semibold text-white">{amountLabel}</div>
                 </div>
               </div>
             </div>
@@ -210,5 +217,3 @@ export default async function OrderPage ({ params }: Props)
     </div>
   );
 }
-
-
