@@ -114,7 +114,7 @@ export default async function OrderPage ({ params }: Props)
 
       <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-          <section className="relative overflow-hidden rounded-3xl border border-white/12 bg-zinc-900 p-6 lg:col-span-3">
+          <section className="opaque-panel relative overflow-hidden rounded-3xl border border-white/12 p-6 lg:col-span-3">
             <div className="relative z-10">
               {isPending ? <CheckoutSteps current="pay" /> : (
                 <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
@@ -169,7 +169,7 @@ export default async function OrderPage ({ params }: Props)
             </div>
           </section>
 
-          <aside className="relative overflow-hidden rounded-3xl border border-white/12 bg-zinc-900 p-6 lg:col-span-2">
+          <aside className="opaque-panel relative overflow-hidden rounded-3xl border border-white/12 p-6 lg:col-span-2">
             <div className="relative z-10">
               <div className="text-sm font-semibold text-white">Order details</div>
               {(isPaid || isShipped) && o.paymentMethod ? (
@@ -179,7 +179,7 @@ export default async function OrderPage ({ params }: Props)
               ) : null}
               <div className="mt-4 flex flex-col gap-3">
                 {items.map((it) => (
-                  <div key={it.id} className="rounded-2xl border border-white/10 bg-zinc-800 p-4">
+                  <div key={it.id} className="opaque-field rounded-2xl border border-white/10 p-4">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <div className="truncate text-sm font-semibold text-white">

@@ -24,7 +24,7 @@ export default function PaymentMethodsPanel ({ memo, methods, amountLabel }: Pro
   if (!method)
   {
     return (
-      <div className="mt-6 rounded-2xl border border-white/10 bg-zinc-900 px-4 py-3 text-sm text-white/70">
+      <div className="opaque-panel mt-6 rounded-2xl border border-white/10 px-4 py-3 text-sm text-white/70">
         Payment methods are unavailable right now. Please contact support.
       </div>
     );
@@ -50,7 +50,7 @@ export default function PaymentMethodsPanel ({ memo, methods, amountLabel }: Pro
               className={
                 selected
                   ? "rounded-2xl border border-emerald-400/40 bg-emerald-500 px-3 py-3 text-sm font-semibold text-zinc-950"
-                  : "rounded-2xl border border-white/12 bg-zinc-800 px-3 py-3 text-sm font-semibold text-white hover:border-white/25"
+                  : "opaque-field rounded-2xl border border-white/12 px-3 py-3 text-sm font-semibold text-white hover:border-white/25"
               }
             >
               {item.title}
@@ -59,7 +59,7 @@ export default function PaymentMethodsPanel ({ memo, methods, amountLabel }: Pro
         })}
       </div>
 
-      <div className="mt-4 rounded-2xl border border-white/12 bg-zinc-900 p-5">
+      <div className="opaque-field mt-4 rounded-2xl border border-white/12 p-5">
         {method.paymentUrl ? (
           <>
             <button
@@ -84,7 +84,7 @@ export default function PaymentMethodsPanel ({ memo, methods, amountLabel }: Pro
               to the address below.
             </p>
             {method.bitcoinAmountBtc ? (
-              <div className="mt-3 flex items-center justify-between gap-3 rounded-xl bg-zinc-800 px-3 py-3">
+              <div className="opaque-panel mt-3 flex items-center justify-between gap-3 rounded-xl px-3 py-3">
                 <div>
                   <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
                     BTC amount
@@ -94,7 +94,7 @@ export default function PaymentMethodsPanel ({ memo, methods, amountLabel }: Pro
                 <CopyButton
                   text={method.bitcoinAmountBtc}
                   label="Copy amount"
-                  className="shrink-0 border-white/10 bg-zinc-800 px-3 py-2 text-[0.65rem] font-semibold tracking-[0.16em] text-white hover:border-emerald-500/35"
+                  className="opaque-field shrink-0 border-white/10 px-3 py-2 text-[0.65rem] font-semibold tracking-[0.16em] text-white hover:border-emerald-500/35"
                 />
               </div>
             ) : (
@@ -105,7 +105,7 @@ export default function PaymentMethodsPanel ({ memo, methods, amountLabel }: Pro
           </>
         )}
 
-        <div className="mt-3 flex items-center justify-between gap-3 rounded-xl bg-zinc-800 px-3 py-3">
+        <div className="opaque-panel mt-3 flex items-center justify-between gap-3 rounded-xl px-3 py-3">
           <div className="min-w-0">
             <div className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">
               {method.destinationLabel}
@@ -115,14 +115,20 @@ export default function PaymentMethodsPanel ({ memo, methods, amountLabel }: Pro
           <CopyButton
             text={method.destinationValue}
             label="Copy"
-            className="shrink-0 border-white/10 bg-zinc-800 px-3 py-2 text-[0.65rem] font-semibold tracking-[0.16em] text-white hover:border-emerald-500/35"
+            className="opaque-field shrink-0 border-white/10 px-3 py-2 text-[0.65rem] font-semibold tracking-[0.16em] text-white hover:border-emerald-500/35"
           />
         </div>
 
-        <p className="mt-3 text-xs leading-5 text-white/55">
-          Add this memo so we can match your payment:{" "}
-          <span className="font-semibold text-white">{memo}</span>
-        </p>
+        {method.key === "bitcoin" ? (
+          <p className="mt-3 text-xs leading-5 text-white/55">
+            Send the exact amount so we can match your payment.
+          </p>
+        ) : (
+          <p className="mt-3 text-xs leading-5 text-white/55">
+            Add this memo so we can match your payment:{" "}
+            <span className="font-semibold text-white">{memo}</span>
+          </p>
+        )}
       </div>
     </div>
   );

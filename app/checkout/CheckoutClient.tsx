@@ -12,7 +12,7 @@ import { usePricing } from "@/app/pricing/PricingProvider";
 import { createOrder } from "@/app/checkout/actions";
 
 const fieldClassName =
-  "h-11 rounded-2xl border border-white/15 bg-zinc-800 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/50";
+  "opaque-field h-11 rounded-2xl border border-white/15 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/50";
 
 type Props = {
   initialEmail?: string;
@@ -98,7 +98,7 @@ export default function CheckoutClient ({
           initial={{ opacity: 0, y: 12, filter: "blur(10px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden rounded-3xl border border-white/12 bg-zinc-900 p-6 lg:col-span-3"
+          className="opaque-panel relative overflow-hidden rounded-3xl border border-white/12 p-6 lg:col-span-3"
         >
             <div className="relative z-10">
             <CheckoutSteps current="shipping" />
@@ -116,7 +116,7 @@ export default function CheckoutClient ({
             ) : null}
 
             {!cart.lines.length ? (
-              <div className="mt-6 rounded-2xl border border-white/10 bg-zinc-800 p-6 text-sm text-white/70">
+              <div className="opaque-field mt-6 rounded-2xl border border-white/10 p-6 text-sm text-white/70">
                 Your cart is empty.{" "}
                 <Link href="/store" className="font-semibold text-white underline decoration-white/25 underline-offset-4">
                   Browse the store
@@ -282,7 +282,7 @@ export default function CheckoutClient ({
           initial={{ opacity: 0, y: 12, filter: "blur(10px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.55, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden rounded-3xl border border-white/12 bg-zinc-900 p-6 lg:col-span-2"
+          className="opaque-panel relative overflow-hidden rounded-3xl border border-white/12 p-6 lg:col-span-2"
         >
             <div className="relative z-10">
             <div className="text-sm font-semibold text-white">Order summary</div>
@@ -290,7 +290,7 @@ export default function CheckoutClient ({
               {lines.length ? lines.map((l) => (
                 <div
                   key={l.slug}
-                  className={`rounded-2xl border bg-zinc-800 p-4 ${l.outOfStock ? "border-rose-500/30" : "border-white/10"}`}
+                  className={`opaque-field rounded-2xl border p-4 ${l.outOfStock ? "border-rose-500/30" : "border-white/10"}`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -317,7 +317,7 @@ export default function CheckoutClient ({
                   </div>
                 </div>
               )) : (
-                <div className="rounded-2xl border border-white/10 bg-zinc-800 p-6 text-sm text-white/70">
+                <div className="opaque-field rounded-2xl border border-white/10 p-6 text-sm text-white/70">
                   No items yet.
                 </div>
               )}

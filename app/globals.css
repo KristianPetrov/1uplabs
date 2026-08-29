@@ -131,6 +131,16 @@ body {
   }
 }
 
+/* Solid checkout surfaces — starfield must not show through form text */
+.opaque-panel {
+  background-color: #1c1f27;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.62);
+}
+
+.opaque-field {
+  background-color: #0b0d12;
+}
+
 /* Reusable neon edge glow for cards/buttons/inputs */
 .neon-edge {
   box-shadow:
