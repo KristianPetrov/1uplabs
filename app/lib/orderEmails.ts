@@ -80,6 +80,11 @@ function getOrderNumber (orderId: string): string
   return orderId.slice(0, 8).toUpperCase();
 }
 
+function getOrderPaymentUrl (orderId: string): string
+{
+  return `${getSiteUrl()}/orders/${orderId}`;
+}
+
 function statusDisplay (status: OrderEmailData["order"]["status"]): string
 {
   switch (status)
@@ -324,24 +329,23 @@ async function renderPaymentMethodsHtml (orderId: string, totalCents: number): P
 
   return `
     <div style="margin-top:16px">
-      <div style="color:#f8fafc;font-weight:700">Manual payment methods</div>
+      <div style="color:#f8fafc;font-weight:700">Pay with one of these methods</div>
       ${methodRows}
       <div style="margin-top:12px;color:#cbd5e1">Memo to include: <strong style="color:#fff">${escapeHtml(memo)}</strong></div>
-      <div style="margin-top:4px;color:#94a3b8">For Zelle, add your Order ID in the memo before sending.</div>
     </div>
   `.trim();
 }
 
 async function buildReceiptText (data: OrderEmailData): Promise<string>
 {
-  const orderUrl = `${getSiteUrl()}/orders/${data.order.id}/thank-you`;
+  const orderUrl = getOrderPaymentUrl(data.order.id);
   const orderNumber = getOrderNumber(data.order.id);
   const itemsText = data.items.map((item) =>
     `- ${item.productName} ${item.productAmount}: ${item.qty} x ${formatUsdFromCents(item.unitPriceCents)} = ${formatUsdFromCents(item.lineTotalCents)}`).join("\n");
   const paymentInstructions = await buildPaymentInstructionsText(data.order.id, data.order.totalCents);
 
   return [
-    `Thanks for your order #${orderNumber}.`,
+    `Pay to complete order #${orderNumber}.`,
     "",
     `Order ID: ${data.order.id}`,
     `Total: ${formatUsdFromCents(data.order.totalCents)}`,
@@ -358,7 +362,7 @@ async function buildReceiptText (data: OrderEmailData): Promise<string>
 async function buildReceiptHtml (data: OrderEmailData): Promise<string>
 {
   const orderNumber = getOrderNumber(data.order.id);
-  const orderUrl = `${getSiteUrl()}/orders/${data.order.id}/thank-you`;
+  const orderUrl = getOrderPaymentUrl(data.order.id);
   const paymentMethodsHtml = await renderPaymentMethodsHtml(data.order.id, data.order.totalCents);
   const body = `
     <div style="color:#e2e8f0">
@@ -370,12 +374,12 @@ async function buildReceiptHtml (data: OrderEmailData): Promise<string>
     </div>
   `.trim();
 
-  return renderLayoutHtml("Thanks for your order", "Your order is now received and pending payment.", body, "Open your thank-you page", orderUrl);
+  return renderLayoutHtml("Pay to complete your order", "Shipping is saved. Send payment to finish — we ship after it arrives.", body, "Complete payment", orderUrl);
 }
 
 async function buildPaymentInstructionsTextMessage (data: OrderEmailData): Promise<string>
 {
-  const orderUrl = `${getSiteUrl()}/orders/${data.order.id}/thank-you`;
+  const orderUrl = getOrderPaymentUrl(data.order.id);
   const orderNumber = getOrderNumber(data.order.id);
   const paymentInstructions = await buildPaymentInstructionsText(data.order.id, data.order.totalCents);
   return [
@@ -392,7 +396,7 @@ async function buildPaymentInstructionsTextMessage (data: OrderEmailData): Promi
 async function buildPaymentInstructionsHtml (data: OrderEmailData): Promise<string>
 {
   const orderNumber = getOrderNumber(data.order.id);
-  const orderUrl = `${getSiteUrl()}/orders/${data.order.id}/thank-you`;
+  const orderUrl = getOrderPaymentUrl(data.order.id);
   const paymentMethodsHtml = await renderPaymentMethodsHtml(data.order.id, data.order.totalCents);
   const body = `
     <div style="color:#e2e8f0">
@@ -403,7 +407,7 @@ async function buildPaymentInstructionsHtml (data: OrderEmailData): Promise<stri
     </div>
   `.trim();
 
-  return renderLayoutHtml("Payment instructions", "Use any one of the methods below to complete your payment.", body, "Open your thank-you page", orderUrl);
+  return renderLayoutHtml("Payment instructions", "Use any one of the methods below to complete your payment.", body, "Complete payment", orderUrl);
 }
 
 function buildStatusTextMessage (data: OrderEmailData): string
@@ -419,7 +423,7 @@ function buildStatusTextMessage (data: OrderEmailData): string
   const pendingReminder = data.order.status === "pending"
     ? [
       "",
-      `Complete payment here: ${getSiteUrl()}/orders/${data.order.id}/thank-you`,
+      `Complete payment here: ${getOrderPaymentUrl(data.order.id)}`,
       `Amount: ${formatUsdFromCents(data.order.totalCents)}`,
       `Memo: ${orderIdToMemo(data.order.id)}`,
     ]

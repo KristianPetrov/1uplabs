@@ -5,10 +5,14 @@ import { motion } from "framer-motion";
 import { useMemo, useState, useTransition } from "react";
 
 import { useCart } from "@/app/cart/CartProvider";
+import CheckoutSteps from "@/app/components/CheckoutSteps";
 import { formatUsdFromCents } from "@/app/lib/money";
 import { products } from "@/app/lib/products";
 import { usePricing } from "@/app/pricing/PricingProvider";
 import { createOrder } from "@/app/checkout/actions";
+
+const fieldClassName =
+  "h-11 rounded-2xl border border-white/15 bg-zinc-800 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/50";
 
 type Props = {
   initialEmail?: string;
@@ -94,17 +98,15 @@ export default function CheckoutClient ({
           initial={{ opacity: 0, y: 12, filter: "blur(10px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-3 neon-edge"
+          className="relative overflow-hidden rounded-3xl border border-white/12 bg-zinc-900 p-6 lg:col-span-3"
         >
             <div className="relative z-10">
-            <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
-              Shipping + contact
-            </div>
-            <h1 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-              Complete your order
+            <CheckoutSteps current="shipping" />
+            <h1 className="mt-4 text-2xl font-semibold tracking-tight text-white">
+              Shipping details
             </h1>
-            <p className="mt-2 text-sm leading-6 text-white/65">
-              You’ll receive payment instructions after placing the order.
+            <p className="mt-2 text-sm leading-6 text-white/70">
+              Enter where we should ship. Next you’ll pay — the order is not complete until payment is sent.
             </p>
 
             {error ? (
@@ -114,7 +116,7 @@ export default function CheckoutClient ({
             ) : null}
 
             {!cart.lines.length ? (
-              <div className="mt-6 rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-white/70">
+              <div className="mt-6 rounded-2xl border border-white/10 bg-zinc-800 p-6 text-sm text-white/70">
                 Your cart is empty.{" "}
                 <Link href="/store" className="font-semibold text-white underline decoration-white/25 underline-offset-4">
                   Browse the store
@@ -153,7 +155,7 @@ export default function CheckoutClient ({
                       });
 
                       cart.clear();
-                      window.location.assign(`/orders/${res.orderId}/thank-you`);
+                      window.location.assign(`/orders/${res.orderId}`);
                       return;
                     }
                     catch (err)
@@ -165,94 +167,94 @@ export default function CheckoutClient ({
               >
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <label className="flex flex-col gap-1">
-                    <span className="text-xs font-semibold text-white/60">Email</span>
+                    <span className="text-xs font-semibold text-white/75">Email</span>
                     <input
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       type="email"
                       autoComplete="email"
                       required
-                      className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35"
+                      className={fieldClassName}
                     />
                   </label>
                   <label className="flex flex-col gap-1">
-                    <span className="text-xs font-semibold text-white/60">Phone (optional)</span>
+                    <span className="text-xs font-semibold text-white/75">Phone (optional)</span>
                     <input
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       type="tel"
                       autoComplete="tel"
-                      className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35"
+                      className={fieldClassName}
                     />
                   </label>
                 </div>
 
                 <label className="flex flex-col gap-1">
-                  <span className="text-xs font-semibold text-white/60">Full name</span>
+                  <span className="text-xs font-semibold text-white/75">Full name</span>
                   <input
                     value={shippingName}
                     onChange={(e) => setShippingName(e.target.value)}
                     required
-                    className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35"
+                    className={fieldClassName}
                   />
                 </label>
 
                 <label className="flex flex-col gap-1">
-                  <span className="text-xs font-semibold text-white/60">Address line 1</span>
+                  <span className="text-xs font-semibold text-white/75">Address line 1</span>
                   <input
                     value={shippingAddress1}
                     onChange={(e) => setShippingAddress1(e.target.value)}
                     required
-                    className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35"
+                    className={fieldClassName}
                   />
                 </label>
 
                 <label className="flex flex-col gap-1">
-                  <span className="text-xs font-semibold text-white/60">Address line 2 (optional)</span>
+                  <span className="text-xs font-semibold text-white/75">Address line 2 (optional)</span>
                   <input
                     value={shippingAddress2}
                     onChange={(e) => setShippingAddress2(e.target.value)}
-                    className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35"
+                    className={fieldClassName}
                   />
                 </label>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   <label className="flex flex-col gap-1 sm:col-span-1">
-                    <span className="text-xs font-semibold text-white/60">City</span>
+                    <span className="text-xs font-semibold text-white/75">City</span>
                     <input
                       value={shippingCity}
                       onChange={(e) => setShippingCity(e.target.value)}
                       required
-                      className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35"
+                      className={fieldClassName}
                     />
                   </label>
                   <label className="flex flex-col gap-1 sm:col-span-1">
-                    <span className="text-xs font-semibold text-white/60">State</span>
+                    <span className="text-xs font-semibold text-white/75">State</span>
                     <input
                       value={shippingState}
                       onChange={(e) => setShippingState(e.target.value)}
                       required
-                      className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35"
+                      className={fieldClassName}
                     />
                   </label>
                   <label className="flex flex-col gap-1 sm:col-span-1">
-                    <span className="text-xs font-semibold text-white/60">ZIP</span>
+                    <span className="text-xs font-semibold text-white/75">ZIP</span>
                     <input
                       value={shippingZip}
                       onChange={(e) => setShippingZip(e.target.value)}
                       required
-                      className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35"
+                      className={fieldClassName}
                     />
                   </label>
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-1">
                   <label className="flex flex-col gap-1">
-                    <span className="text-xs font-semibold text-white/60">Country</span>
+                    <span className="text-xs font-semibold text-white/75">Country</span>
                     <select
                       value={shippingCountry}
                       onChange={(e) => setShippingCountry(e.target.value)}
-                      className="h-11 rounded-2xl border border-white/10 bg-zinc-950/40 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/35"
+                      className={fieldClassName}
                     >
                       <option value="US">US</option>
                       <option value="CA">CA</option>
@@ -265,7 +267,7 @@ export default function CheckoutClient ({
                   disabled={pending || !cart.lines.length}
                   className="mt-2 inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400 disabled:opacity-60"
                 >
-                  {pending ? "Placing order…" : "Place order"}
+                  {pending ? "Continuing…" : "Continue to payment"}
                 </button>
 
                 <div className="text-xs leading-5 text-white/55">
@@ -280,7 +282,7 @@ export default function CheckoutClient ({
           initial={{ opacity: 0, y: 12, filter: "blur(10px)" }}
           animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
           transition={{ duration: 0.55, delay: 0.06, ease: [0.22, 1, 0.36, 1] }}
-          className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:col-span-2 neon-edge"
+          className="relative overflow-hidden rounded-3xl border border-white/12 bg-zinc-900 p-6 lg:col-span-2"
         >
             <div className="relative z-10">
             <div className="text-sm font-semibold text-white">Order summary</div>
@@ -288,7 +290,7 @@ export default function CheckoutClient ({
               {lines.length ? lines.map((l) => (
                 <div
                   key={l.slug}
-                  className={`rounded-2xl border bg-white/5 p-4 ${l.outOfStock ? "border-rose-500/30" : "border-white/10"}`}
+                  className={`rounded-2xl border bg-zinc-800 p-4 ${l.outOfStock ? "border-rose-500/30" : "border-white/10"}`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
@@ -315,7 +317,7 @@ export default function CheckoutClient ({
                   </div>
                 </div>
               )) : (
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-sm text-white/70">
+                <div className="rounded-2xl border border-white/10 bg-zinc-800 p-6 text-sm text-white/70">
                   No items yet.
                 </div>
               )}

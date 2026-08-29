@@ -15,14 +15,14 @@ export default function CopyField ({ label, value }: Props)
       initial={{ opacity: 0, y: 8, filter: "blur(8px)" }}
       animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4"
+      className="group relative overflow-hidden rounded-2xl border border-white/12 bg-zinc-900 p-4"
     >
       <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-sky-500/0 blur-2xl transition duration-700 group-hover:bg-sky-500/20" />
       <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/55">
         {label}
       </div>
       <div className="mt-2 flex items-center justify-between gap-3">
-        <code className="min-w-0 truncate rounded-xl bg-zinc-950/50 px-3 py-2 text-sm text-white/90">
+        <code className="min-w-0 truncate rounded-xl bg-zinc-800 px-3 py-2 text-sm text-white">
           {value}
         </code>
         <CopyButton
