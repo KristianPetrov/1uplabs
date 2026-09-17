@@ -19,8 +19,7 @@ export default function CircuitOverlay ({
       aria-hidden="true"
       className={`circuit-overlay circuit-overlay--${variant}${className ? ` ${className}` : ""}`}
     >
-      <CircuitTraces animated={animated} />
+      <CircuitTraces variant={variant} animated={animated} />
     </div>
   );
 }
-
