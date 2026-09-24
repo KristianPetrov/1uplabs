@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { getFeaturedProducts } from "@/app/lib/products";
 import FeaturedCarousel from "@/app/components/FeaturedCarousel";
-import CircuitOverlay from "@/app/components/CircuitOverlay";
 import SiteHeader from "@/app/components/SiteHeader";
 
 export default function Home ()
@@ -55,18 +54,6 @@ export default function Home ()
               <p className="inline-flex items-center gap-2 rounded-full border  bg-white/5 px-3 py-1 text-xs font-medium text-white/70">
                 Transparent. Tested. Reliable.
               </p>
-              <h1 className="mt-5 text-balance text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-                Level up your peptide research.
-              </h1>
-              <p className="mt-5 max-w-xl text-pretty text-base leading-7 text-white/70 sm:text-lg">
-                Our mission at 1UpLabs is to provide researchers with reliable,
-                high-quality peptide materials for laboratory research only,
-                supported by transparency, testing, and integrity at every step.
-                We aim to make peptide science more accessible, more organized,
-                and more fun to explore—like hitting a 1-Up in the lab—while
-                maintaining strict compliance and zero tolerance for misuse or
-                medical claims.
-              </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <Link
@@ -103,13 +90,12 @@ export default function Home ()
 
         <section className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
           <div className="relative overflow-visible rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge sm:p-8">
-            <CircuitOverlay variant="panel" className="opacity-40" animated />
             <div className="relative z-10">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+                  <h1 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl">
                     Featured products
-                  </h2>
+                  </h1>
                   <p className="mt-2 max-w-2xl text-sm leading-6 text-white/65 sm:text-base">
                     A quick look at what researchers are exploring right now.
                   </p>
@@ -128,8 +114,7 @@ export default function Home ()
         </section>
 
         <section className="mx-auto max-w-6xl px-6 pb-12 sm:pb-16">
-          <div className="lab-scanlines relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge sm:p-8">
-            <CircuitOverlay variant="panel" className="opacity-35" animated={false} />
+          <div className="lab-scanlines rounded-3xl border border-white/10 bg-white/5 p-6 neon-edge sm:p-8">
             <div className="relative z-10">
               <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
                 <div className="max-w-2xl">
@@ -179,7 +164,6 @@ export default function Home ()
         </section>
 
         <footer className="relative overflow-hidden border-t border-white/10">
-          <CircuitOverlay variant="footer" className="opacity-45" animated={false} />
           <div className="relative mx-auto max-w-6xl px-6 py-10">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-sm font-semibold text-white">1UpLabs</div>

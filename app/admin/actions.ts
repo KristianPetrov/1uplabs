@@ -9,6 +9,7 @@ import { db } from "@/app/db";
 import { orders, productOverrides, shopSettings } from "@/app/db/schema";
 import { sendOrderStatusUpdateEmail } from "@/app/lib/orderEmails";
 import { PRICING_CACHE_TAG } from "@/app/lib/pricing";
+import { reclaimPromoForOrder, releasePromoForOrder } from "@/app/lib/promoStore";
 import { eq } from "drizzle-orm";
 
 const upsertSchema = z.object({
@@ -136,24 +137,35 @@ export async function updateOrderAdmin (formData: FormData): Promise<void>
     throw new Error("Mail service and tracking number are required to mark an order as shipped.");
   }
 
-  const before = await db
-    .select({ status: orders.status })
-    .from(orders)
-    .where(eq(orders.id, parsed.orderId))
-    .limit(1);
+  const previousStatus = await db.transaction(async (tx) =>
+  {
+    const before = await tx
+      .select({ status: orders.status })
+      .from(orders)
+      .where(eq(orders.id, parsed.orderId))
+      .limit(1);
 
-  await db
-    .update(orders)
-    .set({
-      status: parsed.status,
-      mailService: parsed.status === "shipped" ? mailService : null,
-      trackingNumber: parsed.status === "shipped" ? trackingNumber : null,
-      shippedAt: parsed.status === "shipped" ? new Date() : null,
-      ...(parsed.status === "paid" && parsed.paymentMethod ? { paymentMethod: parsed.paymentMethod } : {}),
-    })
-    .where(eq(orders.id, parsed.orderId));
+    await tx
+      .update(orders)
+      .set({
+        status: parsed.status,
+        mailService: parsed.status === "shipped" ? mailService : null,
+        trackingNumber: parsed.status === "shipped" ? trackingNumber : null,
+        shippedAt: parsed.status === "shipped" ? new Date() : null,
+        ...(parsed.status === "paid" && parsed.paymentMethod ? { paymentMethod: parsed.paymentMethod } : {}),
+      })
+      .where(eq(orders.id, parsed.orderId));
 
-  if (before[0] && before[0].status !== parsed.status)
+    if (before[0] && before[0].status !== parsed.status)
+    {
+      if (parsed.status === "canceled") await releasePromoForOrder(tx, parsed.orderId);
+      else if (before[0].status === "canceled") await reclaimPromoForOrder(tx, parsed.orderId);
+    }
+
+    return before[0]?.status ?? null;
+  });
+
+  if (previousStatus && previousStatus !== parsed.status)
   {
     try
     {

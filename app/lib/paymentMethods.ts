@@ -96,7 +96,7 @@ export async function getManualPaymentMethods (orderId: string, totalCents: numb
       destinationLabel: "Cash App tag",
       destinationValue: cashAppTag,
       paymentUrl: `https://cash.app/${cashAppTag}/${amount}`,
-      note: "Tap to open Cash App. Amount is pre-filled.",
+      note: "Opens Cash App with the amount already filled.",
       bitcoinAmountBtc: null,
       bitcoinRateUsd: null,
     },
@@ -106,7 +106,7 @@ export async function getManualPaymentMethods (orderId: string, totalCents: numb
       destinationLabel: "Venmo handle",
       destinationValue: venmoHandleRaw,
       paymentUrl: `https://venmo.com/${encodeURIComponent(venmoHandlePath)}?txn=pay&amount=${amount}&note=${encodeURIComponent(memo)}`,
-      note: "Tap to open Venmo. Amount and memo are pre-filled.",
+      note: "Opens Venmo with the amount and memo already filled.",
       bitcoinAmountBtc: null,
       bitcoinRateUsd: null,
     },
@@ -135,7 +135,7 @@ export async function buildPaymentInstructionsText (orderId: string, totalCents:
     `Order ID: ${orderId}`,
     `Total amount: ${amountLabel}`,
     "",
-    "Manual payment methods:",
+    "Pay with one of these methods:",
     ...methods.map((method) =>
     {
       const lines = [

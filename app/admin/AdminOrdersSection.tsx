@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 
 import { updateOrderAdmin } from "@/app/admin/actions";
-import CircuitOverlay from "@/app/components/CircuitOverlay";
 import { formatUsdFromCents } from "@/app/lib/money";
 
 type AdminOrderRow = {
@@ -21,6 +20,9 @@ type AdminOrderRow = {
   status: "pending" | "paid" | "shipped" | "canceled";
   paymentMethod: "cashapp" | "zelle" | "venmo" | "bitcoin";
   totalCents: number;
+  promoCode: string | null;
+  discountCents: number;
+  shippingDiscountCents: number;
   mailService: string | null;
   trackingNumber: string | null;
   createdAt: Date;
@@ -120,6 +122,14 @@ function AdminOrderCard ({ order }: { order: AdminOrderRow })
           <div className="mt-1 text-xs text-white/55">
             {shippingAddress}
           </div>
+          {order.promoCode ? (
+            <div className="mt-1 text-xs text-emerald-200/80">
+              Promo {order.promoCode}
+              {order.discountCents + order.shippingDiscountCents > 0
+                ? ` · saved ${formatUsdFromCents(order.discountCents + order.shippingDiscountCents)}`
+                : ""}
+            </div>
+          ) : null}
         </div>
 
         <div className="shrink-0 text-sm font-semibold text-white">
@@ -207,7 +217,6 @@ export default function AdminOrdersSection ({ orders }: Props)
 {
   return (
     <section className="relative mt-6 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 lg:mt-8">
-      <CircuitOverlay variant="panel" className="opacity-40" animated={false} />
       <div className="relative z-10">
         <div className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">
           Order management

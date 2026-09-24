@@ -76,153 +76,6 @@ body {
   display: block;
 }
 
-/* Circuit board glow traces (SVG) — corner-anchored so they never stretch */
-.circuit-overlay {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-  opacity: 0.72;
-  mix-blend-mode: screen;
-}
-
-.circuit-overlay--hero {
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%);
-}
-
-.circuit-overlay--footer {
-  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 70%, transparent 100%);
-  mask-image: linear-gradient(to top, #000 0%, #000 70%, transparent 100%);
-}
-
-.circuit-overlay--panel {
-  opacity: 0.58;
-}
-
-.circuit-corner,
-.circuit-rail {
-  position: absolute;
-  overflow: visible;
-}
-
-.circuit-corner {
-  width: min(36%, 220px);
-  height: min(42%, 220px);
-}
-
-.circuit-corner--tl { top: 0; left: 0; }
-.circuit-corner--tr { top: 0; right: 0; transform: scaleX(-1); transform-origin: center; }
-.circuit-corner--bl { bottom: 0; left: 0; transform: scaleY(-1); transform-origin: center; }
-.circuit-corner--br { bottom: 0; right: 0; transform: scale(-1); transform-origin: center; }
-
-.circuit-rail {
-  left: 0;
-  right: 0;
-  height: 118px;
-}
-
-.circuit-rail--top { top: 0; }
-.circuit-rail--bottom { bottom: 0; }
-
-.circuit-base path,
-.circuit-pins {
-  fill: none;
-  stroke: rgba(167, 243, 208, 0.55);
-  stroke-width: 2.2;
-  stroke-linecap: square;
-  stroke-linejoin: miter;
-}
-
-.circuit-chip {
-  fill: rgba(6, 16, 14, 0.72);
-  stroke: rgba(52, 211, 153, 0.78);
-  stroke-width: 1.8;
-}
-
-.circuit-via-ring {
-  fill: rgba(16, 185, 129, 0.16);
-  stroke: rgba(125, 211, 252, 0.78);
-  stroke-width: 1.6;
-}
-
-.circuit-via-hole {
-  fill: rgba(6, 10, 14, 0.88);
-}
-
-.circuit-pad {
-  fill: rgba(16, 185, 129, 0.38);
-  stroke: rgba(167, 243, 208, 0.55);
-  stroke-width: 1;
-}
-
-.circuit-pulse {
-  fill: none;
-  stroke-width: 2.4;
-  stroke-linecap: square;
-  stroke-linejoin: miter;
-  opacity: 0.82;
-  stroke-dasharray: 16 220;
-  animation: circuitDash var(--dur) linear infinite;
-  animation-delay: var(--delay);
-}
-
-@keyframes circuitDash {
-  0% { stroke-dashoffset: 240; }
-  100% { stroke-dashoffset: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .circuit-pulse { animation: none; }
-}
-
-@media (prefers-reduced-motion: reduce), (max-width: 768px) {
-  .circuit-base,
-  .circuit-pulses {
-    filter: none !important;
-  }
-}
-
-/* Optional: grid floor (hero-only) */
-.hero-grid-floor {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.22;
-}
-
-.hero-grid-floor::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 64%;
-  width: 160%;
-  height: 140%;
-  transform: translate(-50%, -50%) perspective(980px) rotateX(70deg);
-  transform-origin: top center;
-  background-image:
-    linear-gradient(to right, rgba(16, 185, 129, 0.12) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(14, 165, 233, 0.09) 1px, transparent 1px);
-  background-size: 64px 64px;
-  filter: drop-shadow(0 0 24px rgba(16, 185, 129, 0.10));
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 66%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 22%, #000 66%, transparent 100%);
-}
-
-.hero-grid-floor::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 54%;
-  width: 120%;
-  height: 2px;
-  transform: translateX(-50%);
-  background: linear-gradient(to right, transparent, rgba(16, 185, 129, 0.26), rgba(14, 165, 233, 0.16), transparent);
-  opacity: 0.7;
-  filter: blur(0.2px);
-}
-
 /* Optional: scanlines (compliance / lab-results sections only) */
 .lab-scanlines {
   position: relative;
@@ -276,6 +129,16 @@ body {
   .lab-scanlines::after {
     animation: none;
   }
+}
+
+/* Solid checkout surfaces — starfield must not show through form text */
+.opaque-panel {
+  background-color: #1c1f27;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.62);
+}
+
+.opaque-field {
+  background-color: #0b0d12;
 }
 
 /* Reusable neon edge glow for cards/buttons/inputs */

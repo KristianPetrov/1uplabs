@@ -5,12 +5,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/app/auth";
 import AdminOrdersSection from "@/app/admin/AdminOrdersSection";
+import AdminPromoCodes, { type AdminPromoCode } from "@/app/admin/AdminPromoCodes";
 import SignOutButton from "@/app/admin/SignOutButton";
 import AdminFlatShipping from "@/app/admin/AdminFlatShipping";
 import AdminProductOverrides from "@/app/admin/AdminProductOverrides";
-import CircuitOverlay from "@/app/components/CircuitOverlay";
 import { db } from "@/app/db";
-import { orders, productOverrides } from "@/app/db/schema";
+import { orders, productOverrides, promoCodes } from "@/app/db/schema";
 import { products } from "@/app/lib/products";
 import { getFlatShippingCents } from "@/app/lib/shopSettings";
 
@@ -24,11 +24,13 @@ type Props = {
   searchParams: Promise<{ tab?: string }>;
 };
 
-type AdminTab = "inventory" | "orders";
+type AdminTab = "inventory" | "orders" | "promos";
 
 function resolveTab (raw: string | undefined): AdminTab
 {
-  return raw === "orders" ? "orders" : "inventory";
+  if (raw === "orders") return "orders";
+  if (raw === "promos") return "promos";
+  return "inventory";
 }
 
 function tabClassName (active: boolean): string
@@ -71,6 +73,9 @@ export default async function AdminPage ({ searchParams }: Props)
       status: orders.status,
       paymentMethod: orders.paymentMethod,
       totalCents: orders.totalCents,
+      promoCode: orders.promoCode,
+      discountCents: orders.discountCents,
+      shippingDiscountCents: orders.shippingDiscountCents,
       mailService: orders.mailService,
       trackingNumber: orders.trackingNumber,
       createdAt: orders.createdAt,
@@ -78,6 +83,30 @@ export default async function AdminPage ({ searchParams }: Props)
     .from(orders)
     .orderBy(desc(orders.createdAt))
     .limit(100);
+
+  const promoCodeRows: AdminPromoCode[] = activeTab === "promos"
+    ? (await db.select().from(promoCodes).orderBy(desc(promoCodes.createdAt))).map((row) => ({
+      id: row.id,
+      code: row.code,
+      name: row.name,
+      description: row.description,
+      active: row.active,
+      discountType: row.discountType === "percent" || row.discountType === "fixed" ? row.discountType : "none",
+      percentOff: row.percentOff,
+      amountOffCents: row.amountOffCents,
+      shippingMode: row.shippingMode === "free" || row.shippingMode === "fixed" ? row.shippingMode : "none",
+      shippingAmountOffCents: row.shippingAmountOffCents,
+      productSlugs: row.productSlugs ?? [],
+      minSubtotalCents: row.minSubtotalCents,
+      maxDiscountCents: row.maxDiscountCents,
+      usageLimit: row.usageLimit,
+      usedCount: row.usedCount,
+      perCustomerLimit: row.perCustomerLimit,
+      firstOrderOnly: row.firstOrderOnly,
+      startsAt: row.startsAt ? row.startsAt.toISOString() : null,
+      endsAt: row.endsAt ? row.endsAt.toISOString() : null,
+    }))
+    : [];
 
   return (
     <div className="min-h-screen text-zinc-50">
@@ -102,7 +131,6 @@ export default async function AdminPage ({ searchParams }: Props)
       </header>
 
       <main className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
-        <CircuitOverlay variant="panel" className="opacity-35" animated/>
         <div className="relative z-10">
           <div className="flex flex-wrap items-center gap-3">
             <Link href="/admin?tab=inventory" className={tabClassName(activeTab === "inventory")}>
@@ -110,6 +138,9 @@ export default async function AdminPage ({ searchParams }: Props)
             </Link>
             <Link href="/admin?tab=orders" className={tabClassName(activeTab === "orders")}>
               Orders
+            </Link>
+            <Link href="/admin?tab=promos" className={tabClassName(activeTab === "promos")}>
+              Promo codes
             </Link>
           </div>
 
@@ -120,7 +151,6 @@ export default async function AdminPage ({ searchParams }: Props)
                 <AdminProductOverrides products={products} overrides={overrides} />
 
                 <aside className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6">
-                  <CircuitOverlay variant="panel" className="opacity-45" animated={false} />
                   <div className="relative z-10">
                     <div className="text-sm font-semibold text-white">Quick actions</div>
                     <div className="mt-4 flex flex-col gap-3">
@@ -138,8 +168,17 @@ export default async function AdminPage ({ searchParams }: Props)
                 </aside>
               </div>
             </div>
-          ) : (
+          ) : activeTab === "orders" ? (
             <AdminOrdersSection orders={recentOrders} />
+          ) : (
+            <AdminPromoCodes
+              codes={promoCodeRows}
+              products={products.map((product) => ({
+                slug: product.slug,
+                name: product.name,
+                amount: product.amount,
+              }))}
+            />
           )}
         </div>
       </main>

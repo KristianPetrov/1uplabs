@@ -8,6 +8,7 @@ import { PricingProvider } from "@/app/pricing/PricingProvider";
 import AuthSessionProvider from "@/app/auth/SessionProvider";
 import { Analytics } from "@vercel/analytics/react";
 import LabBackground from "@/app/components/LabBackground";
+import RevampNotice from "@/app/components/RevampNotice";
 import { SharedUiAdaptersProvider } from "@/app/shared/SharedUiAdaptersProvider";
 
 const geistSans = Geist({
@@ -103,6 +104,7 @@ export default function RootLayout ({
                 <CartProvider>
                   {children}
                   <FloatingCart />
+                  <RevampNotice />
                 </CartProvider>
               </PricingProvider>
             </SharedUiAdaptersProvider>
