@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useMemo, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 import { useCart } from "@/app/cart/CartProvider";
 import CheckoutSteps from "@/app/components/CheckoutSteps";
 import { formatUsdFromCents } from "@/app/lib/money";
 import { products } from "@/app/lib/products";
 import { usePricing } from "@/app/pricing/PricingProvider";
-import { createOrder } from "@/app/checkout/actions";
+import { createOrder, previewPromoCode } from "@/app/checkout/actions";
 
 const fieldClassName =
   "opaque-field h-11 rounded-2xl border border-white/15 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/50";
@@ -52,6 +52,17 @@ export default function CheckoutClient ({
   const [shippingState, setShippingState] = useState(initialShippingState);
   const [shippingZip, setShippingZip] = useState(initialShippingZip);
   const [shippingCountry, setShippingCountry] = useState(initialShippingCountry);
+  const [promoInput, setPromoInput] = useState("");
+  const [promoError, setPromoError] = useState<string | null>(null);
+  const [promoPending, setPromoPending] = useState(false);
+  const [appliedPromo, setAppliedPromo] = useState<Extract<Awaited<ReturnType<typeof previewPromoCode>>, { ok: true }> | null>(null);
+  const appliedCodeRef = useRef<string | null>(null);
+  const promoRequestRef = useRef(0);
+  const previewContextRef = useRef({
+    email: "",
+    lineKey: "",
+    lines: [] as Array<{ slug: string; qty: number }>,
+  });
 
   const lines = useMemo(() =>
   {
@@ -89,7 +100,91 @@ export default function CheckoutClient ({
 
   const subtotalCents = useMemo(() => lines.reduce((sum, l) => sum + l.lineTotalCents, 0), [lines]);
   const flatShippingCents = pricing.flatShippingCents;
-  const totalCents = subtotalCents + flatShippingCents;
+  const lineKey = lines.map((line) => `${line.slug}:${line.qty}:${line.unitPriceCents}`).join("|");
+  const merchandiseOff = Math.min(appliedPromo?.merchandiseDiscountCents ?? 0, subtotalCents);
+  const shippingOff = Math.min(appliedPromo?.shippingDiscountCents ?? 0, flatShippingCents);
+  const shippingDueCents = Math.max(0, flatShippingCents - shippingOff);
+  const totalCents = Math.max(0, subtotalCents - merchandiseOff + shippingDueCents);
+
+  previewContextRef.current = {
+    email,
+    lineKey,
+    lines: lines.map((line) => ({ slug: line.slug, qty: line.qty })),
+  };
+
+  const runPromoPreview = useCallback(async (code: string) =>
+  {
+    const requestId = ++promoRequestRef.current;
+    setPromoPending(true);
+    const snapshot = previewContextRef.current;
+    try
+    {
+      const result = await previewPromoCode({
+        code,
+        email: snapshot.email,
+        lines: snapshot.lines,
+      });
+      if (promoRequestRef.current !== requestId) return;
+      if (!result.ok)
+      {
+        appliedCodeRef.current = null;
+        setAppliedPromo(null);
+        setPromoError(result.error);
+        return;
+      }
+      appliedCodeRef.current = result.code;
+      setAppliedPromo(result);
+      setPromoInput(result.code);
+      setPromoError(null);
+      const latest = previewContextRef.current;
+      if (latest.email !== snapshot.email || latest.lineKey !== snapshot.lineKey)
+      {
+        void runPromoPreview(result.code);
+      }
+    }
+    catch (err)
+    {
+      if (promoRequestRef.current !== requestId) return;
+      appliedCodeRef.current = null;
+      setAppliedPromo(null);
+      setPromoError(err instanceof Error ? err.message : "Couldn't apply that code.");
+    }
+    finally
+    {
+      if (promoRequestRef.current === requestId) setPromoPending(false);
+    }
+  }, []);
+
+  useEffect(() =>
+  {
+    if (!lines.length)
+    {
+      if (!appliedCodeRef.current) return;
+      promoRequestRef.current += 1;
+      appliedCodeRef.current = null;
+      setAppliedPromo(null);
+      setPromoError(null);
+      setPromoPending(false);
+      return;
+    }
+
+    const code = appliedCodeRef.current;
+    if (!code) return;
+    const timer = window.setTimeout(() =>
+    {
+      void runPromoPreview(code);
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [email, lineKey, lines.length, runPromoPreview]);
+
+  function removePromo ()
+  {
+    promoRequestRef.current += 1;
+    appliedCodeRef.current = null;
+    setAppliedPromo(null);
+    setPromoError(null);
+    setPromoPending(false);
+  }
 
   return (
     <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
@@ -152,6 +247,7 @@ export default function CheckoutClient ({
                         shippingState,
                         shippingZip,
                         shippingCountry,
+                        promoCode: appliedPromo?.code,
                       });
 
                       cart.clear();
@@ -264,7 +360,7 @@ export default function CheckoutClient ({
 
                 <button
                   type="submit"
-                  disabled={pending || !cart.lines.length}
+                  disabled={pending || promoPending || !cart.lines.length}
                   className="mt-2 inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400 disabled:opacity-60"
                 >
                   {pending ? "Continuing…" : "Continue to payment"}
@@ -323,14 +419,88 @@ export default function CheckoutClient ({
               )}
             </div>
 
+            {lines.length ? (
+              <div className="mt-5">
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-white/50">
+                  Promo code
+                </div>
+                {appliedPromo ? (
+                  <div className="mt-2 rounded-2xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <div className="font-mono text-sm font-semibold tracking-wide text-emerald-100">
+                          {appliedPromo.code}
+                        </div>
+                        <div className="mt-1 text-xs text-emerald-100/80">{appliedPromo.summary}</div>
+                        {appliedPromo.description ? (
+                          <div className="mt-1 text-xs text-white/60">{appliedPromo.description}</div>
+                        ) : null}
+                        {promoPending ? (
+                          <div className="mt-1 text-xs text-white/50">Updating discount…</div>
+                        ) : null}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={removePromo}
+                        className="shrink-0 text-xs font-semibold text-white/70 underline decoration-white/30 underline-offset-4"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-2 flex gap-2">
+                    <input
+                      value={promoInput}
+                      onChange={(e) => setPromoInput(e.target.value.toUpperCase())}
+                      onKeyDown={(e) =>
+                      {
+                        if (e.key === "Enter")
+                        {
+                          e.preventDefault();
+                          if (promoInput.trim()) void runPromoPreview(promoInput);
+                        }
+                      }}
+                      placeholder="Enter code"
+                      autoComplete="off"
+                      spellCheck={false}
+                      className={`${fieldClassName} min-w-0 flex-1 font-mono tracking-wide`}
+                    />
+                    <button
+                      type="button"
+                      disabled={promoPending || !promoInput.trim()}
+                      onClick={() =>
+                      {
+                        void runPromoPreview(promoInput);
+                      }}
+                      className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 bg-white/10 px-4 text-sm font-semibold text-white transition hover:bg-white/15 disabled:opacity-60"
+                    >
+                      {promoPending ? "Checking…" : "Apply"}
+                    </button>
+                  </div>
+                )}
+                {promoError ? (
+                  <div className="mt-2 text-xs font-semibold text-rose-200">{promoError}</div>
+                ) : null}
+              </div>
+            ) : null}
+
             <div className="mt-5 border-t border-white/10 pt-4">
               <div className="flex items-center justify-between text-sm">
                 <div className="text-white/70">Subtotal</div>
                 <div className="font-semibold text-white">{formatUsdFromCents(subtotalCents)}</div>
               </div>
+              {merchandiseOff > 0 ? (
+                <div className="mt-2 flex items-center justify-between text-sm">
+                  <div className="text-emerald-200/90">Discount</div>
+                  <div className="font-semibold text-emerald-200">-{formatUsdFromCents(merchandiseOff)}</div>
+                </div>
+              ) : null}
               <div className="mt-2 flex items-center justify-between text-sm">
                 <div className="text-white/70">Shipping (flat rate)</div>
-                <div className="font-semibold text-white">{formatUsdFromCents(flatShippingCents)}</div>
+                <div className="font-semibold text-white">
+                  {flatShippingCents > 0 && shippingDueCents === 0 ? "Free" : formatUsdFromCents(shippingDueCents)}
+                </div>
               </div>
               <div className="mt-2 flex items-center justify-between text-sm">
                 <div className="text-white/70">Total</div>

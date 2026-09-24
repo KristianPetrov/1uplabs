@@ -1,14 +1,16 @@
 "use server";
 
-import { and, eq, gte, inArray, sql } from "drizzle-orm";
+import { and, eq, gte, sql } from "drizzle-orm";
 import { getServerSession } from "next-auth";
 import { z } from "zod";
 
 import { authOptions } from "@/app/auth";
 import { db } from "@/app/db";
 import { customerAddresses, orderItems, orders, productOverrides, users } from "@/app/db/schema";
-import { products } from "@/app/lib/products";
+import { priceCheckoutLines } from "@/app/lib/checkoutLines";
 import { sendAdminOrderPlacedEmail, sendOrderReceiptEmail } from "@/app/lib/orderEmails";
+import { orderTotalAfterPromo } from "@/app/lib/promos";
+import { lockAndQuotePromo, previewPromo, recordPromoRedemption, type PromoPreview } from "@/app/lib/promoStore";
 import { getFlatShippingCents } from "@/app/lib/shopSettings";
 
 const paymentMethodSchema = z.enum(["cashapp", "zelle", "venmo", "bitcoin"]);
@@ -30,7 +32,36 @@ const createOrderSchema = z.object({
   shippingZip: z.string().trim().min(3).max(16),
   shippingCountry: z.string().trim().min(2).max(2).default("US"),
   paymentMethod: paymentMethodSchema.optional().default("venmo"),
+  promoCode: z.string().trim().max(40).optional().or(z.literal("")),
 });
+
+const previewPromoSchema = z.object({
+  code: z.string().trim().min(1).max(40),
+  email: z.string().trim().max(320).optional().or(z.literal("")),
+  lines: z.array(lineSchema).min(1).max(50),
+});
+
+export async function previewPromoCode (input: z.input<typeof previewPromoSchema>): Promise<PromoPreview>
+{
+  const parsed = previewPromoSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "Check the code and try again." };
+
+  try
+  {
+    const priced = await priceCheckoutLines(parsed.data.lines);
+    const shippingCents = await getFlatShippingCents();
+    return await previewPromo({
+      code: parsed.data.code,
+      email: parsed.data.email ?? "",
+      lines: priced.map((line) => ({ slug: line.slug, lineTotalCents: line.lineTotalCents })),
+      shippingCents,
+    });
+  }
+  catch (error)
+  {
+    return { ok: false, error: error instanceof Error ? error.message : "Couldn't apply that code." };
+  }
+}
 
 export type CreateOrderInput = z.input<typeof createOrderSchema>;
 
@@ -40,50 +71,17 @@ export async function createOrder (input: CreateOrderInput): Promise<{ orderId: 
   const session = await getServerSession(authOptions);
   const customerId = session?.user?.id ?? null;
 
-  const baseBySlug = new Map(products.map((p) => [p.slug, p]));
-  const uniqueSlugs = Array.from(new Set(data.lines.map((l) => l.slug)));
-
-  for (const slug of uniqueSlugs)
+  const computed = await priceCheckoutLines(data.lines);
+  for (const line of computed)
   {
-    if (!baseBySlug.has(slug)) throw new Error(`Unknown product: ${slug}`);
+    if (line.inventory != null && line.qty > line.inventory)
+    {
+      throw new Error(`${line.productName} ${line.productAmount} is out of stock (requested ${line.qty}, available ${line.inventory}).`);
+    }
   }
-
-  const overrideRows = await db
-    .select({
-      slug: productOverrides.slug,
-      priceCents: productOverrides.priceCents,
-      inventory: productOverrides.inventory,
-    })
-    .from(productOverrides)
-    .where(inArray(productOverrides.slug, uniqueSlugs));
-
-  const overrideBySlug = new Map(overrideRows.map((r) => [r.slug, r]));
-
-  const computed = data.lines.map((l) =>
-  {
-    const p = baseBySlug.get(l.slug)!;
-    const o = overrideBySlug.get(l.slug);
-    const unitPriceCents = (o?.priceCents ?? p.priceCents);
-    const inventory = o?.inventory ?? null; // null = unlimited
-
-    if (!Number.isFinite(unitPriceCents) || unitPriceCents < 0) throw new Error(`Invalid price for ${l.slug}`);
-    if (inventory != null && (!Number.isFinite(inventory) || inventory < 0)) throw new Error(`Invalid inventory for ${l.slug}`);
-    if (inventory != null && l.qty > inventory) throw new Error(`${p.name} ${p.amount} is out of stock (requested ${l.qty}, available ${inventory}).`);
-
-    return {
-      slug: l.slug,
-      qty: l.qty,
-      productName: p.name,
-      productAmount: p.amount,
-      unitPriceCents,
-      lineTotalCents: unitPriceCents * l.qty,
-      inventory,
-    };
-  });
 
   const subtotalCents = computed.reduce((sum, l) => sum + l.lineTotalCents, 0);
   const shippingCents = await getFlatShippingCents();
-  const totalCents = subtotalCents + shippingCents;
   const now = new Date();
 
   const created = await db.transaction(async (tx) =>
@@ -110,6 +108,26 @@ export async function createOrder (input: CreateOrderInput): Promise<{ orderId: 
       if (!updated.length) throw new Error(`${line.productName} ${line.productAmount} just went out of stock. Please try again.`);
     }
 
+    const promoCode = data.promoCode?.trim() ?? "";
+    const appliedPromo = promoCode
+      ? await lockAndQuotePromo(tx, {
+        code: promoCode,
+        email: emailNormalized,
+        lines: computed.map((line) => ({ slug: line.slug, lineTotalCents: line.lineTotalCents })),
+        shippingCents,
+        now,
+      })
+      : null;
+
+    const merchandiseDiscountCents = appliedPromo?.merchandiseDiscountCents ?? 0;
+    const shippingDiscountCents = appliedPromo?.shippingDiscountCents ?? 0;
+    const totalCents = orderTotalAfterPromo(
+      subtotalCents,
+      shippingCents,
+      merchandiseDiscountCents,
+      shippingDiscountCents,
+    );
+
     const inserted = await tx
       .insert(orders)
       .values({
@@ -126,6 +144,11 @@ export async function createOrder (input: CreateOrderInput): Promise<{ orderId: 
         paymentMethod: data.paymentMethod,
         status: "pending",
         subtotalCents,
+        shippingCents,
+        discountCents: merchandiseDiscountCents,
+        shippingDiscountCents,
+        promoCode: appliedPromo?.code ?? null,
+        promoCodeId: appliedPromo?.promoId ?? null,
         totalCents,
         createdAt: now,
       })
@@ -145,6 +168,18 @@ export async function createOrder (input: CreateOrderInput): Promise<{ orderId: 
         lineTotalCents: l.lineTotalCents,
       })),
     );
+
+    if (appliedPromo)
+    {
+      await recordPromoRedemption(tx, {
+        promoId: appliedPromo.promoId,
+        orderId,
+        email: emailNormalized,
+        merchandiseDiscountCents,
+        shippingDiscountCents,
+        now,
+      });
+    }
 
     // If a customer is signed in, save/refresh their default profile + address.
     if (customerId)
