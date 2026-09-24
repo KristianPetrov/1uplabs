@@ -20,6 +20,9 @@ type AdminOrderRow = {
   status: "pending" | "paid" | "shipped" | "canceled";
   paymentMethod: "cashapp" | "zelle" | "venmo" | "bitcoin";
   totalCents: number;
+  promoCode: string | null;
+  discountCents: number;
+  shippingDiscountCents: number;
   mailService: string | null;
   trackingNumber: string | null;
   createdAt: Date;
@@ -119,6 +122,14 @@ function AdminOrderCard ({ order }: { order: AdminOrderRow })
           <div className="mt-1 text-xs text-white/55">
             {shippingAddress}
           </div>
+          {order.promoCode ? (
+            <div className="mt-1 text-xs text-emerald-200/80">
+              Promo {order.promoCode}
+              {order.discountCents + order.shippingDiscountCents > 0
+                ? ` · saved ${formatUsdFromCents(order.discountCents + order.shippingDiscountCents)}`
+                : ""}
+            </div>
+          ) : null}
         </div>
 
         <div className="shrink-0 text-sm font-semibold text-white">

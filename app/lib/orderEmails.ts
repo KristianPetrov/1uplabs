@@ -15,6 +15,11 @@ type OrderEmailData = {
     email: string;
     phone: string | null;
     status: "pending" | "paid" | "shipped" | "canceled";
+    subtotalCents: number;
+    shippingCents: number;
+    discountCents: number;
+    shippingDiscountCents: number;
+    promoCode: string | null;
     totalCents: number;
     paymentMethod: "cashapp" | "zelle" | "venmo" | "bitcoin";
     shippingName: string;
@@ -141,6 +146,11 @@ async function loadOrderEmailData (orderId: string): Promise<OrderEmailData | nu
         email: orders.email,
         phone: orders.phone,
         status: orders.status,
+        subtotalCents: orders.subtotalCents,
+        shippingCents: orders.shippingCents,
+        discountCents: orders.discountCents,
+        shippingDiscountCents: orders.shippingDiscountCents,
+        promoCode: orders.promoCode,
         totalCents: orders.totalCents,
         paymentMethod: orders.paymentMethod,
         shippingName: orders.shippingName,
@@ -170,6 +180,7 @@ async function loadOrderEmailData (orderId: string): Promise<OrderEmailData | nu
         email: orders.email,
         phone: orders.phone,
         status: orders.status,
+        subtotalCents: orders.subtotalCents,
         totalCents: orders.totalCents,
         paymentMethod: orders.paymentMethod,
         shippingName: orders.shippingName,
@@ -191,6 +202,10 @@ async function loadOrderEmailData (orderId: string): Promise<OrderEmailData | nu
     {
       order = {
         ...fallback,
+        shippingCents: Math.max(0, fallback.totalCents - fallback.subtotalCents),
+        discountCents: 0,
+        shippingDiscountCents: 0,
+        promoCode: null,
         receiptEmailSentAt: null,
         paymentInstructionsEmailSentAt: null,
         statusEmailSentAt: null,
@@ -290,6 +305,44 @@ function renderLayoutHtml (title: string, subtitle: string, bodyHtml: string, ct
   `.trim();
 }
 
+function promoSavings (order: OrderEmailData["order"]): number
+{
+  return Math.max(0, order.discountCents) + Math.max(0, order.shippingDiscountCents);
+}
+
+function moneyBreakdownText (order: OrderEmailData["order"]): string[]
+{
+  if (!order.promoCode && promoSavings(order) <= 0) return [];
+  const shippingDue = Math.max(0, order.shippingCents - order.shippingDiscountCents);
+  const lines = [`Subtotal: ${formatUsdFromCents(order.subtotalCents)}`];
+  if (order.discountCents > 0)
+  {
+    lines.push(`Discount${order.promoCode ? ` (${order.promoCode})` : ""}: -${formatUsdFromCents(order.discountCents)}`);
+  }
+  if (order.shippingDiscountCents > 0 && shippingDue === 0)
+  {
+    lines.push(`Shipping: Free${order.promoCode ? ` (${order.promoCode})` : ""}`);
+  }
+  else
+  {
+    lines.push(`Shipping: ${formatUsdFromCents(shippingDue)}`);
+    if (order.shippingDiscountCents > 0)
+    {
+      lines.push(`Shipping discount${order.promoCode ? ` (${order.promoCode})` : ""}: -${formatUsdFromCents(order.shippingDiscountCents)}`);
+    }
+  }
+  return lines;
+}
+
+function moneyBreakdownHtml (order: OrderEmailData["order"]): string
+{
+  const lines = moneyBreakdownText(order);
+  if (!lines.length) return "";
+  return lines
+    .map((line) => `<div style="margin-bottom:6px;color:#cbd5e1">${escapeHtml(line)}</div>`)
+    .join("");
+}
+
 function renderItemsHtml (items: OrderEmailData["items"]): string
 {
   const rows = items.map((item) => `
@@ -348,6 +401,7 @@ async function buildReceiptText (data: OrderEmailData): Promise<string>
     `Pay to complete order #${orderNumber}.`,
     "",
     `Order ID: ${data.order.id}`,
+    ...moneyBreakdownText(data.order),
     `Total: ${formatUsdFromCents(data.order.totalCents)}`,
     `Status: ${statusDisplay(data.order.status)}`,
     `Order page: ${orderUrl}`,
@@ -368,6 +422,7 @@ async function buildReceiptHtml (data: OrderEmailData): Promise<string>
     <div style="color:#e2e8f0">
       <div style="margin-bottom:10px">Order number: <strong style="color:#fff">#${escapeHtml(orderNumber)}</strong></div>
       <div style="margin-bottom:10px">Order ID: <span style="color:#fff">${escapeHtml(data.order.id)}</span></div>
+      ${moneyBreakdownHtml(data.order)}
       <div style="margin-bottom:16px">Total: <strong style="color:#fff">${escapeHtml(formatUsdFromCents(data.order.totalCents))}</strong></div>
       ${renderItemsHtml(data.items)}
       ${paymentMethodsHtml}
@@ -483,6 +538,7 @@ function buildAdminOrderPlacedText (data: OrderEmailData): string
     `Customer phone: ${data.order.phone ?? "n/a"}`,
     `Payment method: ${paymentMethodDisplay(data.order.paymentMethod)}`,
     `Status: ${statusDisplay(data.order.status)}`,
+    ...moneyBreakdownText(data.order),
     `Total: ${formatUsdFromCents(data.order.totalCents)}`,
     `Admin order page: ${orderUrl}`,
     "",
@@ -509,6 +565,7 @@ function buildAdminOrderPlacedHtml (data: OrderEmailData): string
       <div style="margin-bottom:10px">Customer email: <span style="color:#fff">${escapeHtml(data.order.email)}</span></div>
       <div style="margin-bottom:10px">Customer phone: <span style="color:#fff">${escapeHtml(data.order.phone ?? "n/a")}</span></div>
       <div style="margin-bottom:10px">Payment method: <strong style="color:#fff">${escapeHtml(paymentMethodDisplay(data.order.paymentMethod))}</strong></div>
+      ${moneyBreakdownHtml(data.order)}
       <div style="margin-bottom:16px">Total: <strong style="color:#fff">${escapeHtml(formatUsdFromCents(data.order.totalCents))}</strong></div>
       <div style="margin-bottom:16px;padding:12px;border:1px solid rgba(255,255,255,0.12);border-radius:10px;background:#0b0f16">
         <div style="color:#f8fafc;font-weight:700;margin-bottom:6px">Shipping address</div>

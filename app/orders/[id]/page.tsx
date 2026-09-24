@@ -74,6 +74,10 @@ export default async function OrderPage ({ params }: Props)
       mailService: orders.mailService,
       trackingNumber: orders.trackingNumber,
       subtotalCents: orders.subtotalCents,
+      shippingCents: orders.shippingCents,
+      discountCents: orders.discountCents,
+      shippingDiscountCents: orders.shippingDiscountCents,
+      promoCode: orders.promoCode,
       totalCents: orders.totalCents,
     })
     .from(orders)
@@ -92,7 +96,7 @@ export default async function OrderPage ({ params }: Props)
   const orderNumber = formatOrderNumberFromId(o.id);
   const amountLabel = formatUsdFromCents(o.totalCents);
   const manualMethods = await getManualPaymentMethods(o.id, o.totalCents);
-  const shippingCents = Math.max(0, o.totalCents - o.subtotalCents);
+  const shippingDueCents = Math.max(0, o.shippingCents - o.shippingDiscountCents);
   const statusLabel = orderStatusLabel(o.status);
   const isPending = o.status === "pending";
   const isPaid = o.status === "paid";
@@ -201,10 +205,25 @@ export default async function OrderPage ({ params }: Props)
                   <div className="text-white/70">Subtotal</div>
                   <div className="font-semibold text-white">{formatUsdFromCents(o.subtotalCents)}</div>
                 </div>
+                {o.discountCents > 0 ? (
+                  <div className="mt-2 flex items-center justify-between text-sm">
+                    <div className="text-emerald-200/90">
+                      Discount{o.promoCode ? ` (${o.promoCode})` : ""}
+                    </div>
+                    <div className="font-semibold text-emerald-200">-{formatUsdFromCents(o.discountCents)}</div>
+                  </div>
+                ) : null}
                 <div className="mt-2 flex items-center justify-between text-sm">
                   <div className="text-white/70">Shipping</div>
-                  <div className="font-semibold text-white">{formatUsdFromCents(shippingCents)}</div>
+                  <div className="font-semibold text-white">
+                    {o.shippingCents > 0 && shippingDueCents === 0 ? "Free" : formatUsdFromCents(shippingDueCents)}
+                  </div>
                 </div>
+                {o.promoCode && o.shippingDiscountCents > 0 ? (
+                  <div className="mt-1 text-right text-xs text-emerald-200/80">
+                    {shippingDueCents === 0 ? "Free shipping" : `${formatUsdFromCents(o.shippingDiscountCents)} off shipping`} with {o.promoCode}
+                  </div>
+                ) : null}
                 <div className="mt-2 flex items-center justify-between text-sm">
                   <div className="text-white/70">Total due</div>
                   <div className="font-semibold text-white">{amountLabel}</div>
