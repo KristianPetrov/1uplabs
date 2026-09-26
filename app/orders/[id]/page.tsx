@@ -10,6 +10,7 @@ import { formatUsdFromCents } from "@/app/lib/money";
 import { formatOrderNumberFromId } from "@/app/lib/orderEmails";
 import { getManualPaymentMethods, orderIdToMemo } from "@/app/lib/paymentMethods";
 import CopyField from "@/app/orders/[id]/CopyField";
+import EditShippingAddress, { PendingOrderBookmark } from "@/app/orders/[id]/EditShippingAddress";
 import PaymentMethodsPanel from "@/app/orders/[id]/PaymentMethodsPanel";
 import SiteHeader from "@/app/components/SiteHeader";
 
@@ -73,6 +74,14 @@ export default async function OrderPage ({ params }: Props)
       paymentMethod: orders.paymentMethod,
       mailService: orders.mailService,
       trackingNumber: orders.trackingNumber,
+      phone: orders.phone,
+      shippingName: orders.shippingName,
+      shippingAddress1: orders.shippingAddress1,
+      shippingAddress2: orders.shippingAddress2,
+      shippingCity: orders.shippingCity,
+      shippingState: orders.shippingState,
+      shippingZip: orders.shippingZip,
+      shippingCountry: orders.shippingCountry,
       subtotalCents: orders.subtotalCents,
       shippingCents: orders.shippingCents,
       discountCents: orders.discountCents,
@@ -116,6 +125,8 @@ export default async function OrderPage ({ params }: Props)
         )}
       />
 
+      <PendingOrderBookmark orderId={o.id} pending={isPending} />
+
       <main className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           <section className="opaque-panel relative overflow-hidden rounded-3xl border border-white/12 p-6 lg:col-span-3">
@@ -136,13 +147,27 @@ export default async function OrderPage ({ params }: Props)
               </h1>
               <p className="mt-2 text-sm leading-6 text-white/70">
                 {isPending
-                  ? "Shipping is saved. Payment is the last step — we ship after we receive it."
+                  ? "Your order is saved. Payment is the last step — we ship after we receive it. Change the address here instead of going back."
                   : isPaid
                     ? "Thank you. Your order will be shipped shortly. You'll receive a tracking number within 48 hours."
                     : isShipped
                       ? "Tracking details are included below."
                       : `This order is ${statusLabel}.`}
               </p>
+
+              {isPending ? (
+                <EditShippingAddress
+                  orderId={o.id}
+                  phone={o.phone ?? ""}
+                  shippingName={o.shippingName}
+                  shippingAddress1={o.shippingAddress1}
+                  shippingAddress2={o.shippingAddress2 ?? ""}
+                  shippingCity={o.shippingCity}
+                  shippingState={o.shippingState}
+                  shippingZip={o.shippingZip}
+                  shippingCountry={o.shippingCountry}
+                />
+              ) : null}
 
               {isPending ? (
                 <PaymentMethodsPanel memo={memo} methods={manualMethods} amountLabel={amountLabel} />

@@ -15,7 +15,16 @@ export default function CheckoutSteps ({ current }: Props)
             : "text-white/45"
         }
       >
-        {shippingDone ? "1 · Shipping saved" : "1 · Shipping"}
+        {shippingDone ? (
+          <a
+            href="#shipping-address"
+            className="underline decoration-white/25 underline-offset-4 transition hover:text-white"
+          >
+            1 · Edit shipping
+          </a>
+        ) : (
+          "1 · Shipping"
+        )}
       </li>
       <li aria-hidden="true" className="text-white/25">
         →

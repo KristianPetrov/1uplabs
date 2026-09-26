@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, useTransition } from "react";
 
 import { useCart } from "@/app/cart/CartProvider";
 import CheckoutSteps from "@/app/components/CheckoutSteps";
@@ -10,6 +10,7 @@ import { formatUsdFromCents } from "@/app/lib/money";
 import { products } from "@/app/lib/products";
 import { usePricing } from "@/app/pricing/PricingProvider";
 import { createOrder, previewPromoCode } from "@/app/checkout/actions";
+import { readPendingOrderId, rememberPendingOrder, subscribePendingOrder } from "@/app/lib/pendingOrder";
 
 const fieldClassName =
   "opaque-field h-11 rounded-2xl border border-white/15 px-4 text-sm font-semibold text-white outline-none transition focus:border-emerald-500/50";
@@ -42,6 +43,7 @@ export default function CheckoutClient ({
   const pricing = usePricing();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const pendingOrderId = useSyncExternalStore(subscribePendingOrder, readPendingOrderId, () => null);
 
   const [email, setEmail] = useState(initialEmail);
   const [phone, setPhone] = useState(initialPhone);
@@ -210,13 +212,42 @@ export default function CheckoutClient ({
               </div>
             ) : null}
 
-            {!cart.lines.length ? (
+            {!cart.ready ? (
               <div className="opaque-field mt-6 rounded-2xl border border-white/10 p-6 text-sm text-white/70">
-                Your cart is empty.{" "}
-                <Link href="/store" className="font-semibold text-white underline decoration-white/25 underline-offset-4">
-                  Browse the store
-                </Link>
-                .
+                Loading your cart…
+              </div>
+            ) : !cart.lines.length ? (
+              <div className="opaque-field mt-6 rounded-2xl border border-white/10 p-6 text-sm text-white/70">
+                {pendingOrderId ? (
+                  <>
+                    <div className="text-sm font-semibold text-white">Your order is still saved</div>
+                    <p className="mt-2 leading-6">
+                      Going back from payment doesn’t cancel it. Return to the pay page to edit the address or finish payment.
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <Link
+                        href={`/orders/${pendingOrderId}`}
+                        className="inline-flex h-11 items-center justify-center rounded-full bg-emerald-500 px-6 text-sm font-semibold text-zinc-950 shadow-sm shadow-emerald-500/20 ring-1 ring-emerald-400/30 transition hover:bg-emerald-400"
+                      >
+                        Return to payment
+                      </Link>
+                      <Link
+                        href="/store"
+                        className="inline-flex h-11 items-center justify-center rounded-full border border-white/15 bg-white/10 px-6 text-sm font-semibold text-white transition hover:bg-white/15"
+                      >
+                        Browse the store
+                      </Link>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    Your cart is empty.{" "}
+                    <Link href="/store" className="font-semibold text-white underline decoration-white/25 underline-offset-4">
+                      Browse the store
+                    </Link>
+                    .
+                  </>
+                )}
               </div>
             ) : (
               <form
@@ -250,6 +281,7 @@ export default function CheckoutClient ({
                         promoCode: appliedPromo?.code,
                       });
 
+                      rememberPendingOrder(res.orderId);
                       cart.clear();
                       window.location.assign(`/orders/${res.orderId}`);
                       return;
